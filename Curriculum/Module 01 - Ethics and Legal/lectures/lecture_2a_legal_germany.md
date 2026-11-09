@@ -1,6 +1,8 @@
 # Legal Framework in Germany
 
-This section mainly focuses on the differences between the Austrian law and the German law in regard to hacking. Overall the law in germany is more strict and the penalities are often higher.
+This section mainly focuses on the differences between Austrian and German law in regard to hacking. The German provisions quoted here set a higher maximum penalty for plain unauthorized access than the Austrian equivalent (three years versus two), but note that "stricter overall" does not follow from that: Austrian law reaches considerably higher maximum penalties for the aggravated cases, for example up to ten years under § 148a StGB.
+
+> **Note:** The sections below are only the three core "hacking" provisions of the German StGB. They are not a complete picture of German computer crime law - §§ 303a and 303b StGB (data tampering and computer sabotage) and § 202d StGB (handling stolen data) are not covered here.
 
 ## Relevant Sections
 
@@ -23,7 +25,7 @@ This provision deals with the criminal act of unauthorized access to particularl
 
 - Offenders can face a **prison sentence of up to three years** or a **monetary fine**.
 
-The focus of this provision is on the illicit access to data that's specifically safeguarded, emphasizing the illegal act of bypassing these protective measures. It ensures the protection of electronic and digital data from unauthorized breaches.
+The provision targets access to data that is specifically safeguarded, and the punishable act is the bypassing of those protective measures.
 
 ______________________________________________________________________
 
@@ -36,7 +38,7 @@ This provision addresses the criminal act of intercepting data not intended for 
 
 **Key Elements:**
 
-- **Unauthorized Interception:** Deliberately obtaining data for oneself or another person that is not intended for them by leveraging technical tools.
+- **Unauthorized Interception:** Deliberately obtaining data for oneself or another person that is not intended for them by using technical tools.
 
 - **Data Source:** The data must either be from a non-public data transmission or from the electromagnetic emission of a data processing system.
 
@@ -48,7 +50,7 @@ This provision addresses the criminal act of intercepting data not intended for 
 
 - The penalty applies unless another provision stipulates a more severe punishment for the same act.
 
-This section emphasizes the protection of electronic and digital data, particularly when it comes to illicit interception, ensuring the data's security and privacy.
+The section protects electronically stored and transmitted data against interception.
 
 ______________________________________________________________________
 
@@ -72,18 +74,18 @@ This section addresses the criminal act of preparing for the unauthorized access
 
 - Those found guilty under this section can face a **prison sentence of up to two years** or a **monetary fine**.
 
-The essence of this section is to criminalize not just the act of unauthorized data access and interception, but also the preparations for such acts, reinforcing the importance of data security and privacy.
+The section criminalizes the preparations for unauthorized data access and interception, in addition to the acts themselves.
 
 ## Differences to the Austrian law
 
-The Austrian and German legal systems both criminalize unauthorized data access and hacking-related activities. Yet, there are differences in the way these actions are framed and punished under the laws of each country. Let's examine some of these differences:
+The Austrian and German legal systems both criminalize unauthorized data access and hacking-related activities, but they differ in how these actions are framed and punished.
 
 ### Definition and Scope
 
 - Austria:
   - Comprehensive approach covering different types of cybercrimes: unauthorized access, data damage, impairing systems, malicious software, digital fraud.
 - Germany:
-  - Focuses on unauthorized data access, especially when data is particularly safeguarded.
+  - The provisions covered above focus on unauthorized data access, especially when the data is particularly safeguarded. Damage to data and sabotage are handled by separate sections (§§ 303a, 303b StGB) not discussed here.
 
 ### Penalties
 
@@ -104,7 +106,7 @@ The Austrian and German legal systems both criminalize unauthorized data access 
 - Austria:
   - Exemptions for those who voluntarily prevent potential harm/damage from their actions.
 - Germany:
-  - No explicit exemptions in provided sections.
+  - No explicit exemptions in the sections quoted above. Note that § 202c is widely criticised because security tools are dual-use; using such tools for legitimate, authorised testing is not what the provision targets.
 
 ### Terminology and Emphasis
 

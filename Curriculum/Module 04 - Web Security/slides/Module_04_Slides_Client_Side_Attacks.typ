@@ -1,4 +1,4 @@
-#import "../../../typst-athena-slides-template/1.0.1/src/lib.typ": *
+#import "../../../typst-theme-emberzero/1.1.0/src/lib.typ": *
 
 #show: athena-theme.with(
   font: "Berkeley Mono",
@@ -34,6 +34,7 @@
 ]
 
 #slide(title: "Why XSS is Dangerous")[
+  #set text(size: 18pt)
   *What attackers can do:*
   1. Steal session cookies → Impersonate users
   2. Capture keystrokes → Steal passwords
@@ -161,7 +162,7 @@
   - Server-side filters ineffective
   - Harder to detect with traditional tools
 
-  *Sources:* `location.hash`, `location.search`, `postMessage`
+  *Sources:* `location.hash`, `location.search`, `postMessage` \
   *Sinks:* `innerHTML`, `eval()`, `document.write()`
 ]
 
@@ -225,6 +226,7 @@
 ]
 
 #slide(title: "Advanced XSS Exploitation")[
+  #local(inset: 0.12em)[
   *Keylogger:*
   ```javascript
   document.onkeypress = function(e) {
@@ -248,9 +250,11 @@
     </div>
   `;
   ```
+  ]
 ]
 
 #slide(title: "XSS Filter Bypasses")[
+  #set text(size: 18pt)
   *Case manipulation:*
   ```html
   <ScRiPt>alert(1)</sCrIpT>
@@ -288,6 +292,7 @@
 ]
 
 #slide(title: "Output Encoding (Context-Aware)")[
+  #local(inset: 0.12em)[
   *HTML Context:*
   ```javascript
   function encodeHTML(str) {
@@ -312,6 +317,7 @@
   ```javascript
   const encoded = encodeURIComponent(userInput);
   ```
+  ]
 ]
 
 #slide(title: "Safe APIs")[
@@ -335,6 +341,7 @@
 ]
 
 #slide(title: "Content Security Policy for XSS")[
+  #set text(size: 16pt)
   *Strict CSP:*
   ```http
   Content-Security-Policy:
@@ -392,6 +399,7 @@
 ]
 
 #slide(title: "CSRF Attack Vectors")[
+  #set text(size: 14pt)
   *GET Request (simple):*
   ```html
   <img src="https://bank.com/delete-account">
@@ -429,6 +437,7 @@
 ]
 
 #slide(title: "CSRF Tokens")[
+  #local(inset: 0.12em)[
   *Server-side:*
   ```php
   // Generate token
@@ -450,6 +459,7 @@
     <button>Transfer</button>
   </form>
   ```
+  ]
 ]
 
 #slide(title: "SameSite Cookies")[
@@ -490,6 +500,7 @@
 ]
 
 #slide(title: "Clickjacking Attack")[
+  #local(inset: 0.12em)[
   *Attacker's page:*
   ```html
   <style>
@@ -512,9 +523,11 @@
   ```
 
   User clicks "FREE iPHONE" but actually clicks delete account button!
+  ]
 ]
 
 #slide(title: "Clickjacking Prevention")[
+  #set text(size: 18pt)
   *X-Frame-Options:*
   ```http
   X-Frame-Options: DENY
@@ -542,6 +555,7 @@
 #section-slide(title: "Other Client-Side Vulnerabilities")
 
 #slide(title: "DOM Clobbering")[
+  #set text(size: 18pt)
   *Definition:* Exploiting browser's behavior of creating global variables for HTML elements
 
   *Vulnerable Code:*
@@ -564,6 +578,7 @@
 ]
 
 #slide(title: "Prototype Pollution")[
+  #set text(size: 15pt)
   *Definition:* Modifying JavaScript object prototypes
 
   *Vulnerable Code:*
@@ -588,6 +603,8 @@
 ]
 
 #slide(title: "postMessage Vulnerabilities")[
+  #local(inset: 0.12em)[
+  #set text(size: 18pt)
   *Vulnerable Receiver:*
   ```javascript
   window.addEventListener('message', function(e) {
@@ -614,6 +631,7 @@
     processMessage(e.data);
   });
   ```
+  ]
 ]
 
 #section-slide(title: "Key Takeaways")
@@ -632,19 +650,20 @@
 ]
 
 #slide(title: "Defense Checklist")[
-  ✅ *Output encoding* (context-aware)
-  ✅ *Input validation* (whitelist)
-  ✅ *CSP* with nonces (no unsafe-inline)
-  ✅ *HTTPOnly, Secure, SameSite* cookies
-  ✅ *CSRF tokens* on state-changing operations
-  ✅ *X-Frame-Options* or CSP frame-ancestors
-  ✅ *Safe APIs* (textContent, not innerHTML)
-  ✅ *Framework protection* (React, Vue auto-escaping)
-  ✅ *Security testing* (manual + automated)
+  ✅ *Output encoding* (context-aware) \
+  ✅ *Input validation* (whitelist) \
+  ✅ *CSP* with nonces (no unsafe-inline) \
+  ✅ *HTTPOnly, Secure, SameSite* cookies \
+  ✅ *CSRF tokens* on state-changing operations \
+  ✅ *X-Frame-Options* or CSP frame-ancestors \
+  ✅ *Safe APIs* (textContent, not innerHTML) \
+  ✅ *Framework protection* (React, Vue auto-escaping) \
+  ✅ *Security testing* (manual + automated) \
   ✅ *Security training* for developers
 ]
 
 #slide(title: "Resources")[
+  #set text(size: 15pt)
   *Learning:*
   - OWASP XSS Guide
   - PortSwigger Web Security Academy

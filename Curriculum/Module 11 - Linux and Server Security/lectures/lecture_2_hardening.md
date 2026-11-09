@@ -10,9 +10,31 @@ There are different kinds of system hardening:
 - OS Hardening
 - Application hardening
 
+Each kind covers one layer of the stack, and a layer is only a secure base for
+the one above it if it has been hardened itself. An attacker needs one
+unhardened layer; the defender needs all of them:
+
+```text
+  +----------------------------------------------------+
+  | Application  TLS, least privilege, patched         |  Application
+  |              dependencies, logs shipped off-host   |  hardening
+  +----------------------------------------------------+
+  | OS / Kernel  SELinux or AppArmor, sysctl, ASLR,    |  OS
+  |              file permissions, fewer services      |  hardening
+  +----------------------------------------------------+
+  | Bootloader   GRUB config owned by root,            |
+  |              SecureBoot verifies the kernel        |  Server
+  +----------------------------------------------------+  hardening
+  | Hardware     BIOS password and updates, USB        |
+  |              disabled, full disk encryption        |
+  +----------------------------------------------------+
+
+  Compromising a lower layer defeats every layer above it.
+```
+
 ## Server hardening
 
-Each layer and component of an system needs to be hardened to ensure that they provide a secure base for the next layer. This all starts with the hardware, the foundation of the application stack.
+Each layer and component of a system needs to be hardened to ensure that they provide a secure base for the next layer. This all starts with the hardware, the foundation of the application stack.
 
 The idea is to make the server as robust as possible against local attacks, i.e. people with physical access to the machine, and prevent them from snooping on the data on the server or introducing malicious code.
 
@@ -58,8 +80,8 @@ Steps for root for grub:
 
     ```bash
     chmod og-rwx /etc/grub.conf
-    chmod -R or-rwx /etc/grub.d
-    chown or-rwx /etc/default/grub
+    chmod -R og-rwx /etc/grub.d
+    chmod og-rwx /etc/default/grub
     ```
 
 ### Linux Kernel
@@ -68,7 +90,7 @@ The heart of a linux distribution is the kernel, protecting it is absolutely nec
 
 #### Kernel logs
 
-Kernel logs are a crucial aspect of a machine administration. Logs can reveal information about the state of daemons, show warnings or other critical messages. The logs are split into eight log levels, starting at level 0 and decreasing in severity until level 7, which are debug logs. In order to protect these logs from unauthorized access, one can restrict the permissions of the logs with the following command:
+Kernel logs are an important part of machine administration. Logs can reveal information about the state of daemons, show warnings or other critical messages. The logs are split into eight log levels, starting at level 0 and decreasing in severity until level 7, which are debug logs. In order to protect these logs from unauthorized access, one can restrict the permissions of the logs with the following command:
 
 Steps for root:
 
@@ -80,7 +102,7 @@ Steps for root:
 
 #### Kernel pointer
 
-A kernel pointer is basically a way of exposing kernel address via /proc and other interfaces. By setting the kernel.kptr_restrict to 1, all kernel pointers are when printed, are replaced with 0s.
+Several `/proc` and `/sys` interfaces print kernel memory addresses, which is exactly the information an exploit needs in order to aim at kernel structures. With `kernel.kptr_restrict = 1`, those addresses are printed as zeroes for processes without the `CAP_SYSLOG` capability; a value of `2` hides them from every process, including root.
 
 Steps for root:
 
@@ -94,7 +116,9 @@ Steps for root:
 
 Exec Shield is a project that has its origins at Red Hat. It was developed in late 2002 with the aim of reducing the risk of worms or other automated remote attacks on Linux systems. It attempts to flag data memory as non-executable and program memory as non-writable, therefore suppressing many security exploits such as buffer overflows or other techniques relying on overwriting data and inserting code.
 
-Steps for root:
+Exec Shield was a patch for Red Hat kernels and was never merged into the mainline kernel, so the `kernel.exec-shield` setting below exists only on older Red Hat based systems. On a current kernel the same protection comes from the hardware NX bit, which the kernel enables on its own, and there is nothing to configure; `sysctl` on such a system rejects the key as unknown. It is shown here because it is still found in many older hardening guides.
+
+Steps for root (older Red Hat based systems only):
 
 1. Enable Exec Shield in the sysctl.d config files
 
@@ -116,18 +140,23 @@ Steps for root:
 
 ### Config SELinux
 
-A incredibly crucial setting is to enforce the SELinux rules. SELinux stands for Security-Enhanced Linux and is a kernel security module. It has been integrated into various distributions but is set to only warn the user upon a rule violation.
+SELinux stands for Security-Enhanced Linux and is a kernel security module that confines what each process may do, independently of file permissions. On Red Hat based distributions it is shipped enabled, but on some systems it runs in permissive mode, where violations are only logged instead of blocked. Debian and Ubuntu ship AppArmor instead, which solves the same problem with profiles per program; on those systems the file below does not exist and `aa-status` is the equivalent check.
 
 Steps as root:
 
-1. Change the `SELINUXTYPE`in`/etc/selinux/config`
- `SELINUXTYPE=enforcing`
+1. Change the mode in `/etc/selinux/config` (`SELINUX` sets the mode, `SELINUXTYPE` selects the policy and stays as it is, usually `targeted`)
+ `SELINUX=enforcing`
 2. Remove this line from `/etc/default/grub` if it exists
  `selinux=0`
 
 ### Network
 
 To protect from potential risks in the network layer there are several settings to enhance the security of the system, like enabling TCP SYN Cookie protection, disabling IP source routing and ignoring broadcast requests.
+
+All of the following settings are written into the same file, so note the
+difference between `>`, which creates or truncates the file, and `>>`, which
+appends a line. Using `>` for every step would leave only the last setting in
+place. After editing, apply the file with `sysctl --system`.
 
 #### TCP/SYN Cookie protection
 
@@ -150,25 +179,33 @@ Steps as root:
 1. Disable IP source routing
 
     ```bash
-    echo "net.ipv4.conf.all.accept_source_route = 0" > /etc/sysctl.d/50-net-stack.conf
+    echo "net.ipv4.conf.all.accept_source_route = 0" \
+      >> /etc/sysctl.d/50-net-stack.conf
     ```
 
 #### ICMP
 
-By ignoring ICMP requests ones device cannot be found as easily, also hiding precious information. O ne should keep in mind that this setting will lead to a harder time debugging.
+Two separate things are configured here. Refusing ICMP redirects stops another
+host on the network from rewriting the local routing table, which is a real
+attack. Ignoring ICMP echo requests ("ping") only makes the host slightly less
+obvious to untargeted scans; a port scan still finds it, so treat this as noise
+reduction rather than protection, and remember that it also makes network
+troubleshooting considerably harder.
 
 Steps as root:
 
 1. Disable ICMP redirect acceptance
 
     ```bash
-    echo "net.ipv4.conf.all.accept_redirects = 0" > /etc/sysctl.d/50-net-stack.conf
+    echo "net.ipv4.conf.all.accept_redirects = 0" \
+      >> /etc/sysctl.d/50-net-stack.conf
     ```
 
-2. Enable ignoring to ICMP requests
+2. Enable ignoring ICMP echo requests
 
     ```bash
-    echo "net.ipv4.icmp_echo_ignore_all = 1" > /etc/sysctl.d/50-net-stack.conf
+    echo "net.ipv4.icmp_echo_ignore_all = 1" \
+      >> /etc/sysctl.d/50-net-stack.conf
     ```
 
 #### Broadcast
@@ -180,7 +217,8 @@ Steps as root:
 1. Enable ignoring broadcast requests
 
     ```bash
-    echo "net.ipv4.icmp_echo_ignore_broadcasts = 1" > /etc/sysctl.d/50-net-stack.conf
+    echo "net.ipv4.icmp_echo_ignore_broadcasts = 1" \
+      >> /etc/sysctl.d/50-net-stack.conf
     ```
 
 ## Application hardening
@@ -201,7 +239,7 @@ Application logs should be aggregated remotely to ensure that they can't be alte
 
 ### Check dependencies for vulnerabilities
 
-Most applications have a large number of software libraries and dependencies, any of which might have security vulnerabilities – all components need to be kept patched and up to date.
+Most applications have a large number of software libraries and dependencies, any of which might have security vulnerabilities. All components need to be kept patched and up to date.
 
 ## Resources
 

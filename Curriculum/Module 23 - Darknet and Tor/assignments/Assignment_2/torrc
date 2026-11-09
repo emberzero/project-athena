@@ -1,0 +1,7 @@
+# Local SOCKS proxy, used for testing from inside the container.
+SocksPort 127.0.0.1:9050
+DataDirectory /var/lib/tor
+
+# The onion service: port 80 of the .onion goes to nginx on 127.0.0.1:80.
+HiddenServiceDir /var/lib/tor/hs/
+HiddenServicePort 80 127.0.0.1:80

@@ -1,31 +1,20 @@
-#import "../../../typst-athena-slides-template/1.0.1/src/lib.typ": *
+#import "../../../typst-theme-emberzero/1.1.0/src/lib.typ": *
 
 #show: athena-theme.with(
-  aspect-ratio: "16-9",
-  slide-alignment: horizon,
-  progress-bar: true,
   font: "Berkeley Mono",
-  institute: [\@nodezeroat/project-athena],
-  logo: [#nodezero-logo],
   config-info(
     title: [Module 11: Linux and Server Security],
     subtitle: [Introduction to \*NIX Privilege Escalation],
     authors: [*Marcel Schnideritsch*, *Simon Possegger*],
     extra: [],
-    footer: [Marcel Schnideritsch],
+    footer: [Module 11 - Linux and Server Security],
   ),
   config-common(
     handout: false,
   ),
-  config-colors(
-    primary: rgb("14b5fc"),
-  ),
 )
 
-#title-slide(
-  title: [Module 11: Linux and Server Security],
-  subtitle: [Introduction to \*NIX Privilege Escalation],
-)
+#title-slide()
 
 #section-slide(title: "Introduction")
 #slide(title: "What is Privilege Escalation")[
@@ -174,24 +163,30 @@
 #slide(title: "Path Injection")[
   - Scripts or binaries with higher privileges may use relative paths, which can be manipulated.
 
-  Example:
-  #codly(number-format: numbering.with("1"))
-  ```c
-  int main(void) {
-      setuid(0);
-      setgid(0);
-      system("ps");
-
-      return 0;
-  }
-  ```
-
-  - Path Environment Variable:
-  #codly(number-format: none)
-  ```bash
-  $ echo $PATH
-  /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-  ```
+  #split(
+    columns: (1fr, 1.4fr),
+    [
+      Example:
+      #codly(number-format: numbering.with("1"))
+      ```c
+      int main(void) {
+          setuid(0);
+          setgid(0);
+          system("ps");
+          return 0;
+      }
+      ```
+    ],
+    [
+      Path Environment Variable:
+      #codly(number-format: none)
+      ```bash
+      $ echo $PATH
+      /usr/local/sbin:/usr/local/bin:
+      /usr/sbin:/usr/bin:/sbin:/bin
+      ```
+    ],
+  )
 
 ]
 
@@ -351,7 +346,4 @@
   - Initial Slide Deck by https://github.com/chr0x6eos
 ]
 
-#title-slide(
-  title: [Module 11: Linux and Server Security],
-  subtitle: [Introduction to \*NIX Privilege Escalation],
-)
+#title-slide()

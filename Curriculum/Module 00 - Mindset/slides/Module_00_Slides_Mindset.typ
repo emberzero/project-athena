@@ -1,4 +1,4 @@
-#import "../../../typst-athena-slides-template/1.0.1/src/lib.typ": *
+#import "../../../typst-theme-emberzero/1.1.0/src/lib.typ": *
 
 #show: athena-theme.with(
   font: "Berkeley Mono",
@@ -19,14 +19,14 @@
 #section-slide(title: "Introduction")
 
 #slide(title: "What is the Offensive Security Mindset")[
-  - The offensive security mindset is characterized by a proactive approach to cybersecurity.
+  #cblock(title: [Offensive Security Mindset])[
+    A *proactive* approach: find and exploit weaknesses in a system before an
+    adversary does, under authorization.
+  ]
 
-
-  - It involves actively seeking vulnerabilities and weaknesses in systems to improve their security.
-
-
-  - This mindset is crucial for penetration testing and other offensive security practices.
-
+  - Actively seek vulnerabilities instead of waiting for an attack
+  - Think like an attacker to anticipate their techniques
+  - The working basis of penetration testing and red teaming
 ]
 
 #section-slide(title: "Red vs. Blue")
@@ -137,10 +137,9 @@
   - Learn from Failure: Every setback teaches you something new.
 ]
 
-#set page(background: image("figures/zen.jpg", width: 100%, height: 100%))
-#slide(title: "")[
+#blank-slide()[
+  #image("figures/zen.jpg", width: 100%)
 ]
-#set page(background: none)
 
 #title-slide(
   title: [Module 00: Mindset],

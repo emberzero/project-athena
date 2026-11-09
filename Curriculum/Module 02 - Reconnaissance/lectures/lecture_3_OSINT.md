@@ -1,18 +1,12 @@
 # Open Source Intelligence (OSINT)
 
-Open Source Intelligence (OSINT) is the practice of collecting, analyzing, and making decisions based on publicly available information. Unlike classified intelligence that requires special access or covert operations, OSINT leverages data that anyone can legally access—from social media profiles and public records to satellite imagery and financial disclosures. In the modern digital age, the volume and detail of publicly available information has exploded, making OSINT an invaluable tool for cybersecurity professionals, investigators, journalists, and organizations.
+Open Source Intelligence (OSINT) is the practice of collecting, analyzing, and making decisions based on publicly available information. Unlike classified intelligence that requires special access or covert operations, OSINT uses data that anyone can legally access: social media profiles, public records, satellite imagery, financial disclosures and much more. Because so much organizational and personal detail is now published by default, OSINT is a core working method for cybersecurity professionals, investigators, journalists, and organizations.
 
 ## What is OSINT?
 
-**Definition**: OSINT involves gathering and analyzing information from publicly accessible sources to produce actionable intelligence for specific purposes such as security assessments, threat analysis, competitive intelligence, or investigations.
+OSINT means gathering and analyzing information from publicly accessible sources to produce usable intelligence for a specific purpose: a security assessment, threat analysis, competitive intelligence or an investigation.
 
-**Key Characteristics**:
-
-- **Publicly Available**: Information is legally accessible without requiring unauthorized access
-- **Diverse Sources**: Data comes from multiple channels (web, social media, government records, etc.)
-- **Analysis Required**: Raw data must be processed, validated, and contextualized
-- **Legal and Ethical**: When done properly, OSINT operations remain within legal boundaries
-- **Continuous Process**: Information changes rapidly; OSINT is ongoing, not one-time
+Everything it uses is legally accessible without unauthorized access, and it comes from many channels at once: the web, social media, government records and others. Raw data on its own is not intelligence; it has to be processed, validated and put in context. Done properly, the work stays inside legal boundaries. It is also never finished, because the information changes while you are collecting it.
 
 **Purpose in Cybersecurity**:
 
@@ -206,9 +200,11 @@ site:example.com filetype:pdf
 "confidential" site:example.com
 inurl:admin site:example.com
 intitle:"index of" site:example.com
-cache:example.com
 site:example.com -www
 ```
+
+(Google's `cache:` operator was retired in 2024; use the Wayback Machine for
+historical copies of a page.)
 
 **Specialized Search Engines**:
 
@@ -221,7 +217,9 @@ site:example.com -www
 
 ### Social Media Intelligence (SOCMINT) Tools
 
-- **Twint**: Twitter intelligence tool (no API required)
+- **Twint**: Twitter intelligence tool (no API required; unmaintained since
+  Twitter's API and access changes broke it, but it is mentioned here because you
+  will still find it referenced in older tutorials)
 - **Social-Searcher**: Multi-platform social media search
 - **Sherlock**: Find usernames across social networks
 - **Maigret**: Collect information about accounts by username
@@ -324,6 +322,28 @@ show hosts
 ### Workflow 1: Company Reconnaissance
 
 **Objective**: Gather comprehensive intelligence about target organization for penetration test.
+
+A single starting point, the domain name, pivots into every other kind of
+finding. Each arrow is a lookup whose output becomes the next lookup's input:
+
+```text
+  example.com
+      │
+      ├─ whois ──────────▶ registrant, netblocks, name servers
+      │
+      ├─ amass / crt.sh ─▶ subdomains ──▶ resolved IPs
+      │                                       │
+      │                                       ▼
+      │                                shodan / censys:
+      │                                open ports, banners,
+      │                                software versions
+      │
+      ├─ LinkedIn ───────▶ employee names ──▶ email format,
+      │                                       checked with
+      │                                       theHarvester
+      │
+      └─ job ads, GitHub ▶ technology stack, internal tooling
+```
 
 **Steps**:
 
@@ -464,7 +484,11 @@ Take a photo (or find one online) and attempt to geolocate it:
 
 - **Public vs. Private**: Just because information is accessible doesn't mean collecting it is legal
 - **Terms of Service**: Scraping websites may violate ToS (civil, not criminal issue)
-- **Anti-Scraping Laws**: CFAA in U.S., Computer Misuse Act in U.K.
+- **Computer Misuse Laws**: The CFAA (U.S.) and the Computer Misuse Act (U.K.)
+  target unauthorised *access*, not search itself. Collecting data from a page
+  that is open to everyone is a different act from logging in, guessing a URL
+  behind an access control, or using credentials found in a breach dump. The
+  second group is where criminal liability starts
 - **Data Protection**: GDPR in EU restricts certain types of data collection
 - **Purpose Matters**: Collecting for security research vs. harassment has different legal implications
 
@@ -513,12 +537,22 @@ Organizations should conduct OSINT on themselves:
 
 ## OSINT in the Kill Chain
 
-OSINT typically serves the first two stages of the Cyber Kill Chain:
+OSINT *is* the Reconnaissance stage of the Cyber Kill Chain. It performs no
+action against the target itself, but its output is what makes the next three
+stages precise instead of generic:
 
-1. **Reconnaissance**: Passive OSINT gathering
-2. **Weaponization**: Using OSINT to craft targeted attacks
-3. **Delivery**: OSINT informs delivery method selection
-4. **Exploitation**: Technical OSINT reveals vulnerabilities
+```text
+  OSINT output            Kill chain stage
+  ─────────────────────   ──────────────────────────────────
+  names, email format ──▶ Reconnaissance
+  tech stack, versions ─▶ Weaponization   (which exploit, which lure)
+  contact channels ─────▶ Delivery        (mail, phone, USB, portal)
+  exposed services ─────▶ Exploitation    (where to aim it)
+```
+
+Note that only the first row is OSINT itself. The later rows are attacker
+decisions *informed* by OSINT; the intelligence does not compromise anything
+on its own.
 
 Defenders should focus OSINT efforts on:
 
@@ -529,11 +563,11 @@ Defenders should focus OSINT efforts on:
 
 ## Key Takeaways
 
-- OSINT leverages publicly available information to produce actionable intelligence
+- OSINT turns publicly available information into intelligence you can act on
 - Four main types: Personal, Organizational, Technical, and Geospatial
-- Numerous specialized tools exist for different OSINT tasks
-- Legal and ethical considerations are paramount
-- OSINT is valuable for both offensive and defensive security
+- Specialized tools exist for each OSINT task
+- The legal and ethical limits matter as much as the technique
+- OSINT serves both offensive and defensive security
 - Everyone should understand their own digital footprint
 - Organizations must balance transparency with security
 - OSINT skills are transferable across many domains
@@ -579,4 +613,4 @@ Defenders should focus OSINT efforts on:
 
 ## Conclusion
 
-OSINT is an essential skill in modern cybersecurity that continues to grow in importance as more information becomes publicly available. Whether you're a penetration tester gathering pre-engagement intelligence, a defender understanding your attack surface, or an incident responder attributing threats, OSINT provides the foundation for informed decision-making. The key to effective OSINT is combining the right tools with analytical thinking, while maintaining strict ethical and legal standards.
+OSINT matters more every year, because more information is published by default. A penetration tester uses it before an engagement, a defender uses it to see their own attack surface, and an incident responder uses it to attribute an attack. In all three cases the result depends less on the tools than on the analysis applied to what they return, and on staying inside the ethical and legal limits while collecting it.

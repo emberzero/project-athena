@@ -2,7 +2,7 @@
 
 A rootkit does not have to be malicious, one common definition is a piece of software with elevated privileges that enables access that is not normally possible.
 
-At its core a bootkit is RAT with more privileges, operations wise that typically means it lives at least in ring 0.
+A rootkit is a RAT with more privileges, operations wise that typically means it lives at least in ring 0.
 Other than the difference in privilege, they typically serve a distinct purpose that justifies the higher cost of development.
 
 ## Purposes
@@ -24,6 +24,22 @@ Especially in modern systems architecture there is quite a lot of software that 
 We have to touch a little bit on this topic, leaving this out doesn't really make sense if we want to actually understand rootkits and their variants.
 
 Ring 0 means that code runs with kernel privileges, that means full access to all things used and managed by the kernel, which is why rootkits and ring 0 programs cannot really be detected or circumvented from userland.
+
+The privilege levels the variants above live at, outermost first. Only
+rings 3 and 0 are real x86 privilege levels; the negative numbers are
+informal nomenclature used to describe code the kernel cannot see:
+
+```text
+  ring  3  user space       apps, libc         userland rootkits
+  ring  0  kernel           drivers, syscalls  kernel rootkits
+  ring -1  hypervisor       hosts the OS       hypervisor rootkits
+  ring -2  SMM              firmware handler   SMM rootkits
+  ring -3  platform engine  out-of-band core   hardware rootkits
+
+  not a ring, a position in the boot chain:
+  BIOS/UEFI firmware and boot sector code run BEFORE the kernel,
+  so they can tamper with everything that loads after them.
+```
 
 Some of the most important kernel structures/operations are:
 

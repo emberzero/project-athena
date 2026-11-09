@@ -1,4 +1,4 @@
-#import "../../../typst-athena-slides-template/1.0.1/src/lib.typ": *
+#import "../../../typst-theme-emberzero/1.1.0/src/lib.typ": *
 
 #show: athena-theme.with(
   font: "Berkeley Mono",
@@ -19,7 +19,7 @@
 #slide(title: "Reverse Engineering 101")[
   As I like to call it:
 
-  #image("./figures/intro.png", height: 92%)
+  #image("./figures/intro.png", height: 85%)
 ]
 
 #section-slide(title: "Assembly")
@@ -183,11 +183,15 @@
 #slide(title: "C to assembly")[
   C to asm in the browser: https://godbolt.org/#
 
-  #image("./figures/hello_world_c.png")
+  #split[
+    #image("./figures/hello_world_c.png")
+  ][
+    #image("./figures/hello_world_asm.png")
+  ]
+]
 
-  #image("./figures/hello_world_asm.png")
-
-  #image("./figures/assembly.png", width: 90%, height: 90%)
+#slide(title: "C to assembly")[
+  #image("./figures/assembly.png", height: 100%)
 ]
 
 #slide(title: "Rev 101")[
@@ -201,19 +205,19 @@
 ]
 
 #slide(title: "Real world usage")[
-  - Malware research
+  #split(columns: (2fr, 1fr), align: horizon)[
+    - Malware research
 
-  - Bug hunting in consumer software & operating systems
+    - Bug hunting in consumer software & operating systems
 
-  - Modding games
+    - Modding games
 
-  - Cracking
+    - Cracking
 
-  - Debugging
-
-  // TODO fix image manually
-
-  #image("./figures/keygen.png")
+    - Debugging
+  ][
+    #image("./figures/keygen.png", height: 100%)
+  ]
 ]
 
 #slide(title: "Executables")[

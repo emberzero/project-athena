@@ -5,8 +5,8 @@
 ## Basic terms from Austrian Criminal Law (Strafgesetz)
 
 - **Place of Crime (Tatort) (§ 62 StGB):**
-  - Offenses committed **within** the country.
-  - Refers to the place of action OR place of result.
+  - Austrian criminal law applies to offenses committed **within** the country.
+  - Where an offense counts as committed is defined in § 67 Abs 2 StGB: at the place of action OR at the place of result. For remote attacks this means the offender does not have to be in Austria for Austrian law to apply.
   - Note: For servers & infrastructure abroad, different laws may apply!
 - **Intent (Vorsatz) (§ 5 Abs 1 StGB):**
   - Refers to the subjective side of the offense.
@@ -17,13 +17,10 @@
 
 ## Legal Definitions
 
-- **Computersystems:**
-  - both individual and connected
-    devices which are used for computer-aided data
-    data processing
-- **Data:**
-  - both personal and non-personal
-    personal data as well as programmes
+- **Computer system (Computersystem):**
+  - Both individual and connected devices which are used for automated data processing.
+- **Data (Daten):**
+  - Both personal and non-personal data, as well as programs.
 
 ### Legal Definitions - Critical Infrastructure
 
@@ -32,7 +29,7 @@
   - National defense
   - Protection of the civilian population against war dangers
   - Functionality of public information and communication technology
-- **Facilities, installations, systems, or components that are crucial for:**
+- **Facilities, installations, systems, or components that are essential for:**
   - Prevention or combat of disasters
   - Public health services
   - Public supply of water, energy, and essential goods
@@ -42,6 +39,44 @@
 ## Relevant Sections
 
 > **Disclaimer:** The names in the examples are not related to real individuals.
+
+The sections below are easier to keep apart when sorted by what the offender actually does, rather than by section number:
+
+```text
+  what is done                       section
+  --------------------------------   ---------------------------
+  [ acquire or build tools,          126c  misuse of computer
+    passwords, access codes ]              programs / access data
+
+  [ break a security measure to      118a  unauthorised access to
+    get into a system ]                    a computer system
+
+  [ read messages in transit ]       119   telecom secrecy
+                                     119a  misuse of intercepted
+                                           data
+                                     241h  spying on non-cash
+                                           payment data
+
+  [ record non-public speech ]       120   audio recording and
+                                           eavesdropping devices
+
+  [ change, delete or suppress       126a  data tampering
+    data ]
+
+  [ make the system stop working ]   126b  disruption of system
+                                           functionality
+
+  [ influence automated processing   148a  fraudulent misuse of
+    for financial gain ]                   data processing
+
+  Each of these is an offence in its own right. A real attack often
+  chains several of them, but none of them requires § 118a first:
+  an insider misusing access she legitimately has, or someone
+  tapping a line without touching a computer system at all, is
+  covered by the respective section on its own.
+```
+
+Within most of these sections the penalty is then graded along similar lines - the basic offence, a higher level once the damage or the number of affected systems grows, and the highest level for very large damage, critical infrastructure, or acting as part of a criminal association. The exact thresholds differ per section and are listed below.
 
 ### **Unauthorized Access to a Computer System (§118a StGB)**
 
@@ -110,8 +145,8 @@ The next day, Adrian was horrified to find out about the emails sent from his ac
 Julia's actions clearly violated § 118a StGB:
 
 - Her primary intention was to harm Adrian, both professionally and personally.
-- She utilized data and resources on Adrian's computer, which was not meant for her.
-- Moreover, she used Adrian's computer system to send out damaging emails, further leveraging the system against him.
+- She accessed data and resources on Adrian's computer that were not meant for her.
+- She used his computer to send out damaging emails, turning his own system against him.
 
 Given the clear evidence against her and the malicious intent, Julia is liable for unauthorized access and the consequent damage she inflicted on Adrian's reputation and work.
 
@@ -165,7 +200,7 @@ ______________________________________________________________________
 > **German:** Missbräuchliches Abfangen von Daten
 
 **Definition:**
-This act pertains to the unauthorized acquisition of knowledge from data, transmitted via a computer system, which isn't meant for the perpetrator. Furthermore, the act covers unauthorized use, dissemination, or publication of this data for material gain or to cause harm.
+This act covers obtaining data from a computer system that is not meant for the perpetrator, as well as the unauthorized use, sharing, or publication of that data for material gain or to cause harm.
 
 **Key Elements:**
 
@@ -273,7 +308,7 @@ This provision deals with the intentional damage or alteration of computer data,
 
 - **Extent of Damage:** The consequences of the tampering can range from minor damages to significant financial losses or impactful disruptions, especially if critical infrastructure is affected.
 
-- **Means of Access:** In some cases, the manner in which the tampering is executed—using specific computer programs, passwords, access codes, etc.—is crucial to determining the severity of the crime.
+- **Means of Access:** In some cases, the manner in which the tampering is executed (using specific computer programs, passwords, access codes, and so on) decides the severity of the crime.
 
 **Intent:**
 
@@ -287,7 +322,7 @@ This provision deals with the intentional damage or alteration of computer data,
 
 - **Impacting Multiple Computer Systems:** Using specific tools or methods to tamper with many computer systems can result in up to **three years** in prison.
 
-- **Major Violations:** Acts causing damage exceeding **300,000 Euro**, affecting crucial parts of the critical infrastructure, or committed as a part of a criminal organization can result in a prison term ranging from **six months to five years**.
+- **Major Violations:** Acts causing damage exceeding **300,000 Euro**, affecting essential parts of the critical infrastructure, or committed as a part of a criminal organization can result in a prison term ranging from **six months to five years**.
 
 ### Example Case for Data Tampering (§ 126a StGB)
 
@@ -392,7 +427,7 @@ To use the mentioned tools or data in committing specific computer-related offen
 
 **Penalties:**
 
-- **Basic Offense:** For actions concerning computer programs or access data meant for Data Tampering, Disruption of Computer System Functionality, or Fraudulent Misuse of Data Processing – up to **six months** in prison or a fine of up to **360 daily rates**.
+- **Basic Offense:** For actions concerning computer programs or access data meant for Data Tampering, Disruption of Computer System Functionality, or Fraudulent Misuse of Data Processing: up to **six months** in prison or a fine of up to **360 daily rates**.
 
 - **Grave Offenses:** If the act relates to:
 
@@ -407,7 +442,7 @@ To use the mentioned tools or data in committing specific computer-related offen
 
 - **Prevention:** No penalties if the perpetrator voluntarily prevents the misuse of the mentioned computer programs, devices, or data for the described offenses as per §§ 118a, 119, 119a, 126a, 126b, or 148a. If there's no threat of misuse or if it's eliminated without the perpetrator's involvement, they are exempt from punishment, provided they genuinely attempt to prevent misuse.
 
-- **Critical Infrastructure:** For acts concerning tools or data capable of affecting essential parts of the critical infrastructure (§ 74 Abs. 1 Z 11) – up to **three years** in prison.
+- **Critical Infrastructure:** For acts concerning tools or data capable of affecting essential parts of the critical infrastructure (§ 74 Abs. 1 Z 11): up to **three years** in prison.
 
 ### Example Case for Misuse of Computer Programs or Access Data (§ 126c StGB)
 
@@ -454,18 +489,18 @@ This section criminalizes the act of intentionally influencing the result of an 
 
 **Penalties:**
 
-- **Basic Offense:** For directly influencing data processing with the intent of illegal enrichment – up to **six months** in prison or a fine of up to **360 daily rates**.
+- **Basic Offense:** For directly influencing data processing with the intent of illegal enrichment: up to **six months** in prison or a fine of up to **360 daily rates**.
 
 - **Aggravated Offense:**
 
-  - If the act is committed as a part of a business operation or causes financial damage exceeding **5,000 Euros** – up to **three years** in prison.
-  - If the financial damage exceeds **300,000 Euros** – imprisonment ranging from **one to ten years**.
+  - If the act is committed as a part of a business operation or causes financial damage exceeding **5,000 Euros**: up to **three years** in prison.
+  - If the financial damage exceeds **300,000 Euros**: imprisonment ranging from **one to ten years**.
 
 - **Unlawful Data Actions & System Disruptions:**
-  If the offense involves illicitly inputting, altering, deleting, suppressing, or transmitting data, or unlawfully hindering or disrupting the functionality of a computer system – up to **three years** in prison.
+  If the offense involves illicitly inputting, altering, deleting, suppressing, or transmitting data, or unlawfully hindering or disrupting the functionality of a computer system: up to **three years** in prison.
 
 - **Criminal Associations:**
-  If the act is committed as a member of a criminal association – imprisonment ranging from **six months to five years**.
+  If the act is committed as a member of a criminal association: imprisonment ranging from **six months to five years**.
 
 This section delineates the legal consequences for various forms of fraudulent misuse of data processing and ties into related offenses and penalties specified in other sections, like the misuse of computer programs (§ 126c StGB) and system disruptions (§ 126b StGB).
 
@@ -514,12 +549,12 @@ This provision criminalizes the act of accessing or 'spying' on non-cash payment
 
 - **Basic Offense:**
 
-  - Unauthorized access with the intent to use the data for illegal enrichment or to facilitate forgery – up to **one year** in prison or a fine of up to **720 daily rates**.
+  - Unauthorized access with the intent to use the data for illegal enrichment or to facilitate forgery: up to **one year** in prison or a fine of up to **720 daily rates**.
 
 - **Aggravated Offense:**
 
-  - If the act is committed as a part of a business operation – up to **three years** in prison.
-  - If committed as a member of a criminal association – imprisonment ranging from **six months to five years**.
+  - If the act is committed as a part of a business operation: up to **three years** in prison.
+  - If committed as a member of a criminal association: imprisonment ranging from **six months to five years**.
 
 - **Exemption from Penalty:**
   Offenders are not liable if they voluntarily prevent the illicit use of the accessed data by notifying the authorities or the rightful owner, or in any other manner, before the data is used illicitly. If there is no risk of illicit use or the risk has been eliminated without the offender's intervention, they won't be punished if they earnestly and voluntarily attempt to eliminate the risk, even if they're unaware that there's no risk.

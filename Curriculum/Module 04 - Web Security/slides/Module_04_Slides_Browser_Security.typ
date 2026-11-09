@@ -1,4 +1,4 @@
-#import "../../../typst-athena-slides-template/1.0.1/src/lib.typ": *
+#import "../../../typst-theme-emberzero/1.1.0/src/lib.typ": *
 
 #show: athena-theme.with(
   font: "Berkeley Mono",
@@ -142,6 +142,7 @@
 ]
 
 #slide(title: "CORS Misconfigurations")[
+  #set text(size: 18pt)
   *Common Vulnerabilities:*
 
   1. *Wildcard with credentials*:
@@ -197,6 +198,7 @@
 ]
 
 #slide(title: "CSP Source Values")[
+  #set text(size: 16pt)
   *Keywords:*
   - `'none'`: Block all
   - `'self'`: Same origin only
@@ -237,6 +239,7 @@
 ]
 
 #slide(title: "CSP Bypasses to Avoid")[
+  #set text(size: 18pt)
   *Common Mistakes:*
 
   1. *'unsafe-inline'*: Defeats XSS protection
@@ -295,6 +298,7 @@
 ]
 
 #slide(title: "Strict-Transport-Security (HSTS)")[
+  #set text(size: 18pt)
   *Forces HTTPS usage*
 
   ```http
@@ -334,6 +338,7 @@
 ]
 
 #slide(title: "Permissions-Policy")[
+  #set text(size: 17pt)
   *Controls which browser features can be used*
 
   ```http
@@ -390,14 +395,15 @@
 ]
 
 #slide(title: "Cookie Prefixes")[
-  *__Secure- Prefix:*
+  #set text(size: 18pt)
+  *\_\_Secure- Prefix:*
   ```http
   Set-Cookie: __Secure-session=abc123; Secure; Path=/
   ```
   - Must have Secure attribute
   - Must be set over HTTPS
 
-  *__Host- Prefix:*
+  *\_\_Host- Prefix:*
   ```http
   Set-Cookie: __Host-session=abc123; Secure; Path=/
   ```
@@ -412,6 +418,7 @@
 #section-slide(title: "Subresource Integrity (SRI)")
 
 #slide(title: "SRI: Subresource Integrity")[
+  #set text(size: 16pt)
   *Ensures third-party resources haven't been tampered with*
 
   ```html
@@ -511,6 +518,7 @@
 ]
 
 #slide(title: "Resources")[
+  #set text(size: 18pt)
   *Documentation:*
   - MDN - Same-Origin Policy
   - MDN - CORS

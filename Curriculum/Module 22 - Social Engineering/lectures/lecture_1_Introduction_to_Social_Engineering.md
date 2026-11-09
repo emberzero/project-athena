@@ -1,16 +1,28 @@
 # Introduction to Social Engineering
 
-Imagine a world where words, with their immense power, have the ability to unlock hidden secrets, strongly influence the minds of individuals, and even shape the very fabric of reality itself. Welcome to the captivating realm of social engineering, a clever and intricate practice that goes beyond mere language barriers and cleverly exploits the human element within the vast and complex field of cybersecurity. It is within this realm that skilled individuals navigate the delicate balance between manipulation and protection, using their expertise to not only understand the vulnerabilities of human behavior but also to fortify the defenses that safeguard our digital world.
+Social engineering is the practice of manipulating people into revealing
+information or performing actions that compromise security. It targets the human
+element of a system rather than its code or configuration.
 
-Social engineering is not about complex codes or impenetrable firewalls; instead, it focuses on the art of manipulating people to divulge sensitive information or perform actions that may compromise security. It's like a digital dance where the cybercriminal takes center stage, using psychological tricks to convince unsuspecting individuals to unwittingly aid in their own undoing.
+Social engineering is not about breaking codes or defeating firewalls. It works
+on the people who hold the credentials. An attacker who can convince a helpdesk
+operator to reset a password does not need an exploit at all.
 
-Picture this: an email arrives, seemingly harmless, requesting you to reset your password or verify personal details. The catch? It's not from the legitimate source but crafted by a social engineer, adept at mimicking trustworthy entities. Before you know it, you've handed over the keys to your digital kingdom.
+A typical example: an email arrives asking you to reset your password or verify
+personal details. It is not from the service it claims to be from, but from an
+attacker who has copied that service's wording, branding and sender address
+closely enough to pass a quick glance. Enter your credentials and the attacker
+now has them.
 
-Now, the beauty of social engineering lies in its simplicity. No need for intricate coding skills or sophisticated hacking tools; just a profound understanding of human behavior and the ability to exploit trust, fear, or urgency.
+The reason social engineering remains effective is that it needs no technical
+sophistication. It needs an understanding of how people behave under trust,
+fear, authority or time pressure, and a plausible story.
 
-To navigate the complex landscape of social engineering, it's essential to be aware of its various forms. Phishing, for instance, involves tricking individuals into revealing confidential information, often through deceptive emails or websites. Another tactic is pretexting, where the attacker creates a fabricated scenario to extract information.
-
-So, whether you're a seasoned tech guru or a newcomer to the digital universe, understanding social engineering is crucial to safeguarding your online presence.
+The common forms are covered in the following lectures. Phishing tricks people
+into revealing confidential information through deceptive messages or websites.
+Pretexting builds a fabricated scenario to make a request for information seem
+routine. Both exploit the same thing: the target's willingness to believe the
+sender is who they claim to be.
 
 ## Sources
 

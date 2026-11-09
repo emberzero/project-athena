@@ -1,18 +1,17 @@
 # API Security
 
-Modern applications increasingly rely on APIs (Application Programming Interfaces) to enable communication between services, mobile apps, and third-party integrations. While APIs provide powerful functionality and enable modern architectures like microservices, they also introduce significant security challenges. API vulnerabilities can lead to data breaches, unauthorized access, and complete system compromise.
+Modern applications rely on APIs (Application Programming Interfaces) for communication between services, mobile apps, and third-party integrations. APIs are what makes an architecture like microservices possible, and they widen the attack surface at the same time. API vulnerabilities lead to data breaches, unauthorized access, and complete system compromise.
 
-This lecture covers the critical security considerations for REST APIs, GraphQL, authentication mechanisms, and the OWASP API Security Top 10.
+This lecture covers the security considerations for REST APIs, GraphQL, authentication mechanisms, and the OWASP API Security Top 10.
 
 ## Why API Security Matters
 
-**The API Security Crisis:**
+**API traffic:**
 
 - **83% of web traffic** is API traffic (Cloudflare, 2024)
-- **69% of API services** vulnerable to DoS attacks (2024)
-- **APIs are 200% more vulnerable** than web applications to attacks
-- **API attacks increased 400%** from 2022 to 2024
-- **Over 60% of enterprises** will use GraphQL by 2027
+- APIs now carry most application traffic, yet they are routinely
+  tested less thoroughly than the user-facing web interfaces in front
+  of them
 
 **Real-World Breaches:**
 
@@ -23,12 +22,12 @@ This lecture covers the critical security considerations for REST APIs, GraphQL,
 
 **Why APIs Are Targeted:**
 
-1. **Direct Database Access**: APIs often connect directly to databases
-2. **Authentication Complexity**: Token-based auth introduces new attack vectors
-3. **Insufficient Testing**: APIs often lack the same security rigor as web UIs
-4. **Documentation Exposure**: API docs reveal attack surface
-5. **Third-Party Integration**: External APIs introduce supply chain risks
-6. **Rate Limiting Gaps**: Resource exhaustion easier than traditional web apps
+1. They often connect directly to databases
+2. Token-based authentication introduces new attack vectors
+3. They often lack the same security rigor as the web UIs in front of them
+4. API documentation reveals the attack surface
+5. External APIs bring supply chain risks with them
+6. Resource exhaustion is easier than on a traditional web app when rate limits are missing
 
 ---
 
@@ -127,8 +126,10 @@ def get_user_profile(user_id):
 
 ```bash
 # Use different authorization tokens for same resource
-curl -H "Authorization: Bearer USER_A_TOKEN" https://api.example.com/api/users/123
-curl -H "Authorization: Bearer USER_B_TOKEN" https://api.example.com/api/users/123
+curl -H "Authorization: Bearer USER_A_TOKEN" \
+     https://api.example.com/api/users/123
+curl -H "Authorization: Bearer USER_B_TOKEN" \
+     https://api.example.com/api/users/123
 
 # Should fail for USER_B
 ```
@@ -383,19 +384,22 @@ app.get('/api/admin/users', (req, res) => {
 });
 ```
 
-**c) JWT Algorithm Confusion:**
+**c) Trusting the Algorithm Named in the Token:**
 
 ```python
 import jwt
 
-# VULNERABLE: Accepts 'none' algorithm
+# VULNERABLE: the algorithm is taken from the token's own header,
+# so the attacker decides how their token gets verified.
 def verify_token(token):
-    # Missing algorithm specification
-    payload = jwt.decode(token, SECRET_KEY, options={"verify_signature": False})
-    return payload
-
-# Attacker creates token with alg=none
+    header = jwt.get_unverified_header(token)
+    return jwt.decode(token, SECRET_KEY, algorithms=[header['alg']])
 ```
+
+Worse still is code that passes
+`options={"verify_signature": False}`: that does not weaken the
+check, it removes it, and every claim in the token is then
+attacker-controlled.
 
 **Prevention:**
 
@@ -485,10 +489,14 @@ def create_user():
 def set_security_headers(response):
     response.headers['X-Content-Type-Options'] = 'nosniff'
     response.headers['X-Frame-Options'] = 'DENY'
-    response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
+    response.headers['Strict-Transport-Security'] = (
+        'max-age=31536000; includeSubDomains'
+    )
 
     # CORS configuration
-    response.headers['Access-Control-Allow-Origin'] = 'https://trusted-app.com'
+    response.headers['Access-Control-Allow-Origin'] = (
+        'https://trusted-app.com'
+    )
     response.headers['Access-Control-Allow-Credentials'] = 'true'
 
     return response
@@ -505,7 +513,10 @@ logger = logging.getLogger(__name__)
 @require_authentication
 def sensitive_operation():
     # Log security-relevant events
-    logger.info(f"User {current_user.id} accessed sensitive operation from {request.remote_addr}")
+    logger.info(
+        f"User {current_user.id} accessed sensitive operation "
+        f"from {request.remote_addr}"
+    )
 
     # Detect anomalies
     if is_suspicious_activity(current_user, request):
@@ -519,7 +530,7 @@ def sensitive_operation():
 
 ## GraphQL Security
 
-**GraphQL** is a query language for APIs that allows clients to request exactly the data they need. While this flexibility is powerful, it introduces unique security challenges not present in REST APIs.
+**GraphQL** is a query language for APIs that allows clients to request exactly the data they need. That flexibility also brings security problems that REST APIs do not have.
 
 ### GraphQL Fundamentals
 
@@ -597,7 +608,11 @@ query {
 
 **Risk**: Attacker learns entire API structure, including sensitive fields.
 
-**Prevention:**
+**Prevention:** Disabling introspection is hardening, not
+authorization. It raises the cost of mapping the schema, but field
+names can still be guessed or recovered from client bundles and
+error messages, so every sensitive field still needs its own
+authorization check.
 
 ```javascript
 // Apollo Server - Disable introspection in production
@@ -615,13 +630,13 @@ const server = new ApolloServer({
 
 **Attack Payload:**
 
-```graphql
+```json
 [
-  { "query": "mutation { login(username: \"admin\", password: \"password1\") { token } }" },
-  { "query": "mutation { login(username: \"admin\", password: \"password2\") { token } }" },
-  { "query": "mutation { login(username: \"admin\", password: \"password3\") { token } }" },
+  {"query":"mutation{login(username:\"admin\",password:\"p1\"){token}}"},
+  {"query":"mutation{login(username:\"admin\",password:\"p2\"){token}}"},
+  {"query":"mutation{login(username:\"admin\",password:\"p3\"){token}}"},
   ...
-  { "query": "mutation { login(username: \"admin\", password: \"password10000\") { token } }" }
+  {"query":"mutation{login(username:\"admin\",password:\"pN\"){token}}"}
 ]
 ```
 
@@ -708,14 +723,16 @@ const server = new ApolloServer({
 });
 
 // Query complexity analysis
-const { createComplexityLimitRule } = require('graphql-validation-complexity');
+const {
+  createComplexityLimitRule
+} = require('graphql-validation-complexity');
 
 const ComplexityLimitRule = createComplexityLimitRule(1000, {
   onCost: (cost) => {
     console.log('Query cost:', cost);
   },
   formatErrorMessage: (cost) => {
-    return `Query is too complex: ${cost}. Maximum allowed complexity: 1000`;
+    return `Query too complex: ${cost}. Maximum allowed: 1000`;
   }
 });
 
@@ -898,8 +915,24 @@ const server = new ApolloServer({
 
 ### JWT Structure
 
+A JWT is three base64url segments joined by dots:
+
 ```text
-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+  segment 1  header     eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+       "."
+  segment 2  payload    eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6
+                        IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ
+       "."
+  segment 3  signature  SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_ad
+                        Qssw5c
+
+  signature = HMAC_or_RSA( base64url(header) + "." +
+                           base64url(payload) )
+
+  The signature covers the first two segments, so neither can be
+  changed without detection -- but both are only ENCODED, never
+  encrypted. Anyone holding the token can read every claim, so a
+  JWT payload is not a place for secrets.
 ```
 
 **Decoded Structure:**
@@ -933,7 +966,10 @@ HMACSHA256(
 
 #### 1. None Algorithm Attack
 
-**Definition**: JWT "none" algorithm allows unsigned tokens.
+**Definition**: The JWT specification includes an `alg` value of
+`none`, meaning "unsigned". Code that reads the algorithm out of the
+token's own header will happily verify such a token against no
+signature at all.
 
 **Vulnerable Code:**
 
@@ -941,9 +977,10 @@ HMACSHA256(
 import jwt
 
 def verify_token(token):
-    # VULNERABLE: Doesn't specify algorithms
-    payload = jwt.decode(token, SECRET_KEY, options={"verify_signature": False})
-    return payload
+    # VULNERABLE: the attacker's own header decides how their
+    # token is checked.
+    header = jwt.get_unverified_header(token)
+    return jwt.decode(token, SECRET_KEY, algorithms=[header['alg']])
 ```
 
 **Attack:**
@@ -956,9 +993,11 @@ import json
 header = {"alg": "none", "typ": "JWT"}
 payload = {"sub": "123", "role": "admin"}
 
-token = base64.urlsafe_b64encode(json.dumps(header).encode()).decode().rstrip('=')
+token = base64.urlsafe_b64encode(
+    json.dumps(header).encode()).decode().rstrip('=')
 token += '.'
-token += base64.urlsafe_b64encode(json.dumps(payload).encode()).decode().rstrip('=')
+token += base64.urlsafe_b64encode(
+    json.dumps(payload).encode()).decode().rstrip('=')
 token += '.'  # Empty signature
 
 # Use token to gain admin access
@@ -971,8 +1010,11 @@ import jwt
 
 def verify_token(token):
     try:
-        # Explicitly whitelist algorithms
-        payload = jwt.decode(token, SECRET_KEY, algorithms=['HS256', 'RS256'])
+        # Whitelist exactly the one algorithm this key is for.
+        # Listing an HMAC and an RSA algorithm together with a
+        # single key is what enables the algorithm confusion
+        # attack shown below.
+        payload = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
         return payload
     except jwt.InvalidTokenError:
         return None
@@ -1032,11 +1074,13 @@ token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
 import datetime
 
 def create_token(user):
+    now = datetime.datetime.now(datetime.timezone.utc)
+
     payload = {
         'sub': user.id,
         'username': user.username,
-        'iat': datetime.datetime.utcnow(),  # Issued at
-        'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=1)  # Expires in 1 hour
+        'iat': now,                               # Issued at
+        'exp': now + datetime.timedelta(hours=1)  # Expires in 1 h
     }
 
     token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
@@ -1057,6 +1101,23 @@ def verify_token(token):
 #### 4. Algorithm Confusion (HS256 vs RS256)
 
 **Definition**: Attacker changes algorithm from RS256 (asymmetric) to HS256 (symmetric), using public key as HMAC secret.
+
+```text
+  Intended (RS256, asymmetric)
+    sign   with PRIVATE key  (server only)
+    verify with PUBLIC  key  (may be published at /jwks.json)
+
+  Confusion attack (RS256 -> HS256)
+    1. attacker obtains the PUBLIC key -- it is not a secret
+    2. attacker builds {"alg":"HS256"} with "role":"admin" and
+       HMAC-signs it, using the public key bytes AS the secret
+    3. server reads "alg" from the attacker's header, selects
+       HMAC, and feeds its stored public key in as the HMAC key
+    4. the HMAC matches -- the forged admin token is accepted
+
+  Root cause: the token told the server which algorithm to use.
+  Fix: the server decides, and pins one algorithm per key.
+```
 
 **Scenario:**
 
@@ -1134,6 +1195,13 @@ fetch('/api/data', {
 });
 ```
 
+Neither option is simply "safe". `localStorage` is readable by any
+injected script, so one XSS equals one stolen token. Cookies are not
+readable by script, but they are sent automatically, which
+reintroduces CSRF, so cookie-based API auth needs `SameSite`
+plus either a CSRF token or a custom header the browser will not
+send cross-site.
+
 ---
 
 ### JWT Best Practices
@@ -1209,7 +1277,9 @@ class JWTManager:
     def revoke_token(self, jti, exp):
         # Store in Redis with expiration
         ttl = exp - datetime.datetime.utcnow()
-        redis_client.setex(f'revoked_token:{jti}', int(ttl.total_seconds()), '1')
+        redis_client.setex(
+            f'revoked_token:{jti}', int(ttl.total_seconds()), '1'
+        )
 ```
 
 ---
@@ -1227,14 +1297,33 @@ class JWTManager:
 **Flow:**
 
 ```text
-1. User → Client App: "Login with Google"
-2. Client App → Authorization Server: Redirect with client_id, redirect_uri, scope
-3. User → Authorization Server: Authenticates and grants permission
-4. Authorization Server → Client App: Authorization code
-5. Client App → Authorization Server: Exchange code for access token
-6. Authorization Server → Client App: Access token
-7. Client App → Resource Server: Request with access token
-8. Resource Server → Client App: Protected resource
+  FRONT CHANNEL -- everything here travels through the browser,
+  so it is visible to the user and to anything on their machine.
+
+  (1) User clicks "Log in with Provider"
+        Browser ──▶ Client App
+
+  (2) Client App redirects the browser to the Auth Server
+        ?client_id &redirect_uri &scope &state &code_challenge
+
+  (3) User authenticates and grants consent at the Auth Server
+
+  (4) Auth Server redirects the browser back to redirect_uri
+        ?code=<authorization code> &state=<echoed back>
+
+  BACK CHANNEL -- server to server over TLS, never in the browser.
+
+  (5) Client App  ──▶ Auth Server
+        code + client_secret + code_verifier
+      Auth Server ──▶ Client App
+        access token (+ id_token for OIDC)
+
+  (6) Client App   ──▶ Resource Server  Bearer <access token>
+      Resource Server ──▶ Client App    protected resource
+
+  Only the short-lived CODE crosses the browser; the TOKEN never
+  does. Step 5 is where the client proves who it is -- which is
+  exactly what the implicit flow skipped.
 ```
 
 **Implementation:**
@@ -1488,7 +1577,9 @@ class OAuth2Client:
         }
 
         from urllib.parse import urlencode
-        return f"{self.config['authorization_endpoint']}?{urlencode(params)}"
+
+        endpoint = self.config['authorization_endpoint']
+        return f"{endpoint}?{urlencode(params)}"
 
     def handle_callback(self, code, state):
         # Validate state
@@ -1569,7 +1660,7 @@ class OAuth2Client:
 # User can update their profile
 @app.route('/api/users/<user_id>', methods=['PUT'])
 def update_user(user_id):
-    if user_id != current_user.id:
+    if int(user_id) != current_user.id:
         abort(403)
 
     # VULNERABLE: User can set any property
@@ -1593,7 +1684,8 @@ def update_user(user_id):
 def search():
     # Enforce pagination
     page = request.args.get('page', 1, type=int)
-    per_page = min(request.args.get('per_page', 20, type=int), 100)  # Max 100
+    per_page = request.args.get('per_page', 20, type=int)
+    per_page = min(per_page, 100)  # Hard upper bound
 
     results = Model.query.paginate(page=page, per_page=per_page)
     return jsonify(results)
@@ -1852,25 +1944,25 @@ def test_rate_limiting(url, headers):
 
 ## Key Takeaways
 
-1. **API Security is Critical**: 83% of web traffic is API traffic; vulnerabilities lead to massive breaches
+1. APIs carry the bulk of modern application traffic, and API flaws are behind some of the largest breaches on record.
 
-2. **BOLA is #1 Threat**: Always validate authorization at the object level, not just authentication
+2. BOLA is API1:2023, the first entry on the OWASP list. Validate authorization at the object level on every request; authenticating the caller is not enough.
 
-3. **GraphQL Requires Special Attention**: Introspection, batching, and query complexity attacks are unique to GraphQL
+3. Introspection, batching, and query complexity attacks are specific to GraphQL and need controls of their own.
 
-4. **JWT Must Be Implemented Correctly**: Algorithm confusion, weak secrets, and missing expiration are common pitfalls
+4. Algorithm confusion, weak secrets, and missing expiration are the usual JWT implementation mistakes.
 
-5. **OAuth 2.0 Needs CSRF Protection**: Always use state parameter and validate redirect URIs exactly
+5. OAuth 2.0 needs CSRF protection: always use the state parameter and validate redirect URIs exactly.
 
-6. **Rate Limiting is Essential**: APIs are susceptible to brute force and DoS without proper rate limits
+6. Without proper rate limits, APIs are open to brute force and DoS.
 
-7. **Validate All Data**: Never trust external APIs or client input; always validate and sanitize
+7. Never trust external APIs or client input; always validate and sanitize.
 
-8. **Defense in Depth**: Combine authentication, authorization, rate limiting, input validation, and monitoring
+8. Combine authentication, authorization, rate limiting, input validation, and monitoring.
 
-9. **Keep APIs Documented**: Maintain an accurate inventory of all API endpoints and versions
+9. Maintain an accurate inventory of all API endpoints and versions.
 
-10. **Test Continuously**: Use automated tools and manual testing to identify API vulnerabilities
+10. Use automated tools and manual testing continuously to find API vulnerabilities.
 
 ---
 

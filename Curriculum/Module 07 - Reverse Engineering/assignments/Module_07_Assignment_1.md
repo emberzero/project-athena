@@ -1,80 +1,146 @@
-## Assignment: Reverse Engineering a simple keygen checker
+# Assignment 1: Reverse Engineering a Keygen Checker
 
-### Objective
+## Objective
 
-This assignment aims to deepen your understanding of the reverse engineering process of native binaries.
+You will reverse engineer a native x86-64 binary that validates a licence key for a given
+username, reconstruct its key-checking algorithm, and compute a valid key for your own username.
+Afterwards you will be able to take an unknown, unstripped ELF binary, locate the function that
+makes a decision, read its logic in a decompiler, and verify your understanding by producing an
+input that the program accepts.
 
-### Instructions
+## Logistics
 
-1. **Analysis:**
+- **Work:** individual. Your key is derived from your own name, so no two submissions are alike.
+- **Deadline:** *set by your instructor*.
+- **Submission:** one PDF, named `Lastname_Firstname_Module07_Assignment1.pdf`.
+- Submit the report only. Do not submit the binary or a patched copy of it.
 
-   - Analyze the given binary and figure out how it works
+## Setup
 
-1. **Generate a valid keygen:**
+- **The target** is the file `main` in this `assignments/` folder. It is an unstripped ELF 64-bit
+  PIE executable for x86-64 Linux. It prompts for a name, then for a key, and prints either
+  `You win!` or `You lose!`.
+- **A Linux x86-64 environment.** Any Linux VM works (the course Kali VM, a plain Debian or Ubuntu
+  VM, or WSL2). The binary will not run natively on macOS or Windows.
+- **Ghidra** (free, <https://ghidra-sre.org/>) for decompilation. It needs a JDK; the version
+  required is stated in the Ghidra release notes. Lecture 3 covers the import and analysis
+  workflow.
+- **Command-line tools:** `file`, `strings`, `nm`, `readelf`, `objdump` - all part of `binutils`,
+  which is installed on the course VMs. GDB for the bonus task.
+- Nothing in this assignment costs money or needs hardware beyond a VM.
 
-   - Your username is the first letter of your first name and your last name appended, without any special characters. Every character shall be lowercased.
+The binary is provided by your instructor for this course, so analysing it is authorised. That
+authorisation covers this file only: do not point these techniques at software you neither own nor
+were given. Module 01 and the legal section of lecture 1 cover why (Austrian StGB §118a, §126a and
+§126b, plus the narrow copyright exceptions in UrhG and Directive 2009/24/EC).
 
-   Example: Max Mustermann => mmustermann
+## Your username
 
-   - Upon a valid key, the program will print: "You win".
+Your username is the first letter of your first name followed by your last name, all lowercase,
+with special characters removed. Umlauts are transliterated (`ä` becomes `ae`, and so on).
 
-### Submission Guidelines
+- Max Mustermann becomes `mmustermann`
+- Asa Mueller-Berg becomes `amuellerberg`
 
-1. **Report with key:**
-   - Submit a short writeup of what the program does, your username as stated above and the valid key for your username.
-   - The report should be in PDF format
-   - Ensure your name, date, and the title of your writeup are included.
+State your full name and the derived username at the top of the report. A key that is valid for a
+different username earns no marks.
 
-### Evaluation Criteria
+## Tasks
 
-1. **Valid key:**
+### 1. Triage
 
-   - Is your key valid for your username?
+Run the command-line triage from lecture 3 before you open any GUI: `file`, `strings -n 6`, `nm`,
+`readelf -h`, `ldd`.
 
-1. **Report**
+**In the report:** the output of `file`, the three or four strings you expect to be anchors into
+the code, and the names of the non-library functions that `nm` reveals. One sentence on whether the
+binary is stripped or packed, and on what the symbol names already suggest about the algorithm.
 
-   - Did you analyze the program properly and correctly state all steps it does within the report?
+### 2. Static analysis in Ghidra
 
-By completing this assignment, you will gain a richer understanding of the reverse engineering of a simple native binary.
+Import the binary, run the default analysis, and find the comparison that decides between
+`You win!` and `You lose!`. The fastest route is to cross-reference one of those strings.
 
-### Bonus Points Task: Debugger Usage or Program Patching
+**In the report:**
 
-#### Objective
+- The name and address of the function containing the decision.
+- The decompiled pseudo-code of the key-checking logic, with your renamed variables. Ghidra's raw
+  output with `uVar3` everywhere does not count as analysis; rename and retype as you read.
+- A plain-language description of the algorithm: what the program does to the username to arrive at
+  the expected key, step by step. This is the core of the assignment.
+- Any transformation you had to confirm in the disassembly rather than in the pseudo-code, and why
+  the pseudo-code was not enough.
 
-For bonus points, demonstrate your proficiency in using a debugger for reverse engineering or show your skills in patching the binary to bypass the key validation mechanism.
+### 3. Compute your key
 
-#### Instructions
+Derive the valid key for *your* username. Do it by reimplementing the algorithm - a short Python or
+C script is the expected route - not by brute force.
 
-1. **Using a Debugger:**
-   - Use a debugger to step through the binary and document your observations.
-   - Focus on how the binary processes the input and validates the key.
-   - Highlight any interesting breakpoints, function calls, or conditional checks.
+**In the report:**
 
-   **Or**
+- Your username, your key, and the script you used to generate it, as a code block.
+- A terminal screenshot or a copy-pasted session showing the program accepting your username and
+  key, with `You win!` visible.
 
-2. **Patching the Binary:**
-   - Modify the binary to bypass the key validation process.
-   - Ensure that any input results in the program printing "You win".
-   - Document the patching process, explaining the changes made to the binary.
+### 4. Assessment
 
-3. **Enhanced Report Submission:**
-   - Include a section in your report titled "Bonus Points Task: Debugger or Patching".
-   - Detail your approach, whether using a debugger or patching, and describe your findings or the steps you took.
-   - Include screenshots or code snippets as necessary to illustrate your process.
+Answer each of these in at most half a page.
 
-### Additional Submission Guidelines for Bonus Points
+- The binary checks the key locally. Name one change to the design that would make your attack stop
+  working, and explain why.
+- Name one thing the developer could do that would raise your cost without fixing the underlying
+  problem, and estimate how much longer it would have taken you.
 
-- Add this bonus task as a separate section in your report.
-- Clearly label this section for easy identification by evaluators.
+## Deliverable checklist
 
-### Evaluation Criteria for Bonus Points
+Your PDF contains: your name, the date, your derived username, the triage output, the function
+address and renamed decompilation, the algorithm description, your keygen script, your key, the
+`You win!` evidence, and the two assessment answers.
 
-1. **Effectiveness of Technique:**
-   - Successful use of a debugger to trace key validation or successful patching of the binary.
-   - Accuracy and clarity in explaining the debugging or patching process.
+## Evaluation criteria
 
-2. **Quality of Documentation:**
-   - Depth of detail in documenting the steps taken and findings.
-   - Clarity and relevance of screenshots or code snippets used.
+| Area | Weight | What earns full marks |
+| --- | --- | --- |
+| **Triage** | 10% | All five triage commands run with output shown, and a correct read of what the symbols and strings imply before any decompiler is opened. |
+| **Algorithm description** | 30% | The key-checking algorithm described correctly and completely, step by step, so that a reader could reimplement it from the report alone. |
+| **Decompilation evidence** | 20% | Correct function name and address, pseudo-code included with meaningfully renamed variables, and disassembly cited wherever the pseudo-code was ambiguous. |
+| **Valid key** | 20% | The submitted key is valid for the submitted username, and the `You win!` evidence matches both. |
+| **Keygen script** | 10% | A working script that derives the key from any username, not a hardcoded constant. |
+| **Assessment and report quality** | 10% | Both assessment questions answered concretely; report structured and readable, with code and output formatted as code. |
+| **Bonus** | +20% | See below. |
 
-By completing this bonus task, you will showcase advanced skills in reverse engineering, either through the analytical use of a debugger or the practical application of binary patching, both critical competencies in cybersecurity and software analysis.
+A key that is valid but unexplained scores the 20% for the key and little else. The explanation is
+the assignment.
+
+## Bonus: Debugger or patching (up to +20%)
+
+Pick **one** of the two options.
+
+### Option A: Dynamic confirmation with GDB
+
+Use GDB to confirm your static reading without re-reading your Ghidra notes.
+
+**In the report:** the breakpoint you set and why, `info registers` or `x/` output showing the
+expected key in memory at the moment of the comparison, and the return value of the check for both
+a wrong and a correct key. The binary is a PIE, so state how you reconciled the static addresses
+with the runtime ones; lecture 4 covers `info proc mappings`.
+
+### Option B: Patch the check
+
+Work on a **copy** of the binary. Patch it so that any key is accepted.
+
+**In the report:** the virtual address you changed, how you converted it to a file offset, the
+original bytes, the new bytes, one sentence on why the change has that effect, and the
+re-disassembly of the patched instruction. Show the patched copy accepting a deliberately wrong
+key. Keep the patch the same length as the original instruction.
+
+For either option, finish with two or three sentences: would your technique still work if the
+validation ran on a server instead of on your machine?
+
+### Bonus evaluation
+
+| Area | Weight | What earns full marks |
+| --- | --- | --- |
+| **Technique** | +12% | The GDB session or the patch demonstrably works, with the evidence named above included. |
+| **Precision** | +5% | Addresses, offsets and bytes stated exactly and internally consistent; PIE address reconciliation correct. |
+| **Reflection** | +3% | The server-side question answered correctly and specifically. |

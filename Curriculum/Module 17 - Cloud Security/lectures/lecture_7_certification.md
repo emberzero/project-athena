@@ -1,83 +1,153 @@
 # Exploring Key Certifications and Standards in On-Premises and Cloud Security
 
-In an era where data is a critical asset, and cybersecurity threats continue to evolve, the importance of robust security measures cannot be overstated. Organizations managing on-premises infrastructure or migrating to the cloud must navigate a landscape of certifications and standards to ensure the confidentiality, integrity, and availability of their systems and data. Let's delve into some of the most relevant certifications and standards in both on-premises and cloud security.
+Two different things get called "certification" in security, and mixing them
+up is a common source of confusion. A *standard* is something an
+organisation is assessed or certified against; a *professional certification*
+attests to one individual's knowledge and experience. This lecture covers the most relevant examples of
+each.
+
+```text
+  Certifies an ORGANISATION     |  Certifies a PERSON
+  ------------------------------+------------------------------
+  ISO/IEC 27001                 |  CISSP   broad security
+    audited management system,  |          management; requires
+    valid 3 years with annual   |          several years of
+    surveillance audits         |          documented experience
+                                |
+  NIST SP 800-53                |  CISA    information systems
+    a control catalogue to      |          audit and control
+    build on - not itself a     |          (ISACA)
+    certification you obtain    |
+                                |  CCSP    cloud-specific
+  These answer: "is this        |          security, by (ISC)2
+  organisation trustworthy?"    |          together with the CSA
+                                |
+                                |  These answer: "does this
+                                |  person know the subject?"
+```
 
 ## ISO/IEC 27001: Information Security Management
 
-**Overview:** ISO/IEC 27001 stands as a cornerstone in the realm of Information Security Management Systems (ISMS). This globally recognized standard provides a meticulous and structured approach to safeguarding sensitive company information, ranging from financial records and intellectual property to employee details. While its scope extends beyond on-premises environments, ISO/IEC 27001 delivers a robust and adaptable framework suitable for diverse infrastructure setups.
+ISO/IEC 27001 is the main international standard for Information Security
+Management Systems (ISMS). It describes a structured approach to protecting
+sensitive company information, from financial records and intellectual property
+to employee data. Its scope is not limited to on-premises environments; the
+framework is written to be adapted to different infrastructure setups.
 
-**Key Components:**
+The standard rests on three parts:
 
-- *Risk Management:* ISO/IEC 27001 places a strong emphasis on identifying, assessing, and managing risks to information security. This includes evaluating potential threats, vulnerabilities, and the impact of security incidents.
-- *Security Controls:* The standard delineates a set of security controls that organizations can implement to mitigate risks effectively. These controls cover various aspects, including access control, cryptography, and physical security.
-- *Continuous Improvement:* ISO/IEC 27001 is not a one-time certification; it fosters a culture of continuous improvement. Organizations are encouraged to regularly review and refine their information security processes to adapt to evolving threats.
+- Risk management: identifying, assessing and managing risks to information
+  security, which includes evaluating threats, vulnerabilities and the impact
+  of security incidents.
+- Security controls: a defined set of controls an organisation can implement to
+  reduce those risks, covering access control, cryptography and physical
+  security among others.
+- Continuous improvement: certification is not a one-time event. Organisations
+  are expected to review and refine their information security processes as
+  threats change.
 
-**Applicability:** ISO/IEC 27001 is applicable across the spectrum of organizations, irrespective of size or industry. By providing clear guidelines for the design and implementation of security controls, risk management processes, and ongoing improvement, the standard ensures a scalable and adaptable approach to information security.
+ISO/IEC 27001 applies to organisations of any size and in any industry. Because
+it gives guidelines for designing controls, running risk management and
+improving both over time, rather than a fixed technical specification, it
+scales to different situations.
 
-**Benefits:**
+Certification is worth having for several reasons. It demonstrates that an
+organisation follows international practice in information security, which
+matters for its reputation and can be a differentiator in competitive markets,
+since clients, partners and stakeholders can see the assessment result. The
+risk management focus makes organisations address security threats before they
+cause a breach or a disruption. Many regulatory frameworks also reference or
+align with ISO/IEC 27001, which makes industry-specific compliance easier.
 
-- *Global Recognition:* Achieving ISO/IEC 27001 certification demonstrates a commitment to international best practices in information security, enhancing the global reputation of an organization.
-- *Risk Mitigation:* The risk management focus helps organizations proactively identify and address potential security threats, minimizing the likelihood of data breaches and disruptions.
-- *Competitive Advantage:* ISO/IEC 27001 certification can be a differentiator in competitive markets, instilling confidence in clients, partners, and stakeholders about the organization's commitment to information security.
-- *Regulatory Compliance:* Many regulatory frameworks reference or align with ISO/IEC 27001, facilitating compliance with industry-specific regulations.
+In short, ISO/IEC 27001 describes how to run information security as a managed
+process: assess risks, select controls, review and improve. It does not
+prescribe a fixed list of technical measures, which is why it transfers to
+almost any infrastructure setup.
 
-**Conclusion:** ISO/IEC 27001 is not merely a certification; it is a strategic approach to information security that empowers organizations to adapt to the dynamic threat landscape. By embracing the principles of risk management, implementing robust security controls, and fostering continuous improvement, organizations can build a resilient foundation for safeguarding sensitive information in an increasingly interconnected and digital world.NIST SP 800-53: Security and Privacy Controls
+## NIST SP 800-53: Security and Privacy Controls
 
-**Overview:** Published by the National Institute of Standards and Technology (NIST), Special Publication 800-53 offers a catalog of security and privacy controls for information systems. While initially developed for federal information systems, it has become a widely adopted standard in both government and private sectors.
+Special Publication 800-53, published by the National Institute of Standards
+and Technology (NIST), is a catalog of security and privacy controls for
+information systems. It was developed for federal information systems and is
+now used widely in government and in the private sector.
 
-**Applicability:** The controls outlined in NIST SP 800-53 cover a broad spectrum, making them applicable to on-premises and cloud environments. Organizations can tailor these controls to meet specific security and compliance requirements.
+Its controls are broad enough to apply to both on-premises and cloud
+environments, and organisations tailor them to their own security and
+compliance requirements.
 
 ## Certified Information Systems Security Professional (CISSP)
 
-**Overview:** The Certified Information Systems Security Professional (CISSP) certification is a pinnacle achievement in the field of information security. Recognized globally, CISSP encompasses a comprehensive spectrum of security domains, offering a profound understanding of the principles and practices crucial for securing information systems.
+CISSP is an internationally recognised certification covering a wide range of
+security domains and the principles and practices needed to secure information
+systems.
 
-**Key Components:**
+It covers eight core domains: Security and Risk Management, Asset Security,
+Security Architecture and Engineering, Communication and Network Security,
+Identity and Access Management (IAM), Security Assessment and Testing, Security
+Operations, and Software Development Security. CISSP is broad, so certified professionals understand how the parts of a
+security programme fit together. Beyond the exam, CISSP also requires a minimum level of
+professional experience in two or more of the domains, so holders have done the
+work in practice.
 
-- *Security Domains:* CISSP covers eight core domains, including Security and Risk Management, Asset Security, Security Architecture and Engineering, Communication and Network Security, Identity and Access Management (IAM), Security Assessment and Testing, Security Operations, and Software Development Security.
-- *Holistic Approach:* CISSP adopts a holistic approach to information security, ensuring that certified professionals possess a well-rounded understanding of the diverse elements that contribute to a robust security posture.
-- *Experience Requirement:* CISSP certification is not only knowledge-based but also requires a minimum level of professional experience in two or more of the security domains. This ensures that CISSP-certified individuals have practical, hands-on expertise.
+CISSP is aimed at professionals who design, implement and manage a complete
+security programme. It is tied to no particular technology or platform, so it
+applies on-premises and in the cloud.
 
-**Applicability:** CISSP is highly relevant for security professionals involved in designing, implementing, and managing a comprehensive security program. It is not tied to a specific technology or platform, making it versatile for professionals working across diverse environments, including on-premises and cloud setups.
+The certification is well known and respected in the industry, it opens doors
+to senior and leadership positions in information security, it is written
+around international standards and practice, and holders join a global
+community with access to its resources, forums and contacts.
 
-**Benefits:**
+CISSP is broad rather than deep, and it is aimed at security management more
+than hands-on technical work. Combined with its experience requirement, that
+makes it a common prerequisite for senior and lead security roles.
 
-- *Industry Recognition:* CISSP is widely recognized and respected in the cybersecurity industry, signifying a high level of expertise and commitment to best practices.
-- *Career Advancement:* CISSP certification is a valuable asset for career growth, opening doors to senior-level positions and leadership roles in information security.
-- *Global Perspective:* CISSP provides a global perspective on information security, considering international standards and best practices.
-- *Community and Resources:* CISSP-certified professionals become part of a global community with access to resources, forums, and networking opportunities.
+## Certified Information Systems Auditor (CISA)
 
-**Conclusion:** CISSP is not just a certification; it is a testament to a professional's deep understanding of information security principles across various domains. By ensuring a balance between theoretical knowledge and practical experience, CISSP empowers individuals to navigate the complexities of modern security challenges, making it a sought-after credential for those aspiring to excel in the dynamic field of cybersecurity.Certified Information Systems Auditor (CISA)
+ISACA's CISA certification is for professionals working in information systems
+auditing, control and security. It concentrates on the governance and control
+of IT systems.
 
-**Overview:** ISACA's CISA certification is designed for professionals involved in information systems auditing, control, and security. It focuses on ensuring the effective governance and control of IT systems.
-
-**Applicability:** CISA is particularly relevant for individuals overseeing the audit and control of on-premises systems, ensuring compliance with security policies and standards.
+CISA is most relevant for people who oversee the audit and control of
+on-premises systems and check compliance with security policies and standards.
 
 ## Certified Cloud Security Professional (CCSP)
 
-**Overview:** The Certified Cloud Security Professional (CCSP) certification is a specialized designation for professionals immersed in the dynamic landscape of cloud security. Jointly developed by (ISC)² and Cloud Security Alliance (CSA), CCSP validates expertise in securing cloud environments and understanding the unique challenges associated with cloud computing.
+CCSP is a certification for cloud security specifically. It was developed
+jointly by (ISC)2 and the Cloud Security Alliance (CSA) and tests knowledge of
+securing cloud environments and of the problems particular to cloud computing.
 
-**Key Components:**
+It covers six domains: Cloud Concepts, Architecture, and Design; Cloud Data
+Security; Cloud Platform and Infrastructure Security; Cloud Application
+Security; Cloud Security Operations; and Legal, Risk, and Compliance. Unlike
+other security certifications, CCSP is built around cloud technologies,
+services and practice throughout.
 
-- *Six Domains:* CCSP covers six essential domains, including Cloud Concepts, Architecture, and Design; Cloud Data Security; Cloud Platform and Infrastructure Security; Cloud Application Security; Cloud Security Operations; and Legal, Risk, and Compliance.
-- *Cloud-Centric Focus:* Unlike traditional security certifications, CCSP places a specific emphasis on cloud-related technologies, services, and best practices, ensuring professionals are well-versed in securing cloud-based infrastructures.
-- *Collaborative Effort:* Developed collaboratively by (ISC)² and CSA, CCSP brings together the expertise of two leading organizations in the fields of cybersecurity and cloud security.
+CCSP suits security professionals working on cloud projects, whether they
+manage cloud environments, implement cloud security controls or handle cloud
+compliance. It goes past on-premises concerns to the details of securing
+cloud architectures: it teaches the security challenges that cloud computing
+brings, from data protection to compliance. It is recognised internationally and adds to a
+holder's professional credibility in cloud security. It is also vendor-neutral,
+so the knowledge applies across cloud providers, and certified individuals get
+access to a network of other professionals, forums and resources.
 
-**Applicability:** CCSP is particularly relevant for security professionals involved in cloud-related initiatives, whether managing cloud environments, implementing cloud security solutions, or navigating the complexities of cloud compliance. It extends beyond on-premises security concerns, focusing on the intricacies of securing cloud-based architectures.
-
-**Benefits:**
-
-- *Cloud Security Proficiency:* CCSP equips professionals with the knowledge and skills necessary to address the unique security challenges posed by cloud computing, from data protection to compliance in the cloud.
-- *Industry Recognition:* As a globally recognized certification, CCSP signifies a commitment to excellence in cloud security and enhances professional credibility in the industry.
-- *Vendor-Neutral Approach:* CCSP is vendor-neutral, allowing professionals to apply their knowledge across various cloud service providers and environments.
-- *Network and Collaboration:* CCSP-certified individuals gain access to a network of like-minded professionals, forums, and resources, fostering ongoing learning and collaboration.
-
-**Conclusion:** CCSP goes beyond traditional security certifications by addressing the distinctive aspects of cloud security. It is a vital credential for professionals navigating the intricacies of securing data, applications, and infrastructure in cloud environments. With its comprehensive coverage of cloud security domains, CCSP empowers individuals to play a pivotal role in ensuring the confidentiality, integrity, and availability of data in the ever-evolving landscape of cloud computing.
+CCSP covers the same kind of ground as CISSP but narrowed to cloud
+environments, including the topics that only arise there: the shared
+responsibility model, multi-tenancy, data residency, and cloud-specific
+compliance.
 
 ## Choosing the Right Path
 
-Selecting the appropriate certification or standard depends on factors such as organizational goals, industry requirements, and the specific technology landscape. Often, a combination of certifications is ideal to ensure a holistic approach to security.
+Which certification or standard fits depends on the organisation's goals, its
+industry requirements and the technology it runs. A combination is often the
+better answer, so that nothing is left uncovered.
 
-Whether safeguarding on-premises infrastructure, migrating to the cloud, or operating in a hybrid environment, a robust security framework is essential. By investing in relevant certifications and adhering to recognized standards, organizations can fortify their defenses and instill confidence in stakeholders regarding the security and resilience of their information systems.
+Be clear about which question you are answering. A customer or auditor asking
+whether your organisation handles data responsibly wants to see a standard such
+as ISO/IEC 27001. An employer asking whether a candidate knows the subject
+wants a professional certification. Neither substitutes for the other, and
+neither one by itself makes a system secure.
 
 ## Sources
 

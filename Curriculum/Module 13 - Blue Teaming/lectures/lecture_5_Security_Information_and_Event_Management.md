@@ -1,42 +1,73 @@
 # Security Information and Event Management (SIEM)
 
-## **Introduction**
+## Introduction
 
 - SIEM combines **security information management (SIM)** and **security event management (SEM)**
-- **aggregating** and **analyzing** event data from various sources like applications, endpoints, firewalls, and networks.
+- aggregates and analyzes event data from various sources like applications, endpoints, firewalls, and networks.
 - assists in quick identification of cyber threats through real-time threat monitoring and alerting capabilities.
+
+The value of a SIEM comes from the pipeline it puts the logs through. A single
+log line from one system usually means nothing; it becomes an incident only
+once events from several sources are brought into a common format and related
+to each other:
+
+```text
+  Sources            Pipeline                Output
+  ----------------------------------------------------------------
+  firewalls     -+
+  IDS / IPS     -+
+  servers       -+--> [ Collection ]   agents, syslog, API pull
+  endpoints     -+          |
+  applications  -+          v
+  cloud / IAM   -+    [ Normalise ]    one schema: time, user,
+                            |          host, action
+                            v
+                      [ Correlate ]    rules and baselines
+                            |          applied across sources
+           +----------------+----------------+
+           v                v                v
+     alerts to the    dashboards and   long-term store
+     analyst          reports          (forensics, compliance)
+```
+
+Note where the limitation lies: the SIEM only sees sources that are actually
+forwarded to it, and correlation rules only find patterns someone has
+described. Coverage and tuning, not the product, decide how useful it is.
 
 _source: Security Information and Event Management \[1.\]_
 
-## **Core Functions**
+## Core Functions
 
-### **Data Correlation and Analysis**
+### Data Correlation and Analysis
 
-- **Reactive Nature**: Traditional SIEM systems focused on reactive logging and event management.
-- **Proactive Shift**: Recent trends show a shift towards more proactive measures, integrating new threat data for better issue identification.
-- **AI Integration**: Adoption of AI tools in SIEM systems helps narrow alert windows and automate security responses, moving from reactive to proactive responses.
-
-_source: Security Information and Event Management \[3.\]_
-
-### **Event Log Management**
-
-- **Essential Component**: Involves collection, normalization, and analysis of log data for network visibility and detecting security incidents.
-- **Evolution and Challenges**: Modern SIEM solutions are evolving to address dynamic cybersecurity challenges, with an emphasis on cloud-based solutions for flexibility.
-- **Combining with SOAR**: Integration with SOAR (Security Orchestration, Automation, and Response) tools extends the usability of SIEM tools, though they remain fundamentally reactive.
-
-_source: Security Information and Event Management \[4.\]_
+Traditional SIEM systems were built around reactive logging and event
+management. Recent products work more proactively by taking in new threat data
+to identify issues earlier. AI tools narrow the alert window further and
+automate parts of the response.
 
 _source: Security Information and Event Management \[3.\]_
 
-### **Monitoring and Alerting**
+### Event Log Management
 
-- **Real-Time Monitoring**: SIEM is crucial for real-time monitoring and alerting in cloud and on-premise infrastructures.
-- **Automation and AI**: Increasing use of AI and automation in SIEM and SOAR tools to save time and improve efficiency in threat response.
-- **Cloud Migration**: There is a growing trend to move SIEM and SOAR solutions to the cloud to support scalable resources and enhance automation capabilities.
+Log management covers the collection, normalization and analysis of log data,
+which is what provides network visibility and makes security incidents
+detectable. Current solutions put the emphasis on cloud-based deployment for
+flexibility against changing threats. Integration with SOAR (Security
+Orchestration, Automation, and Response) tools extends what a SIEM can do,
+although the combination stays reactive.
+
+_source: Security Information and Event Management \[3.\], Security Information and Event Management \[4.\]_
+
+### Monitoring and Alerting
+
+A SIEM provides the real-time monitoring and alerting for both cloud and
+on-premise infrastructure. AI and automation are used increasingly in SIEM and
+SOAR tools to save time in threat response, and there is a growing trend to
+move both to the cloud for scalable resources and more automation.
 
 _source: Security Information and Event Management \[4.\], Security Information and Event Management \[3.\]_
 
-## **Key Capabilities**
+## Capabilities
 
 - **Threat Analytics**
   - SIEM systems are evolving to address complex security threats, although they primarily focus on logging and event management
@@ -47,12 +78,13 @@ _source: Security Information and Event Management \[4.\], Security Information 
 - **User Behavior Analytics (UBA)**
   - The integration of new threat data in SIEM systems aids in detecting potential phishing efforts and identifying compromise points, aligning with the user behavior analytics approach.
 - **Alerting**
+  - correlation rules raise an alert when a pattern matches; keeping the number of alerts low enough to be acted on is the main tuning problem of any SIEM deployment
 - **Incident Response**
   - Combining SIEM with SOAR (Security Orchestration, Automation, and Response) extends the usability of these tools. However, even this combination is reactive rather than proactive, indicating a need for solutions that fill these gaps, such as extended detection and response (XDR).
 
 _source: Security Information and Event Management \[3.\], Security Information and Event Management \[5.\]_
 
-## **Benefits**
+## Benefits
 
 - **Rapid Detection and Response**
   - shortens the time required to detect and identify threats
@@ -63,7 +95,7 @@ _source: Security Information and Event Management \[3.\], Security Information 
 
 _source: Security Information and Event Management \[5.\]_
 
-## **Challenges in Implementing SIEM**
+## Challenges in Implementing SIEM
 
 - Requirement of integration with other solutions
 - Extensive oversight and control needed from security experts
@@ -73,6 +105,11 @@ _source: Security Information and Event Management \[5.\]_
 _source: Security Information and Event Management \[5.\]_
 
 ## Solution Comparison
+
+The prices and feature sets below are those listed in the source article when
+it was written; licensing models in this market change often. Use the table to
+see which kinds of products exist and what they optimise for, and get current
+figures from the vendor before making any comparison that matters.
 
 | SIEM Solution                     | Best For                        | Key Features                                                               | Deployment Options          | Pricing                                                     |
 | --------------------------------- | ------------------------------- | -------------------------------------------------------------------------- | --------------------------- | ----------------------------------------------------------- |

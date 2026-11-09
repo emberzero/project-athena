@@ -1,34 +1,29 @@
 # Tools and Techniques for Social Engineering
 
-<span style="float: left; margin-right: 10px;">
-    <img src="../resources/images/ToolsSocialEngineering.png" alt="Social Engineering" width="300">
-    <br>
-    <small>Source: [ChatGPT/DALL&middot;E]</small>
-</span>
-<span>
-In this section of the module Social Engineering, we will explore the Tools and Techniques used in these sophisticated engineering attacks. Because such attacks consist not only of psychological tricks, but involve a whole process that can be divided into several steps.
+![Social engineering tools](../resources/images/ToolsSocialEngineering.png)
 
-Understanding these tools and techniques of social engineering is crucial for a better understanding of the subject and for the development of effective countermeasures.
+*Image source: ChatGPT / DALL-E.*
 
-This article delves into how an social engineer operates and what Tools and Techniques they use to get to their vicious goals.
-</span>
+This section covers the tools and techniques used in social engineering attacks. An attack of this kind is more than a single psychological trick: it is a process that runs through several steps.
 
-<div style="clear: both;"></div>
+Knowing these tools and techniques is what makes effective countermeasures possible.
+
+The sections below describe how a social engineer operates and which tools and techniques they use.
 
 ## Gathering Open Source Intelligence (OSINT)
 
-**Overview**: OSINT involves collecting data from publicly available sources to gather information about a target. This information can be used to craft persuasive and targeted attacks.
+OSINT involves collecting data from publicly available sources to gather information about a target. This information can be used to craft persuasive and targeted attacks.
 
-**Techniques**:
+Techniques:
 
 - Using search engines, social media, and public records.
 - Employing specialized tools for data gathering and analysis.
 
 ## Profiling and Communication Techniques
 
-**Overview**: Effective social engineering requires understanding the target's behavior and communication style.
+Effective social engineering requires understanding the target's behavior and communication style.
 
-**Techniques**:
+Techniques:
 
 - Utilizing the DISC assessment to categorize behavior.
   - The DISC assessment is a tool that categorizes personalities into four main traits:
@@ -39,47 +34,47 @@ This article delves into how an social engineer operates and what Tools and Tech
   - This can be used to predict how a target will respond to certain situations.
 - Adapting communication style to match the target's profile.
 
-## The Art of Pretexting
+## Pretexting
 
-**Overview**: Pretexting involves creating a fabricated scenario (or pretext) to engage a target.
+Pretexting involves creating a fabricated scenario (or pretext) to engage a target.
 
-**Techniques**:
+Techniques:
 
 - Developing believable scenarios tailored to the target.
 - Role-playing to gain trust and extract information.
 
 ## Building Rapport and Influence
 
-**Overview**: Building a connection with the target is key to persuading them to divulge information or take certain actions.
+Building a connection with the target is key to persuading them to divulge information or take certain actions.
 
-**Techniques**:
+Techniques:
 
 - Applying principles like reciprocity, authority, and liking.
 - Creating scenarios that leverage scarcity and social proof.
 
 ## Framing and Elicitation
 
-**Overview**: Framing refers to presenting information in a way that influences the target's perception. Elicitation is the subtle extraction of information.
+Framing refers to presenting information in a way that influences the target's perception. Elicitation is the subtle extraction of information.
 
-**Techniques**:
+Techniques:
 
 - Crafting questions and statements that guide the target's responses.
 - Using conversational techniques to uncover sensitive information without raising suspicion.
 
 ## Utilizing Nonverbal Communication
 
-**Overview**: Nonverbal cues play a significant role in communication and can be leveraged in social engineering.
+Nonverbal cues play a significant role in communication and can be leveraged in social engineering.
 
-**Techniques**:
+Techniques:
 
 - Reading and interpreting body language and facial expressions.
 - Adjusting one's own nonverbal signals to build trust and rapport.
 
 ## Executing Social Engineering Attacks
 
-**Overview**: Various forms of social engineering attacks like phishing, vishing, and impersonation are commonly used.
+Various forms of social engineering attacks like phishing, vishing, and impersonation are commonly used.
 
-**Techniques**:
+Techniques:
 
 - Designing convincing phishing emails.
 - Conducting vishing calls by adopting authoritative or trustworthy personas.
@@ -87,13 +82,13 @@ This article delves into how an social engineer operates and what Tools and Tech
 
 ## Conclusion
 
-Understanding the tools and techniques of social engineering is essential in today's digital landscape, especially for individuals and organizations looking to strengthen their defense against such attacks. By being aware of these methods, one can better prepare and protect against the psychological tricks used by social engineers.
+Individuals and organizations that want to defend against these attacks need to know the methods used against them. The techniques above are the ones an attacker will use.
 
 In the next section of this module we will look at how we can defend against these attacks.
 
 ## Sources
 
-- **1 Book**: [Social Engineering: The Science of Human Hacking](https://www.amazon.com/Social-Engineering-Science-Human-Hacking/dp/111943338X) - By Christopher Hadnagy, 2018
-- **2 Website**: [Social Engineering: Definition, Examples, and Techniques](https://www.csoonline.com/article/571993/social-engineering-definition-examples-and-techniques.html) - By CSO Online, 2022
-- **3 Website**: [Top 8 Social Engineering Techniques and How to Prevent Them](https://www.exabeam.com/information-security/top-8-social-engineering-techniques-and-how-to-prevent-them-2022/) - By Exabeam
-- **4 Website**: [What is Social Engineering? Attack Techniques & Prevention Methods](https://www.imperva.com/learn/application-security/social-engineering-attack/) - By Imperva
+- Book: [Social Engineering: The Science of Human Hacking](https://www.amazon.com/Social-Engineering-Science-Human-Hacking/dp/111943338X) - By Christopher Hadnagy, 2018
+- Website: [Social Engineering: Definition, Examples, and Techniques](https://www.csoonline.com/article/571993/social-engineering-definition-examples-and-techniques.html) - By CSO Online, 2022
+- Website: [Top 8 Social Engineering Techniques and How to Prevent Them](https://www.exabeam.com/information-security/top-8-social-engineering-techniques-and-how-to-prevent-them-2022/) - By Exabeam
+- Website: [What is Social Engineering? Attack Techniques & Prevention Methods](https://www.imperva.com/learn/application-security/social-engineering-attack/) - By Imperva

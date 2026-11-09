@@ -1,4 +1,4 @@
-#import "../../../typst-athena-slides-template/1.0.1/src/lib.typ": *
+#import "../../../typst-theme-emberzero/1.1.0/src/lib.typ": *
 
 #show: athena-theme.with(
   font: "Berkeley Mono",
@@ -113,7 +113,7 @@
 ]
 
 #slide(title: "Dilemma 3: Gray Hat Behavior")[
-  **Is it okay to break rules for a good cause?**
+  *Is it okay to break rules for a good cause?*
 
   - Access without permission—then report flaws
   - Intention is good, but legality is unclear

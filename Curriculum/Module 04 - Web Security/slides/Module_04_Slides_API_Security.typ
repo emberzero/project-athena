@@ -1,4 +1,4 @@
-#import "../../../typst-athena-slides-template/1.0.1/src/lib.typ": *
+#import "../../../typst-theme-emberzero/1.1.0/src/lib.typ": *
 
 #show: athena-theme.with(
   font: "Berkeley Mono",
@@ -63,6 +63,7 @@
 ]
 
 #slide(title: "BOLA (Broken Object Level Authorization)")[
+  #set text(size: 16pt)
   *#1 OWASP API Security Top 10:2023*
 
   *Vulnerable Code:*
@@ -105,6 +106,8 @@
 ]
 
 #slide(title: "Excessive Data Exposure")[
+  #local(inset: 0.12em)[
+  #split([
   *Vulnerable:*
   ```javascript
   app.get('/api/users', async (req, res) => {
@@ -114,6 +117,7 @@
   });
   ```
 
+  ], [
   *Prevention (Data Transfer Objects):*
   ```javascript
   class UserDTO {
@@ -131,9 +135,12 @@
       res.json(dtos);
   });
   ```
+  ])
+  ]
 ]
 
 #slide(title: "Mass Assignment")[
+  #split([
   *Vulnerable:*
   ```python
   @app.route('/api/users/<user_id>', methods=['PUT'])
@@ -147,6 +154,7 @@
       db.session.commit()
   ```
 
+  ], [
   *Attack:*
   ```json
   {
@@ -157,9 +165,11 @@
   ```
 
   *Prevention:* Whitelist allowed fields!
+  ])
 ]
 
 #slide(title: "Rate Limiting")[
+  #show raw.where(block: true): set text(size: 11pt)
   *Essential for APIs:*
 
   ```python
@@ -185,6 +195,7 @@
 #section-slide(title: "GraphQL Security")
 
 #slide(title: "GraphQL Overview")[
+  #set text(size: 15pt)
   *What is GraphQL?*
   - Query language for APIs
   - Client specifies exactly what data needed
@@ -206,6 +217,7 @@
 ]
 
 #slide(title: "GraphQL Introspection Abuse")[
+  #split([
   *Issue:* GraphQL exposes entire schema
 
   *Introspection Query:*
@@ -222,6 +234,7 @@
   }
   ```
 
+  ], [
   *Result:* Attacker learns entire API structure, including sensitive fields
 
   *Prevention:*
@@ -230,9 +243,12 @@
     introspection: process.env.NODE_ENV !== 'production'
   });
   ```
+  ])
 ]
 
 #slide(title: "GraphQL Batching Attacks")[
+  #show raw.where(block: true): set text(size: 11pt)
+  #set text(size: 18pt)
   *Issue:* Multiple queries in single request bypass rate limiting
 
   *Attack (10,000 login attempts in one request):*
@@ -257,8 +273,12 @@
 ]
 
 #slide(title: "GraphQL Query Depth DoS")[
+  #show raw.where(block: true): set text(size: 11pt)
+  #local(inset: 0.12em)[
+  #split([
   *Attack:* Deeply nested queries exhaust resources
 
+  ], [
   ```graphql
   query {
     user(id: 1) {
@@ -284,9 +304,12 @@
   ```
 
   *Result:* Exponential database queries, server crash
+  ])
+  ]
 ]
 
 #slide(title: "GraphQL DoS Prevention")[
+  #set text(size: 18pt)
   *Depth Limiting:*
   ```javascript
   const depthLimit = require('graphql-depth-limit');
@@ -309,6 +332,8 @@
 ]
 
 #slide(title: "GraphQL Authorization")[
+  #local(inset: 0.12em)[
+  #split(columns: (1fr, 1.5fr), [
   *Vulnerable Resolver:*
   ```javascript
   const resolvers = {
@@ -321,6 +346,7 @@
   };
   ```
 
+  ], [
   *Secure Resolver:*
   ```javascript
   const resolvers = {
@@ -341,6 +367,8 @@
     }
   };
   ```
+  ])
+  ]
 ]
 
 #section-slide(title: "JWT Security")
@@ -386,6 +414,8 @@
 ]
 
 #slide(title: "JWT Best Practices")[
+  #local(inset: 0.12em)[
+  #show raw.where(block: true): set text(size: 11pt)
   ```python
   import jwt
   import datetime
@@ -410,6 +440,7 @@
       except jwt.InvalidTokenError:
           return None
   ```
+  ]
 ]
 
 #slide(title: "JWT Storage")[
@@ -468,6 +499,7 @@
 ]
 
 #slide(title: "OAuth 2.0 Best Practices")[
+  #set text(size: 18pt)
   *1. Exact Redirect URI Matching:*
   ```python
   ALLOWED_URIS = ['https://app.example.com/callback']
@@ -521,6 +553,7 @@
 ]
 
 #slide(title: "API Security Testing")[
+  #set text(size: 17pt)
   *Tools:*
   - *Burp Suite*: Intercept, test, scan APIs
   - *Postman*: API testing, automation
@@ -538,15 +571,15 @@
 ]
 
 #slide(title: "API Security Checklist")[
-  ✅ *Authentication*: Strong tokens, proper validation
-  ✅ *Authorization*: Object-level and function-level checks
-  ✅ *Rate Limiting*: Prevent brute force and DoS
-  ✅ *Input Validation*: Whitelist approach, reject bad data
-  ✅ *Output Filtering*: DTOs, don't expose sensitive fields
-  ✅ *HTTPS Only*: Encrypt all API traffic
-  ✅ *Security Headers*: HSTS, CSP, etc.
-  ✅ *Error Handling*: Generic messages, log details
-  ✅ *Logging & Monitoring*: Detect attacks
+  ✅ *Authentication*: Strong tokens, proper validation \
+  ✅ *Authorization*: Object-level and function-level checks \
+  ✅ *Rate Limiting*: Prevent brute force and DoS \
+  ✅ *Input Validation*: Whitelist approach, reject bad data \
+  ✅ *Output Filtering*: DTOs, don't expose sensitive fields \
+  ✅ *HTTPS Only*: Encrypt all API traffic \
+  ✅ *Security Headers*: HSTS, CSP, etc. \
+  ✅ *Error Handling*: Generic messages, log details \
+  ✅ *Logging & Monitoring*: Detect attacks \
   ✅ *API Documentation*: Keep accurate inventory
 ]
 
@@ -564,6 +597,7 @@
 ]
 
 #slide(title: "API Gateway Benefits")[
+  #set text(size: 17pt)
   *Centralized Security:*
   - Authentication & Authorization
   - Rate limiting & throttling
@@ -583,6 +617,7 @@
 #section-slide(title: "Key Takeaways")
 
 #slide(title: "Summary")[
+  #set text(size: 18pt)
   - *API security is critical* - 83% of web traffic is APIs
   - *BOLA is #1 threat* - Always validate authorization
   - *GraphQL needs special attention* - Depth limits, cost analysis
@@ -596,6 +631,7 @@
 ]
 
 #slide(title: "Resources")[
+  #set text(size: 14pt)
   *Learning:*
   - OWASP API Security Top 10:2023
   - PortSwigger API Testing Labs

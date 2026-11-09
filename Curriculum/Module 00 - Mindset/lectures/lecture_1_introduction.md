@@ -1,125 +1,95 @@
 # Introduction to the Offensive Security Mindset
 
-The Offensive Security Mindset is a way of thinking and approaching cybersecurity challenges with the intent to proactively discover, analyze, and exploit vulnerabilities in systems, networks, and applications. This mindset is crucial for professionals working in penetration testing, vulnerability assessment, and other areas of offensive security. It allows them to anticipate the techniques and strategies that malicious actors might employ and take proactive measures to protect and secure systems against potential threats.
+The Offensive Security Mindset means approaching a system with the intent to discover, analyse and exploit its weaknesses before someone else does. Penetration testers, vulnerability analysts and red teamers work this way in order to anticipate the techniques an adversary might use, under authorization and before those weaknesses are exploited.
 
-In contrast to defensive security, which focuses on building and maintaining secure systems, the Offensive Security Mindset emphasizes the active pursuit of vulnerabilities and weaknesses in systems, networks, and applications. By adopting this mindset, cybersecurity professionals can better understand the potential attack vectors and develop effective countermeasures to mitigate risks and protect valuable assets.
+Defensive security builds and maintains systems and monitors them for signs of attack. Offensive security looks for the weaknesses before an adversary does. A complete security programme uses both.
 
 ## The Offensive Security Mindset
 
-### **Definition of Offensive Security**
+### Definition of Offensive Security
 
-Offensive Security refers to the proactive approach of identifying and exploiting vulnerabilities in systems, networks, and applications to assess and improve their security. It involves simulating the techniques and strategies employed by malicious actors to reveal potential weaknesses that could be exploited in real-world attacks. The primary goal of Offensive Security is to uncover vulnerabilities and address them before they can be exploited by adversaries.
+Offensive Security is the practice of identifying and exploiting vulnerabilities in systems, networks and applications in order to assess and improve their security. It works by simulating the techniques real attackers use, so that weaknesses are found and fixed before an adversary reaches them.
 
-Some common areas within Offensive Security include:
+Common areas within Offensive Security:
 
-1. **Penetration Testing:** The process of simulating cyberattacks on systems, networks, or applications to identify and exploit vulnerabilities. Penetration testers, also known as ethical hackers, perform authorized attacks to assess the security posture of their targets and provide recommendations for improvement.
+1. **Penetration Testing:** Simulating cyberattacks on systems, networks or applications to identify and exploit vulnerabilities. Penetration testers, also called ethical hackers, perform authorized attacks to assess the security posture of their targets and provide recommendations for improvement.
 
-1. **Vulnerability Assessment:** The systematic identification and evaluation of vulnerabilities in a system or network. Vulnerability assessments involve using automated tools and manual techniques to discover potential weaknesses, analyze their severity, and recommend appropriate mitigation measures.
+1. **Vulnerability Assessment:** The systematic identification and evaluation of vulnerabilities in a system or network, using automated tools and manual techniques to find weaknesses, rate their severity and recommend mitigations.
 
-1. **Exploit Development:** The creation of custom tools, scripts, or code to take advantage of identified vulnerabilities. Exploit developers create proof-of-concept exploits to demonstrate the potential impact of a vulnerability, which can help prioritize remediation efforts.
+1. **Exploit Development:** Writing custom tools, scripts or code that take advantage of an identified vulnerability. A proof-of-concept exploit demonstrates the real impact of a finding, which is what makes remediation prioritisation possible.
 
-1. **Red Teaming:** A simulated adversarial engagement where a group of security professionals, known as the Red Team, emulates real-world attacks to test an organization's security posture. Red Teaming exercises provide a comprehensive evaluation of an organization's defensive capabilities and can reveal gaps in detection, response, and mitigation processes.
+1. **Red Teaming:** A simulated adversarial engagement in which a team emulates real attacks against an organisation. Red team exercises test defensive capability end to end and expose gaps in detection, response and mitigation rather than in a single system.
 
-By adopting an Offensive Security approach, cybersecurity professionals can gain a deeper understanding of potential attack vectors, develop effective countermeasures, and ultimately improve the security of systems, networks, and applications.
+### Differences between offensive and defensive security
 
-### **Differences Between Offensive and Defensive Security**
+Offensive and defensive security are complementary. Both belong in a complete security programme, but they work on different sides of the same problem.
 
-Offensive Security and Defensive Security are two complementary approaches to safeguarding systems, networks, and applications from cyber threats. While both are essential for a comprehensive cybersecurity strategy, they focus on different aspects of the security landscape.
+#### Offensive security
 
-#### ***Offensive Security***
+Offensive security identifies and exploits vulnerabilities in systems, networks and applications, so that weaknesses can be fixed before an adversary finds them. In practice that means:
 
-As mentioned earlier, Offensive Security is a proactive approach that involves identifying and exploiting vulnerabilities in systems, networks, and applications. The main goal of Offensive Security is to uncover potential weaknesses and address them before they can be exploited by adversaries.
-
-Key aspects of Offensive Security include:
-
-- Simulating cyberattacks to test the security posture of systems, networks, or applications
+- Simulating cyberattacks to test the security posture of systems, networks or applications
 - Identifying vulnerabilities and assessing their severity
 - Developing custom exploits to demonstrate the potential impact of vulnerabilities
-- Conducting Red Teaming exercises to evaluate an organization's overall security posture
+- Conducting red teaming exercises to evaluate an organisation's overall security posture
 
-#### ***Defensive Security***
+#### Defensive security
 
-Defensive Security, on the other hand, focuses on building and maintaining secure systems, networks, and applications by implementing various security measures and monitoring for potential threats. The primary objective of Defensive Security is to prevent unauthorized access, detect attacks, and minimize damage.
+Defensive security builds and maintains secure systems by implementing controls and monitoring for threats. Its objective is to prevent unauthorized access, detect attacks and limit the damage when one succeeds. In practice that means:
 
-Key aspects of Defensive Security include:
-
-- Implementing security controls, such as firewalls, intrusion detection systems, and encryption
+- Implementing security controls, such as firewalls, intrusion detection systems and encryption
 - Establishing secure coding practices and performing regular software updates
 - Monitoring network traffic and system logs for signs of suspicious activity
-- Developing incident response plans to mitigate the impact of potential breaches or attacks
+- Developing incident response plans to limit the impact of a breach
 
-In summary, Offensive Security is about actively seeking out vulnerabilities and simulating attacks to improve security, while Defensive Security is about implementing protective measures and monitoring systems to prevent and detect attacks. A comprehensive cybersecurity strategy should combine both Offensive and Defensive Security approaches to effectively protect systems, networks, and applications from cyber threats.
+### The three key traits
 
-### **The three key traits**
+The Offensive Security Mindset rests on three traits:
 
-The Offensive Security Mindset is built on three key traits:
+1. **Curiosity:** The wish to understand how a system actually works, which is what makes somebody keep asking questions and keep reading after the obvious answer has been found.
 
-1. **Curiosity:** A natural desire to explore and learn about systems, technologies, and potential vulnerabilities. Curiosity drives cybersecurity professionals to ask questions, dig deeper, and continuously search for new information to improve their understanding of the constantly evolving threat landscape.
+1. **Creativity:** The ability to find unconventional ways to discover and exploit vulnerabilities, which is what makes it possible to anticipate how an adversary might bypass a security measure.
 
-1. **Creativity:** The ability to think outside the box and come up with innovative and unconventional ways to discover vulnerabilities and exploit them. Creativity is essential for anticipating how adversaries might bypass security measures and developing novel solutions to address emerging threats.
-
-1. **Persistence:** The determination to continue seeking out vulnerabilities, even in the face of challenges and setbacks. Persistence is necessary for overcoming obstacles and finding success in the complex world of cybersecurity.
+1. **Persistence:** The determination to keep looking for vulnerabilities in the face of setbacks.
 
 ## Real-World Applications
 
-Offensive Security plays a crucial role in identifying and addressing vulnerabilities in real-world scenarios. Here are a few examples of how Offensive Security techniques have been applied to uncover and mitigate security risks:
+A few examples of how offensive security techniques have been used to find and fix real risks:
 
-1. **Penetration Testing for a Financial Institution:** A large financial institution hires a team of ethical hackers to perform a penetration test on their web applications and internal networks. The team discovers multiple vulnerabilities, including a SQL injection vulnerability that could allow unauthorized access to sensitive customer data. The financial institution addresses the identified vulnerabilities, significantly reducing the risk of a data breach.
+1. **Penetration testing for a financial institution:** A large financial institution hires a team of ethical hackers to test its web applications and internal networks. The team finds several vulnerabilities, among them an SQL injection that would allow unauthorized access to customer data. The institution fixes the findings and reduces its exposure to a data breach.
 
-1. **Vulnerability Assessment of IoT Devices:** A security research firm conducts a vulnerability assessment of popular IoT devices, such as smart home hubs, security cameras, and thermostats. They identify several critical vulnerabilities that could enable attackers to gain unauthorized control of the devices. The research firm discloses the findings to the affected manufacturers, who then release firmware updates to address the vulnerabilities.
+1. **Vulnerability assessment of IoT devices:** A security research firm assesses popular IoT devices such as smart home hubs, security cameras and thermostats. It finds several critical vulnerabilities that would let an attacker take control of the devices, discloses them to the manufacturers, and the manufacturers release firmware updates.
 
-1. **Exploit Development for a Zero-Day Vulnerability:** A cybersecurity researcher discovers a previously unknown vulnerability in a widely used operating system. They develop a proof-of-concept exploit to demonstrate the potential impact of the vulnerability, which could allow remote code execution on affected systems. The researcher responsibly discloses the vulnerability to the operating system vendor, who then releases a security patch to address the issue.
+1. **Exploit development for a zero-day vulnerability:** A researcher finds a previously unknown vulnerability in a widely used operating system and writes a proof-of-concept exploit showing that it allows remote code execution. After responsible disclosure, the vendor releases a patch.
 
-1. **Red Teaming for a Government Agency:** A government agency conducts a Red Teaming exercise to assess the security posture of their critical infrastructure. The Red Team simulates a sophisticated cyberattack, targeting both the agency's IT systems and their industrial control systems. The exercise reveals several weaknesses in the agency's detection and response capabilities, leading to improvements in their overall security posture.
-
-These real-world examples demonstrate the value of Offensive Security in uncovering vulnerabilities, assessing potential risks, and helping organizations improve their security posture. By proactively identifying and addressing weaknesses, Offensive Security techniques contribute to a more secure and resilient digital landscape.
+1. **Red teaming for a government agency:** A government agency runs a red team exercise against its critical infrastructure. The red team attacks both the IT systems and the industrial control systems, and the exercise exposes several weaknesses in detection and response that the agency then improves.
 
 ## Importance of an Offensive Security Mindset in the Cybersecurity Field
 
-An Offensive Security Mindset is vital for cybersecurity professionals as it enables them to anticipate potential threats, stay one step ahead of adversaries, and effectively protect their organizations and clients. Adopting this mindset offers several key benefits in the cybersecurity field:
-
-1. **Proactive Threat Discovery:** By actively seeking out vulnerabilities, cybersecurity professionals can identify potential risks before they can be exploited by malicious actors. This allows organizations to prioritize and address critical vulnerabilities, reducing the likelihood of successful cyberattacks.
-
-1. **Understanding Adversary Tactics:** Embracing an Offensive Security Mindset helps cybersecurity professionals think like attackers, enabling them to anticipate the techniques and strategies adversaries may employ. This knowledge is invaluable for developing effective countermeasures and enhancing an organization's overall security posture.
-
-1. **Continuous Improvement:** The Offensive Security Mindset encourages constant learning and exploration, keeping professionals up-to-date with the latest threats, vulnerabilities, and attack methodologies. This continuous improvement is essential in the ever-evolving cybersecurity landscape, where new threats and attack techniques emerge regularly.
-
-1. **Informed Decision-Making:** By simulating cyberattacks and assessing their impact, cybersecurity professionals can provide valuable insights to decision-makers. This enables organizations to make informed decisions on resource allocation, security control implementation, and risk management.
-
-1. **Comprehensive Security Strategy:** Incorporating Offensive Security into an organization's cybersecurity strategy complements Defensive Security measures, ensuring a more holistic approach to protecting systems, networks, and applications. This combination of proactive and reactive security measures helps organizations achieve a robust defense-in-depth strategy.
-
-In conclusion, having an Offensive Security Mindset is crucial for cybersecurity professionals to stay ahead of evolving threats, better understand adversary tactics, and implement comprehensive security strategies. It fosters proactive threat discovery, informed decision-making, and continuous improvement, making it an invaluable mindset in the cybersecurity field.
+Actively looking for vulnerabilities finds risks before an attacker exploits them, which lets an organisation fix the critical ones first. Thinking like an attacker makes it possible to anticipate which techniques will be used, which is what effective countermeasures are built on. The habit of continuous learning keeps a professional current as new attack methods appear. Simulating attacks and measuring their impact gives decision makers something concrete to base resource allocation and risk management on. And offensive work inside a security programme complements the defensive side, which is what defence in depth requires.
 
 ## Conclusion
 
-1. The **Offensive Security Mindset** is a proactive approach to discovering, analyzing, and exploiting vulnerabilities in systems, networks, and applications. It is essential for professionals working in penetration testing, vulnerability assessment, and other areas of offensive security.
+1. The **Offensive Security Mindset** is a proactive approach to discovering, analysing and exploiting vulnerabilities in systems, networks and applications. It is the working method of penetration testing, vulnerability assessment and the other offensive disciplines.
 
-1. Offensive Security is focused on simulating cyberattacks, identifying vulnerabilities, and developing countermeasures, while Defensive Security is centered on implementing protective measures and monitoring systems to prevent and detect attacks.
+1. Offensive security simulates attacks, identifies vulnerabilities and develops countermeasures. Defensive security implements protective measures and monitors systems to prevent and detect attacks.
 
-1. Three key traits of the Offensive Security Mindset are **curiosity**, **creativity**, and **persistence**. These traits enable professionals to anticipate potential threats and stay ahead of adversaries.
+1. Three traits carry the mindset: **curiosity**, **creativity** and **persistence**.
 
-1. Real-world examples of Offensive Security include penetration testing, vulnerability assessment of IoT devices, exploit development for zero-day vulnerabilities, and red teaming exercises.
+1. Offensive security is applied in penetration tests, vulnerability assessments of IoT devices, exploit development for zero-day vulnerabilities and red team exercises.
 
-1. Adopting an Offensive Security Mindset offers several benefits in the cybersecurity field, such as proactive threat discovery, understanding adversary tactics, continuous improvement, informed decision-making, and the development of comprehensive security strategies.
+1. The benefits are earlier discovery of risk, a working model of adversary tactics, continuous learning, better informed decisions and a security strategy that covers both sides.
 
 ## Embracing the Offensive Security Mindset
 
-Dear students,
+To develop and keep an Offensive Security Mindset:
 
-As you embark on your journey in the cybersecurity field, we highly encourage you to adopt the **Offensive Security Mindset**. Embracing this mindset will equip you with the skills, knowledge, and attitude necessary to stay ahead of adversaries and effectively protect systems, networks, and applications.
+1. Stay curious. Keep learning about new technologies, systems and vulnerabilities, and keep up with current attack methods.
 
-To develop and maintain an Offensive Security Mindset, consider the following steps:
+1. Think creatively. Look for ways to discover and exploit vulnerabilities that the designers did not plan for, and take the attacker's view of the system.
 
-1. **Stay Curious:** Cultivate a passion for learning and exploring new technologies, systems, and potential vulnerabilities. Keep yourself updated on the latest trends, threats, and attack methodologies in the cybersecurity landscape.
+1. Be persistent. Keep looking when the obvious approaches fail; success here usually means working through the setbacks.
 
-1. **Think Creatively:** Challenge yourself to think outside the box and come up with innovative ways to discover and exploit vulnerabilities. Emulate the mindset of an attacker to anticipate how they might bypass security measures and develop novel solutions to address emerging threats.
+1. Take part in practical exercises: Capture the Flag competitions, penetration testing labs and red team exercises, to build skills and practical experience.
 
-1. **Be Persistent:** Develop the determination to continuously seek out vulnerabilities, even when faced with challenges and setbacks. Remember that success in cybersecurity often requires overcoming obstacles and persevering through tough situations.
-
-1. **Participate in Practical Exercises:** Engage in hands-on activities, such as Capture the Flag (CTF) competitions, penetration testing labs, and red teaming exercises, to hone your skills and gain real-world experience.
-
-1. **Learn from Others:** Collaborate with fellow students and professionals, share knowledge, and learn from their experiences. The cybersecurity community is a valuable resource that can help you grow and excel in your career.
-
-By embracing the Offensive Security Mindset, you will be better equipped to anticipate potential threats, develop effective countermeasures, and contribute to a more secure and resilient digital landscape. Remember, curiosity, creativity, and persistence are the key traits that define this mindset. Cultivate these traits, and you'll be well on your way to a successful career in cybersecurity.
-
-Good luck, and always stay vigilant!
+1. Learn from others. Work with fellow students and professionals, share knowledge and learn from their experience.

@@ -1,34 +1,44 @@
 # Secure DevOps in the Cloud
 
-**Introduction:**
+## Introduction
 
-DevSecOps - a blend of development, security, and operations - is all about weaving security into every step of creating and running software. Unlike the older ways where security was an afterthought at the final stage of development, DevSecOps makes it a shared responsibility from start to finish.
-
-**DevOps with a Security Twist:**
-
-DevOps, which focuses on collaboration between development and operations, becomes even more powerful when security joins the mix. In the fast-paced world of modern development, waiting until the end to think about security can slow things down. That's why DevSecOps emerged, emphasizing the need to build security into the core of DevOps initiatives.
+DevSecOps, a blend of development, security, and operations, means building security into every step of creating and running software, instead of treating it as a review gate shortly before release. The practical argument for it is cost: a flaw found while the developer is still writing the code is cheap to fix, the same flaw found in production is not.
 
 ![DevSecOps | CyberRes](https://pnx-assets-prod.s3.amazonaws.com/2022-03/security_matters_in_devops_0.png)
 
-**What DevSecOps Involves:**
+## Security Checks Along the Pipeline
 
-DevSecOps is not just about tools; it's a mindset. It means considering security right from the beginning of building an application. It's also about using tools that continuously integrate security checks without slowing down the development process.
+In practice, DevSecOps means each stage of the pipeline has its own automated
+security check, and a failing check breaks the build like any other test:
 
-**Built-In Security:**
+```text
+  Plan  -->  Code  -->  Build  -->  Test  -->  Deploy  -->  Operate
+   |          |          |           |           |            |
+   v          v          v           v           v            v
+  threat     secret     dependency  DAST and   signed       runtime
+  model,     scanning,  (SCA) scan, IaC        images,      monitoring,
+  security   SAST in    image scan  config     least-       log review,
+  stories    the IDE                checks     privilege    drift
+                                               deploy       detection
+```
 
-DevSecOps is about making security an integral part of the entire lifecycle of an application. It's not just an outer layer protecting apps and data; it's built right in. This approach involves inviting security teams from the beginning of a project, automating security checks, and helping developers code with security in mind.
+Each stage also needs a named owner and a defined failure action, otherwise
+the checks turn into a wall of warnings that everyone learns to ignore. The
+approach involves bringing security people in at the planning stage,
+automating the checks above, and giving developers feedback inside their own
+tooling rather than in a report weeks later.
 
 ![Software Development Life Cycle Models and Methodologies - Mohamed Sami](https://i0.wp.com/melsatar.blog/wp-content/uploads/2012/03/sdlc.png?fit=830%2C374&ssl=1)
 
-**Automation is Key:**
+## Automation
 
-To handle the complexity of short and frequent development cycles, organizations turn to automation. Automating repetitive tasks not only speeds things up but also ensures that security is consistently applied. From source control to deployment, automation plays a crucial role.
+To handle the complexity of short and frequent development cycles, organizations turn to automation. Automating repetitive tasks speeds the work up and applies the security checks consistently, from source control through to deployment.
 
-**Security for Containers and Microservices:**
+## Security for Containers and Microservices
 
 With the rise of container technologies, like Docker, and microservices, DevSecOps needs to adapt. Security must now be continuous and integrated at every stage. This means securing the environment, data, and the entire continuous integration/continuous delivery (CI/CD) process.
 
-**Simple Steps for DevSecOps:**
+## Simple Steps for DevSecOps
 
 1. **Environment and Data Security:**
    - Keep things standardized and automated.
@@ -41,5 +51,3 @@ With the rise of container technologies, like Docker, and microservices, DevSecO
    - Include security tests in the acceptance test process.
    - Automate updates for known vulnerabilities.
    - Implement automated system and service configuration management.
-
-In a nutshell, DevSecOps is about making security everyone's business. By automating and integrating security practices from the beginning, organizations can build software that is not only agile but also robust and secure.

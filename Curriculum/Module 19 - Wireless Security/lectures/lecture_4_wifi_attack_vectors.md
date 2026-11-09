@@ -2,15 +2,13 @@
 
 ## 4.1 Introduction
 
-Understanding WiFi attack vectors is essential in the evolving landscape of wireless security. With the increasing prevalence of wireless networks, their vulnerabilities become prime targets for malicious entities. This chapter focuses on the various methods employed by attackers to exploit weaknesses in wireless networks, highlighting the importance of robust security measures.
+An attack vector is the method or pathway an attacker uses to gain unauthorized access to a network or to compromise its data. In wireless networks these vectors exploit flaws in hardware and protocols as well as procedural and human weaknesses.
 
-An attack vector in wireless security is a method or pathway utilized for unauthorized access to a network or for compromising data. These vectors exploit not just technical flaws in hardware and software but also target procedural and human vulnerabilities. Grasping these attack vectors is crucial for anyone responsible for securing a wireless network, as it informs the development of effective defense strategies.
-
-This chapter aims to provide a thorough overview of common and emerging WiFi attack vectors. Covering everything from passive eavesdropping to advanced man-in-the-middle attacks, this chapter will explore the mechanics of these threats and their potential impacts. The goal is to equip you with the necessary knowledge to identify and defend against these security breaches, enhancing the overall protection of wireless networks.
+This chapter covers the common WiFi attack vectors, from passive eavesdropping to man-in-the-middle attacks, how each one works, and how to detect or prevent it.
 
 ## 4.2 Active vs Passive Attacks
 
-Active and passive attacks are two fundamental categories of cybersecurity threats, particularly in the context of WiFi networks. They differ primarily in their methods of execution and interaction with the target network:
+Attacks on WiFi networks fall into two categories. They differ in how they are carried out and in how far they interact with the target network:
 
 ### 4.2.1 Passive Attacks
 
@@ -30,58 +28,58 @@ Active and passive attacks are two fundamental categories of cybersecurity threa
 
 We will now have a look at the 7 most common WiFi attack vectors, explain how they work, give examples for them and suggest ways of detecting or preventing them.
 
-### 4.3.1 **Eavesdropping/Sniffing**
+### 4.3.1 Eavesdropping/Sniffing
 
 - **Type**: Passive Attack
 - **How it Works**: The attacker captures wireless data as it is transmitted over a network using a sniffer tool. This can include passwords, emails, and other sensitive information if not encrypted.
 - **Example**: Using a tool like Wireshark to monitor unsecured WiFi network traffic at a coffee shop.
-- **Detection and Prevention**: Encryption (like WPA2 or WPA3) makes sniffed data unreadable. Network monitoring can sometimes identify unusual traffic patterns indicative of sniffing.
+- **Detection and Prevention**: Encryption (like WPA2 or WPA3) makes sniffed data unreadable, but with one important caveat: on a WPA2-PSK network, anyone who knows the passphrase and has captured a client's four-way handshake can derive that client's keys and decrypt its traffic. A shared passphrase therefore protects the network from outsiders, not its users from each other. WPA3 and OWE derive per-client keys and remove this. Purely passive sniffing emits nothing and so cannot be detected over the air; defence is to assume it is happening and encrypt accordingly.
 
-### 4.3.2 **Man-in-the-Middle (MITM) Attacks**
+### 4.3.2 Man-in-the-Middle (MITM) Attacks
 
 - **Type**: Active Attack
 - **How it Works**: The attacker intercepts and potentially alters the communication between two parties without their knowledge. This can be done by infiltrating an unsecured WiFi network or using tools to create a false access point.
 - **Example**: An attacker sets up an unsecured WiFi hotspot and intercepts data between connected users and the internet.
-- **Detection and Prevention**: HTTPS usage, VPNs, and strong network authentication can help prevent MITM attacks. Awareness of network security is also crucial.
+- **Detection and Prevention**: HTTPS usage, VPNs, and strong network authentication can help prevent MITM attacks. Users also have to pay attention to which network they are on.
 
-### 4.3.3 **Denial of Service (DoS)**
+### 4.3.3 Denial of Service (DoS)
 
 - **Type**: Active Attack
-- **How it Works**: The attacker overwhelms the network with excessive traffic or data requests, rendering the network unusable.
-- **Example**: Flooding a WiFi network with traffic using a tool like LOIC (Low Orbit Ion Cannon).
-- **Detection and Prevention**: Network monitoring for unusual traffic surges, implementing rate limiting, and having robust network infrastructure can mitigate DoS attacks.
+- **How it Works**: Against a wireless network the cheapest DoS does not need traffic volume at all. Because 802.11 management frames are unauthenticated by default, an attacker can forge deauthentication or disassociation frames that appear to come from the AP and repeatedly throw clients off the network. Jamming the channel with radio noise and flooding the AP with bogus association requests are further variants.
+- **Example**: A deauthentication flood sent with `aireplay-ng` against a target BSSID. Generic flooding tools aimed at an internet service are a different class of attack and are not what makes wireless specifically fragile.
+- **Detection and Prevention**: Enable Protected Management Frames (802.11w), which are mandatory under WPA3 and optional under WPA2; they authenticate management frames and so block the forged-deauth attack outright. A wireless IDS can flag deauth floods and channel interference. Jamming at the radio layer cannot be prevented by any protocol, only detected and located.
 
-### 4.3.4 **Evil Twin Attacks**
+### 4.3.4 Evil Twin Attacks
 
 - **Type**: Active Attack
 - **How it Works**: The attacker sets up a malicious WiFi access point that mimics a legitimate one, tricking users into connecting and transmitting their data through the rogue network.
 - **Example**: Creating a WiFi access point with a name similar to a legitimate cafe network to capture customer data.
 - **Detection and Prevention**: Users should verify network authenticity before connecting. Networks can use AP (Access Point) fingerprinting to detect rogue APs.
 
-### 4.3.5 **Packet Injection**
+### 4.3.5 Packet Injection
 
 - **Type**: Active Attack
 - **How it Works**: The attacker injects arbitrary packets into a network. This can be used to disrupt or manipulate normal network operations.
 - **Example**: Injecting packets to disrupt a client's connection or to exploit vulnerabilities in the network.
 - **Detection and Prevention**: Encryption, strong network protocols, and intrusion detection systems can help identify and prevent packet injection.
 
-### 4.3.6 **WiFi Phishing**
+### 4.3.6 WiFi Phishing
 
 - **Type**: Active Attack
 - **How it Works**: Similar to phishing on the internet, WiFi phishing involves creating a fraudulent network or portal to deceive users into entering sensitive information.
 - **Example**: Setting up a fake WiFi login page that looks legitimate to capture user credentials.
-- **Detection and Prevention**: User education is key. SSL/TLS for websites can help. Networks should use security measures like WPA3 for authentication.
+- **Detection and Prevention**: User education is the main defence. SSL/TLS for websites can help. Networks should use security measures like WPA3 for authentication.
 
-### 4.3.7 **Cracking WiFi Passwords**
+### 4.3.7 Cracking WiFi Passwords
 
-- **Type**: Active Attack
-- **How it Works**: The attacker uses techniques like brute-force attacks, dictionary attacks, or exploiting WPS (WiFi Protected Setup) vulnerabilities to guess or crack WiFi passwords.
-- **Example**: Using a tool like Aircrack-ng to crack weak WiFi passwords.
-- **Detection and Prevention**: Using strong, complex passwords, disabling WPS, and monitoring for multiple failed login attempts can prevent password cracking.
+- **Type**: Mostly passive. Capturing the handshake and cracking it are both passive and leave no trace; only the optional deauthentication used to force a client to reconnect is active and detectable.
+- **How it Works**: The attacker captures a WPA2 four-way handshake and then tests passphrase guesses against it offline, by dictionary or brute force. A separate route is the WPS PIN: its eight-digit PIN is verified in two independent halves, which reduces the search space enough to be practical, so WPS is attacked directly rather than the passphrase.
+- **Example**: Capturing a handshake with `airodump-ng` and cracking it with `aircrack-ng` or `hashcat`.
+- **Detection and Prevention**: A long, random passphrase, since the attack scales with guessing speed and nothing else; WPS disabled; and WPA3, whose SAE handshake makes each guess require a fresh exchange with the network, removing the offline attack. Monitoring for failed logins does not help here, because no login attempt reaches the network.
 
 ## 4.4 Conclusion
 
-This chapter's exploration of WiFi attack vectors reveals a key insight: the majority are active attacks, which are generally easier to detect due to their direct interaction with the network. This understanding is crucial for both network defenders and ethical hackers. While defenders can leverage this for more effective monitoring and response, penetration testers must conduct their assessments with heightened care to avoid unintended network disruptions. Staying vigilant, adhering to ethical practices, and continuously updating security strategies are vital in navigating the evolving landscape of WiFi security.
+Most of the vectors above are active attacks, which interact with the network and so leave something a defender can see. That cuts both ways: defenders get a monitoring strategy, while penetration testers must work carefully, because a deauthentication flood or a rogue AP in a production environment causes real disruption. The exceptions matter most, though. Passive sniffing and offline passphrase cracking produce no detectable event at all, so against those the only defence is a protocol and a passphrase that hold up even when the attacker has a full capture of the traffic.
 
 ## Sources
 

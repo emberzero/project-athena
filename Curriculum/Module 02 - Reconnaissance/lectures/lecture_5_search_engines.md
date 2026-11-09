@@ -1,6 +1,6 @@
 # Search Engines for Reconnaissance
 
-Search engines have evolved far beyond simple web page indexing. Modern search engines—both traditional web search and specialized cybersecurity-focused platforms—provide powerful reconnaissance capabilities for discovering vulnerable devices, exposed data, network infrastructure, and sensitive information. This lecture explores how attackers and security professionals leverage search engines to map attack surfaces and identify security weaknesses without directly interacting with target systems.
+Two kinds of search engine are useful for reconnaissance: traditional web search, and specialized platforms built for security work. Both can be used to find vulnerable devices, exposed data, network infrastructure, and sensitive information. This lecture covers how attackers and security professionals use them to map attack surfaces and identify security weaknesses without directly interacting with target systems.
 
 ## Traditional Search Engines for Reconnaissance
 
@@ -54,13 +54,17 @@ intext:"confidential" site:example.com
 intext:"password" filetype:log
 ```
 
-**cache:** - View Google's cached version of page
+**cache:** - View Google's cached version of a page. Google retired this
+operator and the "Cached" link in 2024; use the Wayback Machine instead for
+historical copies.
 
 ```text
 cache:example.com
 ```
 
-**link:** - Find pages linking to specific URL
+**link:** - Find pages linking to a specific URL. Also no longer supported by
+Google; it is listed here because older dork lists still contain it. Backlink
+discovery now needs a dedicated service.
 
 ```text
 link:example.com
@@ -203,7 +207,10 @@ contains:pdf site:example.com
 url:admin site:example.com
 ```
 
-**DuckDuckGo** - Privacy-focused, less aggressive caching, useful for avoiding detection:
+**DuckDuckGo** - Privacy-focused; supports most of the same operators. It
+draws on a different index than Google, so it is worth querying for coverage
+rather than for stealth. No web search engine touches the target on your
+behalf, so none of them is "more covert" than another:
 
 ```text
 site:example.com
@@ -324,12 +331,18 @@ version:"2.4.41"
 product:Apache version:2.4
 ```
 
-**Vulnerability (CVE)**:
+**Vulnerability (CVE)**: the `vuln:` filter is not available on free Shodan
+accounts; it requires a paid or academic membership:
 
 ```text
 vuln:CVE-2021-44228 (Log4Shell)
 vuln:CVE-2017-0144 (EternalBlue)
 ```
+
+Shodan infers these matches from banners and version strings, not by
+exploiting anything. A `vuln:` hit is therefore a *candidate*, not a confirmed
+vulnerable host: backported patches and vendor builds routinely keep the old
+version string.
 
 **Has Screenshot** (for services with web interfaces):
 
@@ -367,7 +380,7 @@ port:3389 country:US
 port:27017 product:"MongoDB"
 "MongoDB Server Information" -authentication
 port:3306 "MySQL" -authentication
-"port:6379 Redis"
+port:6379 product:"Redis"
 ```
 
 **Find Industrial Control Systems**:
@@ -589,6 +602,27 @@ filename:.env DB_PASSWORD
 - You're querying a search engine, not the target directly
 - Information is already publicly accessible
 
+"Passive" describes the query, not the whole data path. Someone had to touch
+the target to build the index, and the target may well have logged that:
+
+```text
+   Analyst ──query──▶  Search index  ◀──────── crawler or
+                       (Google, Shodan,        Shodan scanner
+                        crt.sh, Wayback)       visits the target
+                             ▲                 and IS logged there
+                             │
+                       CAs publish issued certs to CT logs:
+                       no contact with the target at all
+
+   Your query never reaches the target. Opening one of the results
+   does — and that request appears in the target's access log like
+   any other visit.
+```
+
+So search-engine reconnaissance keeps *you* out of the target's logs, as long
+as you only read the index. The moment you click through to a discovered
+`/admin` page, you are doing active reconnaissance.
+
 ### Legal Gray Areas
 
 - Accessing exposed data may still violate laws (CFAA in U.S.)
@@ -624,7 +658,10 @@ Disallow: /config/
 Disallow: /backup/
 ```
 
-**Note**: robots.txt doesn't prevent crawling, only requests it
+**Note**: robots.txt only *requests* that well-behaved crawlers stay out; it
+enforces nothing. Worse, it is itself a public file, so the example above
+hands an attacker the three directory names you most wanted hidden. Use
+authentication for anything sensitive and keep it out of robots.txt.
 
 **2. Remove from Index**:
 
@@ -636,7 +673,7 @@ Disallow: /backup/
 
 - Require authentication for sensitive areas
 - Don't rely on "security through obscurity"
-- Use proper access controls, not just hidden URLs
+- Use proper access controls instead of relying on hidden URLs
 
 **4. Regular Monitoring**:
 
@@ -734,21 +771,21 @@ shodan host YOUR_IP_ADDRESS
 
 Search engine reconnaissance fits into the overall process:
 
-1. **Passive Reconnaissance**: Search engines are passive, generate no target logs
+1. **Passive Reconnaissance**: Querying the index generates no entries in the target's logs. Following a result does
 2. **Early Phase**: Use before active scanning to understand scope
 3. **Continuous**: Search engines index new content constantly
 4. **Validation**: Confirm technical findings with search data
-5. **Intelligence**: Combine with OSINT for comprehensive picture
+5. **Intelligence**: Combine with OSINT for a fuller picture
 
 ## Key Takeaways
 
 - Traditional search engines (Google, Bing) can reveal sensitive data through dorking
 - Shodan and similar platforms index internet-connected devices and services
-- Search engine reconnaissance is largely passive but incredibly effective
+- Search engine reconnaissance is largely passive but very effective
 - Organizations must monitor their own search engine exposure
 - Legal and ethical considerations apply even to public data
 - Defensive reconnaissance helps organizations understand their attack surface
-- Combine multiple search engines for comprehensive coverage
+- Combine multiple search engines for broader coverage
 - Regular monitoring and mitigation reduces exposure
 
 ## Additional Resources
@@ -782,4 +819,4 @@ Search engine reconnaissance fits into the overall process:
 
 ## Conclusion
 
-Search engines have evolved into powerful reconnaissance tools that allow security professionals and attackers alike to discover vast amounts of information without directly interacting with targets. From Google dorking revealing misconfigured web servers to Shodan exposing critical infrastructure, these tools demonstrate that passive reconnaissance can be devastatingly effective. Organizations must adopt a defensive mindset by regularly auditing their search engine footprint and implementing controls to prevent sensitive information exposure. Remember: if a search engine can find it, so can an attacker—and unlike active reconnaissance, search engine queries leave no traces on your systems.
+Search engines let security professionals and attackers collect information without directly interacting with a target. Google dorking turns up misconfigured web servers, and Shodan turns up exposed critical infrastructure, which shows how effective passive reconnaissance can be. The same queries work against your own organization, so audit your search engine footprint regularly and put controls in place against sensitive information exposure. If a search engine can find it, so can an attacker, and unlike active reconnaissance these queries leave no traces on your systems.

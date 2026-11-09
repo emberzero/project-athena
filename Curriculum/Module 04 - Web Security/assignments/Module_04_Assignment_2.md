@@ -2,34 +2,76 @@
 
 ## Objective
 
-The purpose of this assignment is to develop your skills in identifying security vulnerabilities in source code and implementing effective remediation strategies. You will analyze vulnerable code snippets, identify security flaws, explain the vulnerabilities, and provide secure implementations. This assignment emphasizes both offensive (identifying vulnerabilities) and defensive (fixing them) security skills.
+You will review eight short pieces of vulnerable application code, identify every security flaw in
+them, prove each flaw with a concrete attack input, and then rewrite the code so the flaw is gone.
+Afterwards you will be able to read unfamiliar code with an attacker's eye and hand a developer a
+fix that actually closes the hole rather than filtering one payload.
 
-## Instructions
+## Logistics
 
-### Part 1: Vulnerability Identification and Explanation
+- **Work:** individual. You may discuss vulnerability classes with classmates; the analysis and
+  the rewritten code must be yours.
+- **Deadline:** *set by your instructor*.
+- **Submission:** one PDF, named `Lastname_Firstname_Module04_Assignment2.pdf`.
 
-For each code snippet provided below, you must:
+## Setup
 
-1. **Identify all security vulnerabilities** present in the code
-2. **Classify each vulnerability** (e.g., SQL Injection, XSS, CSRF, etc.)
-3. **Explain the vulnerability**:
-   - How it can be exploited
-   - What data or functionality is at risk
-   - Potential impact on the application and users
-4. **Provide a proof-of-concept attack** (example malicious input or attack vector)
+- No target system is involved. Every snippet below is in this file, and the work is reading,
+  writing and explaining code. Nothing to install, nothing to pay for, nothing to attack.
+- If you choose to run a snippet to confirm a flaw, run it **only on your own machine or in a
+  container you built yourself**, never on school infrastructure and never reachable from the
+  network. Module 01 and Austrian StGB §118a, §126a and §126b cover why that boundary exists.
+- Useful references: the OWASP Cheat Sheet Series, and lectures 3, 4 and 5 of this module, which
+  cover every vulnerability class present below.
+- The languages used are Python (Flask, Django), JavaScript (Express, Apollo) and PHP. You are not
+  expected to be fluent in all three; the flaws do not depend on language trivia.
 
-### Part 2: Secure Implementation
+## Tasks
 
-For each vulnerable code snippet:
+For **each** of the eight snippets, your report contains the following, under a heading naming the
+snippet.
 
-1. **Rewrite the code** to eliminate all identified vulnerabilities
-2. **Explain your remediation approach**:
-   - What security measures you implemented
-   - Why your solution prevents the vulnerability
-   - Any trade-offs or considerations
-3. **Document security best practices** applied in your solution
+### 1. Findings
 
----
+A table of every vulnerability you found in that snippet:
+
+| # | Vulnerability | CWE | Line or construct | Severity |
+| --- | --- | --- | --- | --- |
+
+Several snippets contain more than one flaw, and some contain flaws from more than one class.
+
+### 2. Explanation
+
+For each finding, two to four sentences: what the code does wrong, what an attacker controls, and
+what they reach as a result. Explain the mechanism, not the category name.
+
+### 3. Proof of concept
+
+For each finding, the concrete input or request that triggers it, in a code block - a payload
+string, a JSON body, a crafted URL, a filename. State what you expect the application to do with
+it. A finding without a proof of concept is an assertion, not a finding.
+
+### 4. Secure rewrite
+
+The corrected code for the whole snippet, as a code block, with short inline comments marking each
+security-relevant change. Then three or four sentences on:
+
+- which mechanism you relied on for each fix - prepared statements, an allow-list, output encoding,
+  an authorisation check, a signed token with a verified algorithm, and so on;
+- why that mechanism makes the attack impossible rather than merely inconvenient;
+- any trade-off your fix introduces, such as broken existing behaviour or added dependencies.
+
+Keep the rewrite recognisably the same program. Deleting a feature to remove its flaw is not a fix,
+unless you argue the feature should not exist and say so.
+
+### 5. Closing analysis
+
+One page at the end of the report, answering:
+
+- Which root cause appears in the largest number of the eight snippets, and what single practice
+  would have prevented all of its instances?
+- Two of the snippets fail in a way that no amount of input filtering would fix. Name them and
+  explain what they need instead.
 
 ## Code Snippets to Analyze
 
@@ -346,148 +388,65 @@ server.listen().then(({ url }) => {
 
 ---
 
-## Submission Requirements
+## Vulnerability classes in scope
 
-### Format
+These are the classes to look for. Which snippet holds which, and how many, is for you to find.
 
-Your submission must include:
+- SQL injection
+- Cross-site scripting, reflected and stored
+- Cross-site request forgery
+- Insecure direct object reference and broken object level authorisation
+- Mass assignment and excessive data exposure
+- Path traversal and unrestricted file upload
+- Broken authentication and insecure credential storage
+- Broken function level authorisation
+- Information disclosure
+- Weak or missing cryptography, including predictable tokens
+- Server-side template injection
+- JWT verification and algorithm flaws
+- GraphQL schema and authorisation exposure
 
-1. **Cover Page**:
-   - Your name
-   - Date
-   - Assignment title: "Module 04 - Assignment 2: Secure Code Review and Remediation"
+## Evaluation criteria
 
-2. **Analysis Section** (for each snippet):
-   - Original vulnerable code (properly formatted)
-   - List of vulnerabilities identified
-   - Detailed explanation of each vulnerability
-   - Proof-of-concept attack examples
-   - Risk assessment (impact and likelihood)
+| Area | Weight | What earns full marks |
+| --- | --- | --- |
+| **Completeness of findings** | 20% | Every significant flaw in all eight snippets found, including the second and third flaw in the snippets that have more than one, with no invented findings padding the table. |
+| **Accuracy of classification** | 10% | Correct vulnerability class and a correct CWE identifier for each finding, anchored to the specific line or construct. |
+| **Explanation quality** | 15% | Each explanation states what the attacker controls and what it reaches, describing the mechanism rather than restating the class name. |
+| **Proofs of concept** | 15% | A concrete, plausible attack input for every finding, with the expected effect stated. |
+| **Secure rewrites** | 25% | Every rewrite closes all of that snippet's flaws, preserves the original functionality, and would pass review in a real project. |
+| **Reasoning about fixes** | 10% | The mechanism behind each fix named correctly, with a defensible argument for why it is sufficient and an honest note on trade-offs. |
+| **Report quality** | 5% | Findings tables complete, closing analysis answered, all code in fenced blocks with the right language tag, readable throughout. |
+| **Bonus** | +20% | See below. |
 
-3. **Remediation Section** (for each snippet):
-   - Secure rewritten code (properly formatted)
-   - Explanation of fixes applied
-   - Security best practices implemented
-   - Testing recommendations
+A rewrite that escapes a quote character scores badly where a prepared statement was available. The
+assignment rewards fixes that remove the attacker's reach, not fixes that block today's payload.
 
-4. **Summary Section**:
-   - Key lessons learned
-   - Common vulnerability patterns observed
-   - Best practices for secure coding
+## Bonus: Prove one fix works (up to +20%)
 
-### Technical Requirements
+Pick **one** snippet. Build it, run it, break it, fix it, and fail to break it again.
 
-- **Document Format**: PDF
-- **Code Formatting**: Use proper syntax highlighting and formatting
-- **Length**: No strict limit, but be concise and thorough
-- **Code Comments**: Include inline comments explaining security measures
-- **Testing Evidence**: Optional but recommended - include screenshots of testing your secure code
+1. Stand the vulnerable snippet up on your own machine or in a container you wrote the Dockerfile
+   for. It must not be reachable from the network.
+2. Demonstrate the exploit against the vulnerable version: the request you sent and the response or
+   state change proving it worked.
+3. Deploy your rewritten version and show the same attack failing, plus evidence that the feature
+   still works for legitimate input.
+4. Write a regression test - any framework, or a plain script with assertions - that fails against
+   the vulnerable version and passes against yours. Include it in the report.
 
-### Submission
+### Bonus evaluation
 
-Submit your document as a PDF on Google Drive according to the course naming convention.
-
----
-
-## Evaluation Criteria
-
-### Vulnerability Identification (40 points)
-
-- **Completeness** (15 points): All vulnerabilities identified in each snippet
-- **Accuracy** (15 points): Correct classification and understanding of vulnerabilities
-- **Explanation Quality** (10 points): Clear, detailed explanations with examples
-
-### Secure Implementation (40 points)
-
-- **Security** (20 points): Code effectively eliminates all vulnerabilities
-- **Code Quality** (10 points): Clean, maintainable, well-commented code
-- **Best Practices** (10 points): Application of security best practices and principles
-
-### Documentation (15 points)
-
-- **Clarity** (5 points): Clear, well-organized document
-- **Completeness** (5 points): All required sections included
-- **Professionalism** (5 points): Proper formatting, grammar, and presentation
-
-### Bonus Points (5 points)
-
-- **Extra Security Measures** (up to 3 points): Additional security enhancements beyond basic fixes
-- **Testing Evidence** (up to 2 points): Include evidence of testing your secure implementations
-
-### Total: 100 points (+ 5 bonus)
-
----
-
-## Expected Vulnerabilities (Hint)
-
-Here are the **categories** of vulnerabilities you should look for (specific instances are for you to find):
-
-- SQL Injection
-- Cross-Site Scripting (XSS)
-- Cross-Site Request Forgery (CSRF)
-- Insecure Direct Object Reference (IDOR)
-- Mass Assignment
-- Path Traversal
-- File Upload Vulnerabilities
-- Broken Authentication
-- Insufficient Authorization
-- Information Disclosure
-- Insecure Cryptography
-- Server-Side Template Injection (SSTI)
-- JWT Security Issues
-- GraphQL Authorization Issues
-
-**Note**: Some snippets contain multiple vulnerabilities!
-
----
-
-## Tips for Success
-
-1. **Read Carefully**: Some snippets have subtle vulnerabilities that are easy to miss
-2. **Think Like an Attacker**: For each input, ask "what malicious data could I provide?"
-3. **Defense in Depth**: Apply multiple layers of security, not just one fix
-4. **Test Your Code**: If possible, set up the code and test your fixes
-5. **Refer to Lectures**: Review lecture materials for security best practices
-6. **Use OWASP Resources**: OWASP Cheat Sheets are excellent references
-7. **Document Everything**: Explain your reasoning clearly
-
----
+| Area | Weight | What earns full marks |
+| --- | --- | --- |
+| **Working exploit** | +7% | The attack demonstrated against the running vulnerable version with evidence of its effect. |
+| **Verified fix** | +7% | The same attack shown failing against the rewrite, with legitimate functionality still working. |
+| **Regression test** | +6% | A test that genuinely distinguishes the two versions, included in full and explained in two sentences. |
 
 ## Resources
 
-- **OWASP Cheat Sheet Series**: <https://cheatsheetseries.owasp.org/>
-- **OWASP Top 10**: <https://owasp.org/www-project-top-ten/>
-- **OWASP API Security Top 10**: <https://owasp.org/www-project-api-security/>
-- **PortSwigger Web Security Academy**: <https://portswigger.net/web-security>
-- **CWE (Common Weakness Enumeration)**: <https://cwe.mitre.org/>
-
----
-
-## Academic Integrity
-
-- You may consult course materials, OWASP resources, and official documentation
-- You may discuss general concepts with classmates
-- **You must write your own code and explanations**
-- **Do not share or copy code solutions**
-- Cite any external resources used
-
-Plagiarism will result in a zero for the assignment and may lead to further academic consequences.
-
----
-
-## Deadline
-
-Refer to the course schedule for the specific deadline. Late submissions will be penalized according to the course policy.
-
----
-
-## Questions?
-
-If you have questions about the assignment:
-
-1. Review the lecture materials first
-2. Check the OWASP resources
-3. Ask during office hours or lab sessions
-4. Post general questions (not solutions) on the course forum
-
-Good luck, and happy secure coding!
+- OWASP Cheat Sheet Series: <https://cheatsheetseries.owasp.org/>
+- OWASP Top 10: <https://owasp.org/www-project-top-ten/>
+- OWASP API Security Top 10: <https://owasp.org/www-project-api-security/>
+- CWE list: <https://cwe.mitre.org/>
+- PortSwigger Web Security Academy: <https://portswigger.net/web-security>

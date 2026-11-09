@@ -1,8 +1,8 @@
 # Server Side Vulnerabilities
 
-Server-side vulnerabilities represent some of the most critical security issues in web applications. Unlike client-side attacks that execute in the user's browser, server-side vulnerabilities directly compromise the application server, database, or backend systems. These vulnerabilities can lead to complete system compromise, data breaches, and severe business impact.
+Server-side vulnerabilities are among the most severe security issues in web applications. Unlike client-side attacks that execute in the user's browser, server-side vulnerabilities directly compromise the application server, database, or backend systems. These vulnerabilities can lead to complete system compromise, data breaches, and severe business impact.
 
-This lecture covers the major server-side vulnerability classes that every security professional must understand.
+This lecture covers the major server-side vulnerability classes.
 
 ---
 
@@ -25,7 +25,7 @@ This lecture covers the major server-side vulnerability classes that every secur
 
 SQL injection (SQLi) is a critical web security vulnerability that enables attackers to manipulate the database queries made by an application. By injecting malicious SQL code into application inputs, attackers can bypass authentication, extract sensitive data, modify or delete records, and in some cases achieve remote code execution on the database server.
 
-SQLi remains one of the most dangerous and prevalent web vulnerabilities, consistently appearing in the OWASP Top 10.
+SQLi is still among the most common web vulnerabilities and appears consistently in the OWASP Top 10.
 
 ### Why SQL Injection Occurs
 
@@ -93,9 +93,29 @@ The `--` is a SQL comment marker. Everything after it is ignored, so the passwor
 
 **Result**: The attacker logs in as 'admin' without knowing the password.
 
+> **Note**: The login snippets in this lecture compare passwords as plain text to keep the injection itself readable. Real applications must store a password hash (bcrypt, scrypt, Argon2) and verify it in application code, never compare passwords inside the SQL query.
+
 ---
 
 ### Types of SQL Injection
+
+Which technique applies is decided by what the application gives back.
+The observable behaviour selects the attack:
+
+```text
+  Inject a probe  ->  what does the application do?
+  -----------------------------------------------------------
+  Query results rendered on the page
+      -> UNION-based: align the column count, then SELECT data
+  Database error text shown to the user
+      -> Error-based: force data into the error message
+  No output, but content changes (found / not found)
+      -> Boolean blind: yes/no questions, one bit per request
+  No output, no visible difference
+      -> Time blind: branch on SLEEP(), measure response time
+  No difference at all, but outbound traffic is allowed
+      -> Out-of-band: push data out over DNS or HTTP
+```
 
 #### 1. Union-Based SQLi
 
@@ -340,9 +360,12 @@ This query becomes:
 
 **Example with $where**:
 
+`$where` is a top-level query operator, not a field operator, and the
+expression it holds is evaluated as JavaScript by the server:
+
 ```json
 {
-    "username": {"$where": "sleep(5000)"}
+    "$where": "sleep(5000)"
 }
 ```
 
@@ -554,6 +577,8 @@ grep -E "(SLEEP|WAITFOR|pg_sleep|DBMS_PIPE)" /var/log/apache2/access.log
 
 > **For more Examples see:** <https://portswigger.net/web-security/sql-injection#sql-injection-examples>
 
+---
+
 ## Server-Side Request Forgery (SSRF)
 
 Server-side request forgery (SSRF) is a web security vulnerability that allows an attacker to induce the server-side application to make HTTP requests to an arbitrary domain of the attacker's choosing. This can include internal services, cloud metadata endpoints, or external systems.
@@ -614,6 +639,23 @@ The server makes a request to its own `localhost/admin` endpoint, which might be
 - Containing sensitive administrative functions
 
 **Result**: The attacker can access internal services that should not be publicly accessible.
+
+The reason SSRF works is positional: the request is made by a host that
+already sits inside the trusted network.
+
+```text
+  +-- internet ----+    +-- internal network ------------------+
+  |                |    |                                      |
+  |  Attacker -----+---->  Web app --+--> 10.0.0.5     admin UI |
+  |   supplies a   |    |  fetches   +--> 127.0.0.1    local    |
+  |   URL it can   |    |  the URL   |                  only    |
+  |   not reach    |    |  for the   +--> 169.254.169.254 IMDS  |
+  |   itself       |    |  attacker  +--> redis, memcached, ... |
+  |                |    |                                      |
+  +----------------+    +--------------------------------------+
+
+  The app's source IP is trusted, so internal ACLs let it through.
+```
 
 ---
 
@@ -1383,6 +1425,19 @@ Attack Flow:
 2. Include log file via LFI
 3. Injected PHP code executes
 
+```text
+  1. Attacker request   User-Agent: <?php system($_GET['cmd']); ?>
+           |
+           v
+  2. Server log         access.log now contains the PHP tags
+           |
+           v
+  3. LFI include        ?page=../../var/log/apache2/access.log
+           |            &cmd=whoami
+           v
+  4. PHP parses the log file as source  ->  command executed
+```
+
 **Example**:
 
 ```bash
@@ -1649,6 +1704,20 @@ When the application doesn't return the XXE result, exfiltrate data via external
    GET /?data=root:x:0:0:root:/root:/bin/bash... HTTP/1.1
    ```
 
+The data never travels back through the application response; it leaves
+over a second connection the parser opens itself:
+
+```text
+  Victim app (XML parser)                  Attacker server
+       |  1. parse XML containing %xxe            |
+       |------- GET /xxe.dtd -------------------->|
+       |<------ DTD with %file and %exfil --------|
+       |  2. %file reads file:///etc/passwd       |
+       |  3. %exfil builds a URL from that text   |
+       |------- GET /?data=root:x:0:0... -------->|
+       |                       4. file contents logged
+```
+
 #### 4. XXE Denial of Service (Billion Laughs)
 
 ```xml
@@ -1679,12 +1748,17 @@ This expands to billions of "lol" strings, consuming all available memory.
 
 ```php
 <?php
-libxml_disable_entity_loader(true);
-
+// Safe by default: do NOT pass LIBXML_NOENT or LIBXML_DTDLOAD.
 $doc = new DOMDocument();
 $doc->loadXML($xml);
 ?>
 ```
+
+With libxml 2.9 and later, external entity loading is disabled by
+default, so a plain `loadXML()` call is already safe. The older
+`libxml_disable_entity_loader()` helper is deprecated as of PHP 8.0 and
+should not be relied on; the real mistake is explicitly re-enabling
+entity substitution or DTD loading through the `$options` argument.
 
 **Java (DocumentBuilderFactory)**:
 
@@ -1743,6 +1817,10 @@ Validate XML structure before parsing:
 if '<!ENTITY' in xml or '<!DOCTYPE' in xml:
     raise Exception("Potentially malicious XML")
 ```
+
+⚠️ **Warning**: This is a blacklist and is bypassable through encodings
+and whitespace tricks. Use it only as an extra signal on top of a parser
+that has entity and DTD processing switched off.
 
 ---
 
@@ -2152,6 +2230,10 @@ def deserialize_safe(signed_data):
     return pickle.loads(data)
 ```
 
+⚠️ **Warning**: A signature only proves the data was not modified in
+transit. The format is still `pickle`, so anyone who obtains the signing
+key gets remote code execution. Prefer a format that cannot execute code.
+
 #### 4. Restrict Deserialization Classes
 
 **Java**:
@@ -2214,10 +2296,13 @@ def validate_password(password):
     if not re.search(r'[!@#$%^&*]', password):
         return False
 
-    # Check against common passwords
+    # Check against common passwords.
+    # Compare whole lines: `password in f.read()` would also reject
+    # any password that merely appears as a substring of the list.
     with open('common-passwords.txt') as f:
-        if password in f.read():
-            return False
+        common = {line.strip() for line in f}
+    if password in common:
+        return False
 
     return True
 ```
@@ -2308,15 +2393,15 @@ if (check_credentials($username, $password)) {
 ```python
 import jwt
 
-# VULNERABLE: Accepts "none" algorithm
+# VULNERABLE: the signature is never checked, so any token is trusted
 token = jwt.decode(user_token, options={"verify_signature": False})
 ```
 
 **Attack**:
 
 ```python
-import jwt
 import base64
+import json
 
 # Create token with "none" algorithm
 payload = {"user": "admin", "role": "admin"}

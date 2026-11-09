@@ -3,7 +3,7 @@
 ## Introduction
 
 - IDPS → combination of Intrusion Detection Systems (IDS) + Intrusion Prevention Systems (IPS)
-- Nowadays a must-have to network security defenses, especially for detecting, tracking, and blocking malicious traffic and malware.
+- A standard part of network security defences, used to detect, track and block malicious traffic and malware.
 - IDPS has become part of advanced tools like next-generation firewalls (NGFW), SIEM, and Extended Detection and Response (XDR)
 
 _source: Intrusion Detection and Prevention Systems \[1.\]_
@@ -15,6 +15,34 @@ _source: Intrusion Detection and Prevention Systems \[1.\]_
 Intrusion Detection Systems (IDS) → **diagnostic tool**
 
 Intrusion Prevention Systems (IPS) → **diagnostic and incident response tool**
+
+The tools differ in what they do with a detection and in where they sit in
+the network. An IDS gets a copy of the traffic from a SPAN port or a
+network tap, so the traffic reaches its destination either way. An IPS is
+placed in the path itself, which is what allows it to drop a packet, and is
+also why a failure or a false positive in an IPS affects production traffic:
+
+```text
+  IDS - out of band (passive)
+
+    internet ---> [ switch / router ] ---> internal network
+                         |                 (traffic arrives
+                         |  copy of the     either way)
+                         |  traffic, via a SPAN port or tap
+                         v
+                      [  IDS  ] ---> alert ---> analyst / SIEM
+
+  IPS - inline (active)
+
+    internet ---> [  IPS  ] ---+---> internal network
+                       |       |     (only permitted traffic)
+                       |       +--X  malicious packet dropped
+                       v
+                    alert ---> analyst / SIEM
+
+  An IDS that fails loses visibility.
+  An IPS that fails can cut connectivity.
+```
 
 _source: Intrusion Detection and Prevention Systems \[3.\]_
 
@@ -48,8 +76,8 @@ _source: Intrusion Detection and Prevention Systems \[2.\]_
 1. **Advantage Over IDS**
    - the advantage is obvious → is both a diagnostic and incident response tool
 1. **Potential Disadvantages**
-   - the possibility of more false positives due to its proactive blocking measures.
-   - it may incorrectly identify legitimate activities as threats, leading to unintended blocking of traffic.
+   - a false positive no longer just produces an alert, it blocks legitimate traffic, so tuning the rule set matters far more than with an IDS.
+   - being inline, the device adds latency and becomes a single point of failure; this is why IPS appliances offer fail-open or fail-closed behaviour, and choosing between availability and security is a deliberate decision.
 
 _source: Intrusion Detection and Prevention Systems \[3.\]_
 
@@ -75,6 +103,7 @@ _source: Intrusion Detection and Prevention Systems \[1.\]_
 
 - monitors network traffic (entire network segment or subnet)
 - It's deployed in strategic network locations
+- it only sees what passes the monitored link, and encrypted traffic is opaque to it unless TLS is terminated or decrypted there, which is why a network sensor does not replace host-based monitoring
 
 _source: Intrusion Detection and Prevention Systems \[1.\]_
 
@@ -107,6 +136,11 @@ _source: Intrusion Detection and Prevention Systems \[4.\], Intrusion Detection 
 _source: Intrusion Detection and Prevention Systems \[5.\]_
 
 ## Product Comparison
+
+The figures below are the values stated by the vendors at the time the source
+article was written. Treat them as a rough orientation about what kinds of
+products exist, not as current specifications, and check the vendor's own
+documentation before relying on a number.
 
 | IDPS Solution                        | Throughput     | Vulnerability & Threat Detection | Web & Network Security    | Malware Protection          | Traffic Analysis           | Additional Features          |
 | ------------------------------------ | -------------- | -------------------------------- | ------------------------- | --------------------------- | -------------------------- | ---------------------------- |

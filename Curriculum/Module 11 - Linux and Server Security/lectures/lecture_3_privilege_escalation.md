@@ -43,13 +43,12 @@ Sometimes file permissions are misconfigured, giving the attacker access to file
 The same applies to misconfigured credentials, giving the attacker access to passwords and keys that they shouldn't have
 
 - Plaintext creds (hardcoded creds in scripts).
-- SSH-Keys (/home/user/.ssh/id rsa)
-- Bash history (/home/user/.bash history)
+- SSH keys (`/home/user/.ssh/id_rsa`, `id_ed25519`)
+- Bash history (`/home/user/.bash_history`)
 
 ### Sudo
 
-Sudo privilege means pretty good chance for privesc!
-Unseeming applications often let us privesc:
+Any sudo privilege is worth examining closely. Programs that look harmless are often enough, because many of them can run a shell, write an arbitrary file or load code:
 
 - 7z
 - apt-get
@@ -66,9 +65,9 @@ starting the process:
 
 ![SUID Example](images/suid_example.jpg)
 
-#### Docker/LXD Group
+### Docker/LXD Group
 
-Docker or LXD group allows spawning of privileged containers.
+Membership in the `docker` or `lxd` group is effectively equivalent to root access, because a member can start a container that mounts the host filesystem. No exploit is needed; this is how the groups are designed to work, which is why they must be treated as administrative groups.
 
 These containers can:
 
@@ -76,24 +75,56 @@ These containers can:
 - Read / Write system-files
 - Fully compromise host
 
-#### Scheduled Tasks / Cron Jobs
+### Scheduled Tasks / Cron Jobs
 
-Scheduled Tasks / Cron jobs run regularly on systems and are located at ```/etc/crontab``` or ```/etc/cron.d```
+Scheduled tasks are defined in ```/etc/crontab```, ```/etc/cron.d``` and the per-user crontabs, and systemd timers are a second place to look. They are interesting because they run on a schedule as another user, often as root: if the script a root cron job executes is writable by us, or if it calls a program by a relative path we can influence, we gain root the next time it fires.
 
 ![Crontab](images/crontab.jpg)
 
-#### Kernel / Software Exploits
+### Kernel / Software Exploits
 
 Check versions and look for public exploits:
 
 - Kernel
   - ```cat /proc/version```
 - Software
-  - ```sudo −V```
+  - ```sudo -V```
 
 ## Enumeration
 
-Now how do you find those vulnerabilities? By searching the system, looking for something that stands out.
+Privilege escalation is rarely one exploit. It works as a loop: enumerate,
+pick a vector from what the enumeration shows, and if it fails, go back and
+enumerate again with the access gained so far.
+
+```text
+  low-privilege shell
+       |
+       v
+  +----------------------------------------------------+
+  | 1. Enumerate                                       |
+  |    users and groups, sudo -l, SUID files,          |
+  |    cron jobs and timers, kernel and pkg versions   |
+  +----------------------------------------------------+
+       | a candidate turns up
+       v
+  +----------------------------------------------------+
+  | 2. Pick a vector                                   |
+  |    sudo entry   -> look the binary up on GTFOBins  |
+  |    SUID binary  -> look the binary up on GTFOBins  |
+  |    script run by a root cron job, writable by us   |
+  |    docker / lxd group membership                   |
+  |    readable credentials, SSH key, bash history     |
+  |    outdated kernel or service -> public exploit    |
+  +----------------------------------------------------+
+       | attempt
+       +--> failed: go back to step 1 with whatever the
+       |            attempt revealed, try the next vector
+       v succeeded
+  root shell -> persistence, credential dumping,
+                lateral movement
+```
+
+So how do you find those vulnerabilities? By searching the system, looking for something that stands out.
 
 - User Files
 - Custom scripts and executables

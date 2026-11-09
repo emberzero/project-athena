@@ -15,12 +15,39 @@ Containerization is a lightweight, portable, and efficient solution for deployin
 1. **Microservices Architecture:**
    - Containerization aligns well with microservices architecture, where applications are composed of small, independently deployable services. Each microservice can be packaged in its own container.
 
+The decisive difference from a virtual machine is the kernel. A VM brings its
+own; containers all share the host's:
+
+```text
+  Virtual machines                 Containers
+  +---------+ +---------+          +---------+ +---------+
+  | app A   | | app B   |          | app A   | | app B   |
+  | libs    | | libs    |          | libs    | | libs    |
+  +---------+ +---------+          +---------+ +---------+
+  | guest OS| | guest OS|          +---------------------+
+  +---------+ +---------+          | container runtime   |
+  +---------------------+          +---------------------+
+  | hypervisor          |          +---------------------+
+  +---------------------+          | shared host kernel  |
+  | host OS / hardware  |          +---------------------+
+  +---------------------+          | host OS / hardware  |
+                                   +---------------------+
+   own kernel per VM:               no guest OS: seconds to
+   a hardware-enforced              start and far less
+   isolation boundary               overhead, but one kernel
+                                    bug can affect every
+                                    container on the host
+```
+
+This single picture explains both the main benefit (efficiency) and the main
+security limitation (a weaker isolation boundary) of containers.
+
 ## Benefits of Containerization
 
 1. **Portability:**
-   - Containers run consistently across various environments, from development to production, ensuring that applications behave the same way regardless of the underlying infrastructure.
+   - Containers run consistently across various environments, from development to production, so applications behave the same way regardless of the underlying infrastructure.
 1. **Isolation:**
-   - Containers provide process isolation, allowing applications to run independently of each other. This isolation enhances security and minimizes conflicts between applications.
+   - Containers provide process isolation, allowing applications to run independently of each other. This reduces conflicts between applications and limits what a compromised process can reach. It is weaker than virtual-machine isolation, though: the isolation comes from kernel features (namespaces, cgroups, seccomp) rather than from separate kernels, so a container is not a substitute for a VM when you need to run untrusted code.
 1. **Resource Efficiency:**
    - Containers share the host operating system kernel, reducing the overhead associated with traditional virtualization. This results in faster startup times and efficient resource utilization.
 1. **Scalability:**
@@ -31,32 +58,32 @@ Containerization is a lightweight, portable, and efficient solution for deployin
 ## Industry Use Cases
 
 1. **Application Deployment:**
-   - Containerization simplifies the deployment of applications by packaging them along with their dependencies. This ensures that applications run reliably across diverse environments.
+   - Containerization simplifies the deployment of applications by packaging them along with their dependencies. Applications then run reliably across diverse environments.
 1. **Microservices Architecture:**
    - Containers are a natural fit for microservices architecture, allowing organizations to build and deploy modular, independently scalable services.
 1. **Hybrid Cloud Environments:**
    - Containerization supports the deployment of applications in hybrid cloud environments, providing flexibility and consistency across on-premises and cloud infrastructure.
 1. **Continuous Integration/Continuous Delivery (CI/CD):**
-   - Containers enable efficient CI/CD pipelines by ensuring that applications are tested and deployed in the same environment throughout the development lifecycle.
+   - Containers make CI/CD pipelines efficient because applications are tested and deployed in the same environment throughout the development lifecycle.
 
 ## Security Considerations
 
 1. **Isolation and Segmentation:**
    - Containers provide process isolation, but it's essential to configure appropriate user and namespace settings to prevent unauthorized access and ensure proper segmentation between containers.
 1. **Container Images Security:**
-   - Securing container images involves minimizing vulnerabilities in the base image, regularly updating images and dependencies, and scanning images for known security issues using tools like Clair, Trivy, or Docker Security Scanning.
+   - Securing container images involves minimizing vulnerabilities in the base image, regularly updating images and dependencies, and scanning images for known security issues using tools like Trivy, Grype, or Clair.
 1. **Runtime Security:**
-   - Monitoring and securing the container runtime environment is crucial. Employing tools like SELinux, AppArmor, or using security-focused container runtimes enhances the runtime security posture.
+   - The container runtime itself needs monitoring and hardening. SELinux, AppArmor, or a security-focused container runtime restrict what a container can do to the host.
 1. **Orchestration Security:**
    - Container orchestration platforms (e.g., Kubernetes) introduce their own security considerations. Secure the orchestration layer by implementing role-based access control (RBAC), network policies, and securing API access.
 1. **Network Security:**
    - Implement network policies to control the communication between containers. Employ network segmentation and encryption to protect data in transit. Container networking solutions should be configured securely.
 1. **Secrets Management:**
-   - Securely manage and store sensitive information such as API keys, passwords, and certificates. Use dedicated solutions like Kubernetes Secrets or external vaults to manage secrets securely.
+   - Securely manage and store sensitive information such as API keys, passwords, and certificates. Never bake secrets into an image or pass them as plain build arguments - they stay readable in the image layers. Kubernetes Secrets are only base64-encoded, not encrypted, so enable encryption at rest for them or use an external secret manager (HashiCorp Vault, AWS Secrets Manager, Azure Key Vault, Google Secret Manager).
 1. **Vulnerability Scanning:**
    - Regularly scan containers for vulnerabilities using automated scanning tools. This helps identify and remediate security issues before deployment.
 1. **Logging and Monitoring:**
-   - Implement robust logging and monitoring to detect and respond to security incidents. Centralized logging and monitoring solutions provide visibility into container activities and potential security threats.
+   - Log and monitor container activity so that security incidents can be detected and responded to. Centralized logging and monitoring solutions provide visibility into container activities and potential security threats.
 
 ## Benefits of Container Security
 
@@ -72,7 +99,7 @@ Containerization is a lightweight, portable, and efficient solution for deployin
 ## Best Practices for Container Security
 
 1. **Follow Least Privilege Principle:**
-   - Limit container privileges to the minimum required for the application to function. Use non-root users and restrict capabilities.
+   - Limit container privileges to the minimum required for the application to function. Run as a non-root user, drop Linux capabilities you do not need, use a read-only root filesystem, and avoid `--privileged` and mounting the Docker socket into a container - either effectively grants root on the host.
 1. **Regularly Update and Patch:**
    - Keep container images and dependencies up-to-date to address known vulnerabilities. Regularly update base images and conduct security scans.
 1. **Implement Network Segmentation:**

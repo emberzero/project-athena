@@ -1,10 +1,10 @@
 # Browser Security Features
 
-Modern web browsers implement multiple security mechanisms to protect users from various attacks. Understanding these features is crucial for both developing secure web applications and performing security assessments. This lecture explores the most important browser security features and how they can be configured, bypassed, or exploited.
+Modern web browsers implement several security mechanisms that protect users from attacks. You need to know them both to build secure web applications and to assess them. This lecture covers the most important of these features and how they can be configured, bypassed, or exploited.
 
 ## Same-Origin Policy (SOP)
 
-The Same-Origin Policy (SOP) is the cornerstone of web security, preventing malicious scripts from one origin from accessing data from another origin. It's one of the oldest and most fundamental security mechanisms in web browsers.
+The Same-Origin Policy (SOP) prevents scripts on one origin from reading data belonging to another origin. It is one of the oldest and most fundamental security mechanisms in web browsers.
 
 ### What Defines an Origin?
 
@@ -32,7 +32,7 @@ This uses scheme `http`, domain `normal-website.com`, and port `80`.
 | `http://normal-website.com:8080/example/` | ❌ No | Different port |
 | `http://normal-website.com:80/example/`   | ✅ Yes | Port 80 is default for HTTP |
 
-**Note**: Internet Explorer does NOT consider port number when applying SOP, making it less secure.
+**Note**: Internet Explorer did not consider the port number when applying SOP, so `http://site:80` and `http://site:8080` counted as one origin. Current browsers all include the port. The lesson is that SOP is enforced by the browser, so its exact behaviour depends on which browser the victim is using.
 
 ### SOP Policy Details
 
@@ -46,9 +46,12 @@ This uses scheme `http`, domain `normal-website.com`, and port `80`.
    - Cannot read `iframe` content from different origin
    - Cannot access `window` object properties from other origin
 
-3. **Cookies**: Cookies set by origin only sent to that origin
-   - `example.com` cannot read cookies from `bank.com`
-   - Prevents cookie theft across domains
+3. **Cookies**: Script on one origin cannot read another site's cookies
+   - `example.com` cannot read cookies belonging to `bank.com`
+   - But cookies do *not* follow SOP. They are scoped by domain and path and
+     ignore scheme and port, so the cookie boundary is wider than the origin
+     boundary. See "SOP and Cookies" below; this gap is the source of a
+     whole class of bugs
 
 **What SOP Allows:**
 
@@ -111,8 +114,10 @@ document.domain = "example.com";
 
 - Allows subdomain to access parent domain
 - Can be exploited if attacker controls any subdomain
-- Modern browsers restrict to valid suffixes
-- Deprecated in modern web security
+- Browsers restrict the value to a valid registrable suffix, so you cannot set
+  it to `com`
+- Deprecated, and Chromium-based browsers have disabled the setter by default
+  since Chrome 115. Treat it as unavailable and use `postMessage` instead
 
 **Exploitation Example:**
 If attacker compromises `evil.example.com`, they can set `document.domain` to `example.com` and access main site data.
@@ -170,7 +175,34 @@ targetWindow.postMessage('alert(document.cookie)', '*');
 
 ### SOP and Cookies
 
-Cookies follow a more relaxed policy than SOP:
+Cookies follow a more relaxed policy than SOP. The two boundaries do not line
+up, and that mismatch is worth drawing:
+
+```text
+  SOP origin boundary = scheme + host + port
+  +------------------------+  +------------------------+
+  | https://app.example    |  | https://api.example    |
+  |         .com:443       |  |         .com:443       |
+  |                        |  |                        |
+  | script here CANNOT     |  | script here CANNOT     |
+  | read the other frame's |  | read the other frame's |
+  | DOM or fetch response  |  | DOM or fetch response  |
+  +------------------------+  +------------------------+
+              ^                           ^
+              +-------------+-------------+
+                            |
+              both receive the same cookies
+                            |
+  Cookie scope is WIDER: Domain=example.com
+  +------------------------------------------------------+
+  | one cookie jar, shared by example.com and every      |
+  | subdomain, across any scheme and any port            |
+  |                                                      |
+  | so evil.example.com -- an abandoned staging box, a   |
+  | user-content host, a hijacked DNS record -- can set  |
+  | and overwrite cookies that the main site accepts     |
+  +------------------------------------------------------+
+```
 
 **Cookie Scope:**
 
@@ -230,7 +262,44 @@ Access-Control-Allow-Credentials: true
 
 **Preflight Requests:**
 
-For complex requests (PUT, DELETE, custom headers), browser sends OPTIONS preflight:
+For complex requests (PUT, DELETE, custom headers), the browser holds the real
+request back and asks permission first:
+
+```text
+  Browser                                    api.example.com
+  (page on https://app.example.com)                 |
+    |                                               |
+    | JS calls fetch() with method DELETE.          |
+    | Not a "simple" request, so nothing is         |
+    | sent to the application yet.                  |
+    |                                               |
+    | OPTIONS /api/data                             |
+    | Origin: https://app.example.com               |
+    | Access-Control-Request-Method: DELETE         |
+    | --------------------------------------------> |
+    |                                               |
+    | 204 No Content                                |
+    | Access-Control-Allow-Origin: (that origin)    |
+    | Access-Control-Allow-Methods: GET, POST,      |
+    |                               DELETE          |
+    | Access-Control-Max-Age: 3600                  |
+    | <-------------------------------------------- |
+    |                                               |
+    | Headers permit it, so now send the real one   |
+    | DELETE /api/data                              |
+    | --------------------------------------------> |
+    |                                               |
+    | 200 OK                                        |
+    | <-------------------------------------------- |
+    |                                               |
+    | JS is allowed to read this body only because  |
+    | the response repeats an Allow-Origin header   |
+    | that matches. Without it the request still    |
+    | reached the server -- the browser only hides  |
+    | the answer.                                   |
+```
+
+The preflight exchange in full:
 
 ```http
 OPTIONS /api/data HTTP/1.1
@@ -279,7 +348,10 @@ If preflight succeeds, browser sends actual request.
 
 **Request Headers:**
 
-- `Origin`: Request origin (set by browser, cannot be modified)
+- `Origin`: Request origin. A browser sets it and page JavaScript cannot
+  change it, but a non-browser client (curl, a script, a proxy) can send
+  any value it likes. So `Origin` is never authentication: CORS protects
+  browser *users* from other websites, it does not protect the server
 - `Access-Control-Request-Method`: Method for actual request
 - `Access-Control-Request-Headers`: Headers for actual request
 
@@ -398,14 +470,17 @@ Browsers don't support wildcards in origin! Server must dynamically set origin.
 
 ## Content Security Policy (CSP)
 
-CSP is a powerful security feature that mitigates XSS and other code injection attacks by controlling which resources can be loaded and executed.
+CSP mitigates XSS and other code injection attacks by controlling which resources a page may load and execute.
 
 ### How CSP Works
 
 Server sends CSP header specifying allowed resource sources:
 
 ```http
-Content-Security-Policy: default-src 'self'; script-src 'self' https://cdn.example.com; style-src 'self' 'unsafe-inline'
+Content-Security-Policy:
+  default-src 'self';
+  script-src 'self' https://cdn.example.com;
+  style-src 'self' 'unsafe-inline'
 ```
 
 Browser enforces policy, blocking violations and optionally reporting them.
@@ -500,7 +575,7 @@ Content-Security-Policy:
   frame-ancestors 'none';
 ```
 
-**Report-Only Mode** (Testing):**
+**Report-Only Mode (Testing):**
 
 ```http
 Content-Security-Policy-Report-Only:
@@ -530,6 +605,12 @@ res.setHeader('Content-Security-Policy', `script-src 'nonce-${nonce}'`);
   alert('Evil!');
 </script>
 ```
+
+The nonce in the header and the nonce in the attribute must match, and a new
+one must be generated for **every response**. A nonce that is hard-coded, or
+reused across responses, is no protection at all: an attacker who can read one
+page learns the value and can simply include it in the injected script tag.
+The page must also not be cached in a way that serves one nonce to many users.
 
 ### CSP Bypasses
 
@@ -590,7 +671,9 @@ Content-Security-Policy: script-src 'self' https://ajax.googleapis.com;
 Exploit using AngularJS:
 
 ```html
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.1/angular.js"></script>
+<script
+  src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.1/angular.js">
+</script>
 <div ng-app ng-csp>
   {{$eval.constructor('alert(1)')()}}
 </div>
@@ -738,7 +821,8 @@ Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
 
 - Prevents SSL stripping attacks
 - Prevents accidental HTTP access
-- Improves SEO
+- Removes the insecure first request to a site the browser has visited before
+  (and, with `preload`, even on the very first visit)
 
 **Preload List:**
 Submit to <https://hstspreload.org/> for browser-level enforcement.
@@ -788,7 +872,7 @@ Permissions-Policy: geolocation=(), microphone=(), camera=(self)
 
 ## Subresource Integrity (SRI)
 
-Ensures third-party resources haven't been tampered with.
+SRI lets the browser verify that a third-party resource has not been tampered with.
 
 **Usage:**
 
@@ -819,13 +903,16 @@ openssl dgst -sha384 -binary library.js | openssl base64 -A
 
 - Protects against compromised CDNs
 - Detects tampering
-- Ensures resource authenticity
+- Confirms the resource is the file you expected
 
 **Requirements:**
 
-- Must use `crossorigin` attribute
-- CORS headers must be configured
-- Hash must match exactly
+- For cross-origin resources, `crossorigin="anonymous"` is required, and the
+  host must send CORS headers; without that the browser cannot see the bytes
+  it would need to hash, and the resource is blocked
+- Same-origin resources need no `crossorigin` attribute
+- Hash must match exactly, so SRI only works for files with a fixed version;
+  it cannot be used on a "latest" URL that changes under you
 
 ## Cookies Security Deep Dive
 
@@ -879,7 +966,7 @@ Set-Cookie: session=abc123;
 
 ### Cookie Prefixes
 
-**__Secure- Prefix:**
+**The `__Secure-` prefix:**
 
 ```http
 Set-Cookie: __Secure-session=abc123; Secure; Path=/
@@ -888,7 +975,7 @@ Set-Cookie: __Secure-session=abc123; Secure; Path=/
 - Must have Secure attribute
 - Must be set over HTTPS
 
-**__Host- Prefix:**
+**The `__Host-` prefix:**
 
 ```http
 Set-Cookie: __Host-session=abc123; Secure; Path=/
@@ -902,7 +989,7 @@ Set-Cookie: __Host-session=abc123; Secure; Path=/
 **Benefits:**
 
 - Prevents subdomain override attacks
-- Ensures HTTPS-only
+- Restricts the cookie to HTTPS
 - Stronger security guarantees
 
 ## Key Takeaways
@@ -913,10 +1000,9 @@ Set-Cookie: __Host-session=abc123; Secure; Path=/
 - Security headers provide defense-in-depth
 - Cookie attributes are critical for session security
 - Each security feature has potential misconfigurations
-- Multiple layers of security are essential
-- Always validate inputs even with security features
+- Multiple layers of security are needed
+- Always validate inputs even with security features in place
 - Test security configurations thoroughly
-- Modern browsers provide powerful security mechanisms
 
 ## Resources
 

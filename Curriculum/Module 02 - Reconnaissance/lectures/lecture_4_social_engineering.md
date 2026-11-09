@@ -1,6 +1,6 @@
 # Social Engineering in Reconnaissance
 
-Social engineering represents the exploitation of human psychology rather than technical vulnerabilities. In the context of reconnaissance, social engineering techniques are used to gather information that may not be publicly available or easily accessible through technical means. This lecture focuses specifically on how social engineering supports the reconnaissance phase—gathering intelligence through human interaction and manipulation.
+Social engineering attacks human psychology instead of technical vulnerabilities. In reconnaissance it is used to gather information that is not publicly available, or not reachable through technical means. This lecture covers how social engineering supports the reconnaissance phase: gathering intelligence through human interaction and manipulation.
 
 **Note**: This lecture covers social engineering as it relates to reconnaissance. For comprehensive coverage of social engineering attacks, defenses, and psychological principles, see Module 22 - Social Engineering.
 
@@ -8,9 +8,9 @@ Social engineering represents the exploitation of human psychology rather than t
 
 **Social Engineering**: The art of manipulating people into divulging confidential information or performing actions that benefit the attacker. In reconnaissance, social engineering is primarily used for information gathering rather than direct system compromise.
 
-**Why It Matters**: Even the most secure technical infrastructure can be bypassed through human vulnerability. Organizations may have perfect firewalls, encrypted communications, and strong access controls, but a single employee sharing information over the phone can unravel these defenses.
+Even the most secure technical infrastructure can be bypassed through human vulnerability. Organizations may have perfect firewalls, encrypted communications, and strong access controls, but a single employee sharing information over the phone can unravel these defenses.
 
-**Key Principle**: People are often the weakest link in security. Social engineering exploits:
+People are often the weakest link in security. Social engineering exploits:
 
 - Trust and authority
 - Desire to be helpful
@@ -41,6 +41,29 @@ Social engineering represents the exploitation of human psychology rather than t
 - Match communication style to the role (formal vs. casual)
 - Have answers ready for verification questions
 - Create supporting artifacts (fake email accounts, phone numbers)
+
+Reconnaissance social engineering is a loop, not a single call. Public
+information makes the first pretext plausible; what the first contact yields
+makes the second one more plausible still:
+
+```text
+  1. OSINT          2. Pretext         3. Contact
+  names, jargon ──▶ credible role ──▶ phone, email or
+  email format      and backstory      in person
+                         ▲                   │
+                         │                   ▼
+  5. Later phase ◀── 4. Disclosure ◀── small, harmless-
+  uses the detail    OS and AV in       looking questions,
+  (phish, physical   use, badge type,   one at a time
+  entry, exploit)    shift times
+
+  The 4 ──▶ 2 arrow is the loop: each detail confirmed in one
+  call becomes the jargon that makes the next pretext credible.
+```
+
+Note what the attacker does *not* ask for: passwords. Asking for a secret
+breaks the pretext. Asking which antivirus product is installed does not,
+and it is nearly as useful.
 
 ### Information Targets
 
@@ -100,16 +123,19 @@ What reconnaissance-focused social engineering seeks to discover:
 **Help Desk Verification**:
 
 ```text
-Attacker: "Hi, this is John from corporate IT. We're auditing our systems and need to verify some information.
-What operating system is on your workstation?"
+Attacker: "Hi, this is John from corporate IT. We're auditing our
+          systems and need to verify some information. What
+          operating system is on your workstation?"
 
 Target: "Windows 10."
 
-Attacker: "Great, and are you using the standard antivirus or did your department get an exception?"
+Attacker: "Great, and are you using the standard antivirus or did
+          your department get an exception?"
 
 Target: "We have Symantec Endpoint Protection."
 
-Attacker: "Perfect. One last thing—what's your employee ID format? Is it first initial, last name?"
+Attacker: "Perfect. One last thing - what's your employee ID
+          format? Is it first initial, last name?"
 
 Target: "Actually it's first name dot last name."
 ```
@@ -147,8 +173,9 @@ Subject: Quick Technology Survey - 5 Minutes
 
 Dear [Name],
 
-We're conducting research on enterprise technology adoption in the [Industry] sector.
-Your insights would be valuable. Could you spare 5 minutes to answer these questions?
+We're conducting research on enterprise technology adoption in the
+[Industry] sector. Your insights would be valuable. Could you spare
+5 minutes to answer these questions?
 
 1. What operating systems does your organization primarily use?
 2. Do you use cloud services? If so, which providers?
@@ -226,7 +253,8 @@ Following authorized personnel through secure entrances while observing:
 ```text
 Profile: "Senior Network Engineer at TargetCorp"
 Recent Post: "Finally got our new Palo Alto firewalls configured!
-            Three weeks of late nights but the network is so much faster now."
+             Three weeks of late nights but the network is so
+             much faster now."
 
 Intelligence Gained:
 - Use Palo Alto Networks firewalls
@@ -289,9 +317,10 @@ Intelligence Gained:
 **Approach**: Cold call as potential customer
 
 ```text
-Attacker: "Hi, I'm evaluating managed security services and was referred to your company.
-          Before we proceed, I need to know what endpoint protection you currently use
-          so we can ensure compatibility."
+Attacker: "Hi, I'm evaluating managed security services and was
+          referred to your company. Before we proceed, I need to
+          know what endpoint protection you currently use so we
+          can ensure compatibility."
 
 Receptionist: "Oh, let me transfer you to IT."
 
@@ -311,10 +340,12 @@ IT Person: "Mostly Windows 10, some Macs in the creative department."
 **Approach**: LinkedIn fake recruiter profile
 
 ```text
-Recruiter Message: "Hi [Name], I saw your profile and have an exciting opportunity.
-                    Who's the best person in your organization to talk to about
-                    enterprise software licensing? Also, could you refer me to any
-                    colleagues who might be interested in career opportunities?"
+Recruiter Message: "Hi [Name], I saw your profile and have an
+                   exciting opportunity. Who's the best person in
+                   your organization to talk to about enterprise
+                   software licensing? Also, could you refer me to
+                   any colleagues who might be interested in
+                   career opportunities?"
 
 Target: "You should talk to John Smith, he's our Director of Procurement.
         I'll send this to a few people who might be interested."
@@ -329,13 +360,15 @@ Target: "You should talk to John Smith, he's our Director of Procurement.
 **Approach**: Fake security vendor assessment call
 
 ```text
-Attacker: "Hello, this is Sarah from SecureTech. We're conducting a mandatory
-          security assessment of access control systems in the building.
-          What type of badge system are you using?"
+Attacker: "Hello, this is Sarah from SecureTech. We're conducting
+          a mandatory security assessment of access control
+          systems in the building. What type of badge system are
+          you using?"
 
 Security: "We have HID proximity cards."
 
-Attacker: "And do you have mantrap at the main entrance or just badge readers?"
+Attacker: "And do you have a mantrap at the main entrance or
+          just badge readers?"
 
 Security: "Just badge readers, but the data center has a mantrap."
 
@@ -363,6 +396,35 @@ Security: "7 AM and 7 PM."
 - Never provide information based on inbound calls alone
 - Use out-of-band communication channels
 - Verify email senders through separate means
+
+The decision an employee actually has to make is narrow, and it does not
+depend on judging whether the caller sounds genuine:
+
+```text
+  Inbound request for information
+              │
+              ▼
+  Would answering reveal any internal detail?
+         │                              │
+         no                            yes
+         │                              │
+         ▼                              ▼
+  answer from public      End the call. Look the person up in
+  material only           the internal directory yourself.
+                                        │
+                          ┌─────────────┴─────────────┐
+                          ▼                           ▼
+                  listed: call back          not listed, or
+                  on the directory           objects to the
+                  number and continue        callback
+                                                   │
+                                                   ▼
+                                           report to security
+```
+
+The caller-supplied number is never the callback number, because a spoofed
+caller ID and a fake switchboard defeat that. Only a number you looked up
+yourself verifies anything.
 
 **3. Information Classification**:
 
@@ -399,7 +461,7 @@ Security: "7 AM and 7 PM."
 
 **Best Practices**:
 
-1. **Verify Identity**: Ask for callback number and employee ID, then verify independently
+1. **Verify Identity**: Look the caller up in the internal directory and call the number listed there, never a number the caller gave you
 2. **Question Authority**: Just because someone claims authority doesn't mean they have it
 3. **Take Your Time**: Resist pressure tactics, legitimate requests can wait
 4. **Follow Policy**: Procedures exist for good reason, don't skip steps
@@ -414,7 +476,7 @@ Security: "7 AM and 7 PM."
 - Social engineering for reconnaissance requires explicit authorization
 - Rules of Engagement (RoE) must specify whether social engineering is permitted
 - Some clients prohibit social engineering entirely
-- Document all social engineering attempts meticulously
+- Document every social engineering attempt
 
 ### Scope Limitations
 
@@ -495,9 +557,9 @@ Social engineering should complement, not replace, technical reconnaissance:
 
 ### Books
 
-- **"The Art of Deception"** by Kevin D. Mitnick - Classic social engineering stories
-- **"Social Engineering: The Science of Human Hacking"** by Christopher Hadnagy - Comprehensive methodology
-- **"Influence: The Psychology of Persuasion"** by Robert B. Cialdini - Psychological foundations
+- **"The Art of Deception"** by Kevin D. Mitnick: classic social engineering stories
+- **"Social Engineering: The Science of Human Hacking"** by Christopher Hadnagy: full methodology
+- **"Influence: The Psychology of Persuasion"** by Robert B. Cialdini: the psychological foundations
 
 ### Organizations and Training
 
@@ -512,4 +574,4 @@ Social engineering should complement, not replace, technical reconnaissance:
 
 ## Conclusion
 
-Social engineering in reconnaissance demonstrates that security is ultimately about people, not just technology. The most sophisticated technical controls can be bypassed through simple conversation if human factors aren't addressed. Understanding social engineering tactics—both for offensive testing and defensive awareness—is essential for comprehensive security. Remember: every social engineering engagement must be explicitly authorized, carefully scoped, and conducted with professionalism and ethics at the forefront.
+Security depends on people as much as on technology. Strong technical controls can be bypassed through a single conversation if the human side is left unaddressed, which is why these tactics are worth understanding from both the offensive and the defensive direction. Every social engineering engagement must be explicitly authorized, carefully scoped, and conducted with professionalism and ethics at the forefront.

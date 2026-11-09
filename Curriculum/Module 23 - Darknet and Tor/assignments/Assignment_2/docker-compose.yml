@@ -1,0 +1,23 @@
+# Module 23 - Assignment 2: a harmless onion service in your own lab.
+# docker compose up -d --build
+# docker compose exec tor cat /var/lib/tor/hs/hostname
+
+services:
+  web:
+    image: nginx:1.27-alpine
+    volumes:
+      - ./site:/usr/share/nginx/html:ro
+    # No "ports:" on purpose. The site must only be reachable through Tor.
+
+  tor:
+    build: .
+    # Share web's network namespace, so 127.0.0.1:80 inside tor is nginx.
+    network_mode: "service:web"
+    depends_on:
+      - web
+    volumes:
+      - ./torrc:/etc/tor/torrc:ro
+      - hs-data:/var/lib/tor
+
+volumes:
+  hs-data:

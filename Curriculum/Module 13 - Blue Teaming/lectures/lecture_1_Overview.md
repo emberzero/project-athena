@@ -4,11 +4,11 @@
 
 ### Intrusion Detection Systems (IDS)
 
-IDS are software or hardware systems that automate the process of tracking event occurrences within a computer system or network and analysing them for signs of security breaches. They are important in the early warning system.
+An IDS records events in a system or network and analyses them for signs of an intrusion, raising an alert when it finds one. It does not block anything, so it works as an early warning system that a human or another tool has to act on.
 
 ### Intrusion Prevention Systems (IPS)
 
-The intrusion protection systems (IPS) are the network security devices responsible for examining network and/or system activities looking for malicious or unwanted behaviors and will instantly attempt to stop or prohibit them. These programs have the same features as intrusion detection system and are also able to prevent unauthorized access.
+An IPS examines network or system activity for malicious or unwanted behaviour and blocks it as it happens. It detects the same way an IDS does, but because it sits in the traffic path it can drop a connection instead of only raising an alert.
 
 ### Security Information and Event Management (SIEM)
 
@@ -20,15 +20,15 @@ EDR solutions constantly monitor and collect data about endpoint devices like de
 
 ### Antivirus Software
 
-Anti-virus software is a program or a set of programs that are specially designed to prevent the creation or usage of virus files. It can also search for and detect these files in software. Examples of what it can find are viruses, worms, trojans, adware, spy ware etc.
+Anti-virus software scans files and running processes for known malware, using signatures of known samples together with heuristics for suspicious behaviour, and then blocks, quarantines or removes what it finds. Typical targets are viruses, worms, trojans, ransomware, adware and spyware. Because it depends heavily on knowing a sample already, it is a baseline control rather than a complete defence.
 
 ### Firewalls
 
-Firewalls are network security devices which regulate traffic and ensure communication between computer networks. They act as a wall between a private network and the internet, or other networks outside the internal network. Firewalls may have physical or virtual character and they have become indispensable tool for compliance with organizational network security policies.
+Firewalls are network security devices that decide which traffic may pass between networks. They sit at the boundary between a private network and the internet, or between internal network segments, and may be physical appliances or software. They are the main place where an organisation's network security policy is actually enforced.
 
 _source: Overview \[1.\], Overview \[2.\]_
 
-## Crucial Security Defense processes
+## Core security defence processes
 
 ### Incident Response
 
@@ -36,7 +36,7 @@ Incident response is a systematic approach towards addressing security breaches 
 
 ### Threat Intelligence
 
-Threat intelligence is the type of knowledge that helps an organization gauge any threat to their surrounding environment. it gives context to threats and empowers organizes to decide with conviction.
+Threat intelligence is information about who attacks organisations like yours, with which tools and techniques. It gives context to raw alerts, so that defenders can judge which threats are relevant to them and prioritise accordingly.
 
 ### Vulnerability Management
 

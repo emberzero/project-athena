@@ -2,6 +2,7 @@ version: '3.8'
 
 services:
   webserver:
+    restart: unless-stopped
     image: docker.io/library/nginx:latest
     ports:
       - "8080:80"
@@ -9,6 +10,7 @@ services:
       - recon-network
 
   ssh:
+    restart: unless-stopped
     build:
       dockerfile: ssh.Dockerfile
     ports:
@@ -17,6 +19,7 @@ services:
       - recon-network
 
   ftp:
+    restart: unless-stopped
     image: stilliard/pure-ftpd:hardened
     environment:
       FTP_USER_NAME: recon_ftp_user
@@ -27,6 +30,7 @@ services:
       - recon-network
 
   database:
+    restart: unless-stopped
     image: docker.io/library/mysql:latest
     environment:
       MYSQL_ROOT_PASSWORD: kKkszlICX5GRd2JaCwyl
@@ -36,9 +40,31 @@ services:
     networks:
       - recon-network
 
+  fileserver:
+    restart: unless-stopped
+    build:
+      dockerfile: smb.Dockerfile
+    ports:
+      - "445:445"
+      - "139:139"
+    networks:
+      - recon-network
+
+  snmp:
+    restart: unless-stopped
+    build:
+      dockerfile: snmp.Dockerfile
+    ports:
+      - "161:161/udp"
+    networks:
+      - recon-network
+
   vulnerable-webserver:
+    restart: unless-stopped
     build:
       dockerfile: vuln.Dockerfile
+    volumes:
+      - /opt/recon/flag:/flag:ro # per-instance flag written by cloud-init
     ports:
       - "17334:80"
     networks:

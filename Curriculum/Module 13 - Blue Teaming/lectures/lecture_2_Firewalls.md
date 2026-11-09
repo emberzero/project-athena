@@ -2,11 +2,11 @@
 
 ## What is a Firewall?
 
-It must be noted that firewalls are used for filtering of network traffic in internal network. It determines the traffic that should either be permitted or prohibited in line with specific stipulations. The firewall can be thought of as a gatekeeper of your computer's entrance point where only trusted sources or IP address are allowed into your network.
+A firewall filters network traffic and decides, for every packet, whether it may pass. It can be thought of as a gatekeeper at the entrance to a network: only traffic matching the configured rules is let through.
 
-The incoming traffic, which is allowed in this network, is configured into a firewall. It differentiates between good traffic and malicious data and either permits or denies packets based on preset security criteria.
+Which traffic is permitted is defined by the administrator in the firewall's rule set. The firewall itself has no idea what is "good" or "malicious"; it only compares each packet against those rules and permits or denies it accordingly. A rule set is therefore only as good as the policy behind it.
 
-The packet data contains such information as its source, destination, content and so on which serves as basis for these rules. They allow traffic from suspect sources, but block it to mitigate cyberattacks.
+The decision is made from the information in the packet: its source and destination address, the port and protocol, the connection state, and with deeper inspection the payload as well. Traffic that does not match an allowing rule is dropped, which is what keeps unwanted connections out of the network.
 
 For instance, the picture below illustrates how a firewall lets genuine traffic through to the user's private network.
 
@@ -14,7 +14,7 @@ For instance, the picture below illustrates how a firewall lets genuine traffic 
 
 _source: Firewalls \[3.\]_
 
-However, as you can see on the picture below, the malicious or per rules blocked traffic is not allowed to enter the users private network. The gatekeeper is doing his job pretty good!
+In the second picture, traffic that the rules do not permit is dropped at the boundary and never reaches the private network.
 
 ![Firewall 2](images/Firewall_2.png)
 
@@ -50,11 +50,36 @@ Both types of firewalls are essential in a comprehensive security strategy. Ofte
 
 ### Antivirus
 
-- Antivirus is also an essential component of network security. It is basically an application or software used to provide security from malicious software coming from the internet.
-  An antivirus working is based upon 3 main actions, Detection, Identification, and Removal of threats.
-  Antivirus can deal with external threats as well as internal threats by implementing only through software.
+- Antivirus software protects a host against malicious code rather than against unwanted connections.
+  It works in three steps: detection, identification and removal or quarantine of the threat.
+  It exists only as software on the endpoint, and it also catches threats that never crossed the network boundary, for example malware arriving on a USB stick. A firewall and an antivirus therefore solve different problems and do not replace each other.
 
-## Diffrent types of firewalls
+## Different types of firewalls
+
+The types below differ mainly in how deep into the packet they look, and that
+depth is what decides which attacks they can see at all. The higher up the
+stack a firewall inspects, the more context it has and the more work each
+packet costs:
+
+```text
+  OSI layer         Firewall type         What it can decide on
+  -----------------------------------------------------------------
+  L7 Application    Proxy / app gateway,  URLs, HTTP methods, file
+                    NGFW, DPI             content, application ID
+  -----------------------------------------------------------------
+  L4 Transport      Stateful inspection   connection state: new,
+                                          established, related
+  -----------------------------------------------------------------
+  L3 Network        Packet filter         IP addresses, protocol,
+                                          ports, judged one packet
+                                          at a time, no state kept
+  -----------------------------------------------------------------
+
+  deeper inspection -> more context, more CPU cost per packet
+```
+
+Virtual firewalls are not a separate depth; any of the types above can be run
+as software inside a virtualised environment.
 
 1. **Packet Filtering Firewalls** <br>
    Operation: Examines packets based on pre-defined rules (such as source/destination IP, ports, protocols) and allows or blocks them accordingly. <br>

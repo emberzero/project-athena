@@ -1,4 +1,4 @@
-#import "../../../typst-athena-slides-template/1.0.1/src/lib.typ": *
+#import "../../../typst-theme-emberzero/1.1.0/src/lib.typ": *
 
 #show: athena-theme.with(
   font: "Berkeley Mono",
@@ -18,9 +18,14 @@
 
 #slide(title: "Warum?")[
 
-  #image("./figures/why_1.jpg", height: 6em)
-  #image("./figures/why_2.jpg", height: 4em)
-  #image("./figures/why_3.png", height: 5em)
+  #split(
+    columns: (1.2fr, 1fr),
+    image("./figures/why_1.jpg", width: 100%),
+    [
+      #image("./figures/why_2.jpg", width: 100%)
+      #image("./figures/why_3.png", width: 100%)
+    ],
+  )
 
   #text(size: 11pt, "Quellen: Wiener Zeitung; heise.de;")
 

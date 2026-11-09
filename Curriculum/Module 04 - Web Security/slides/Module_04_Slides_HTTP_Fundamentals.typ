@@ -1,4 +1,4 @@
-#import "../../../typst-athena-slides-template/1.0.1/src/lib.typ": *
+#import "../../../typst-theme-emberzero/1.1.0/src/lib.typ": *
 
 #show: athena-theme.with(
   font: "Berkeley Mono",
@@ -102,6 +102,7 @@
 ]
 
 #slide(title: "Important HTTP Headers")[
+  #set text(size: 18pt)
   *Request Headers:*
   - `Host`: Domain name (required in HTTP/1.1)
   - `User-Agent`: Client software identification
@@ -118,6 +119,7 @@
 ]
 
 #slide(title: "HTTP Response Structure")[
+  #set text(size: 18pt)
   ```http
   HTTP/1.1 200 OK
   Date: Mon, 01 Dec 2025 10:30:00 GMT

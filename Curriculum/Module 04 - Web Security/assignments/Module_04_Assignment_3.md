@@ -2,477 +2,194 @@
 
 ## Objective
 
-The purpose of this assignment is to develop comprehensive API security testing skills through a hands-on security assessment of a vulnerable API application. You will perform reconnaissance, identify vulnerabilities, exploit security flaws, and document your findings in a professional penetration testing report. This assignment simulates real-world API security assessments.
+You will run a full security assessment against a deliberately vulnerable API that you deploy
+yourself, find and exploit at least five vulnerabilities from the OWASP API Security Top 10:2023,
+and report them the way a professional tester reports to a client. Afterwards you will be able to
+enumerate an unfamiliar API, test it systematically against the API Top 10, and write findings that
+a developer can act on and a manager can read.
 
-## Overview
+## Logistics
 
-You will conduct a security assessment of **crAPI (Completely Ridiculous API)** or **VAmPI (Vulnerable API)**, two intentionally vulnerable API applications designed for security testing practice. Your task is to identify and exploit vulnerabilities from the OWASP API Security Top 10:2023 and document your findings professionally.
+- **Work:** individual, or in pairs. A pair submits one report naming both authors and stating who
+  tested what.
+- **Deadline:** *set by your instructor*.
+- **Submission:** one PDF, named `Lastname_Firstname_Module04_Assignment3.pdf`. A pair uses the
+  name of the first author listed. Scripts and raw request logs go in an appendix inside the same
+  PDF; do not submit archives.
 
-## Instructions
+## Setup
 
-### Phase 1: Environment Setup
+Choose **one** target and deploy it on your own machine. Both are free and open source, and both
+are published for exactly this purpose.
 
-#### Option A: crAPI (Recommended for comprehensive testing)
-
-**Installation:**
+### Option A: crAPI (the fuller target)
 
 ```bash
-# Using Docker Compose
 git clone https://github.com/OWASP/crAPI
 cd crAPI
-docker-compose -f deploy/docker/docker-compose.yml up -d
-
-# Access at http://localhost:8888
+docker compose -f deploy/docker/docker-compose.yml up -d
 ```
 
-**About crAPI:**
+Covers more of the API Top 10, includes a web front end and a GraphQL endpoint, and needs several
+gigabytes of RAM. Check the repository README for the current compose path and the port it serves
+on - the project moves these occasionally.
 
-- Full-featured vulnerable API and web application
-- Covers multiple OWASP API Top 10 vulnerabilities
-- Includes REST APIs and GraphQL
-- More realistic and complex scenarios
-
-#### Option B: VAmPI (Simpler, faster setup)
-
-**Installation:**
+### Option B: VAmPI (the lighter target)
 
 ```bash
-# Using Docker
 docker pull erev0s/vampi:latest
 docker run -d -p 5000:5000 erev0s/vampi
-
-# Access API at http://localhost:5000
-# Documentation at http://localhost:5000/docs
 ```
 
-**About VAmPI:**
-
-- Lightweight vulnerable REST API
-- Clear vulnerability examples
-- Good for beginners
-- Faster to complete
-
-**Choose ONE application for your assessment.**
-
-### Phase 2: Reconnaissance and API Discovery
-
-Document the following information:
-
-1. **API Endpoints Discovery**:
-   - List all API endpoints discovered
-   - HTTP methods supported for each endpoint
-   - Authentication requirements
-   - Parameter types and expected inputs
-
-2. **API Documentation Analysis**:
-   - Review available API documentation
-   - Identify authenticated vs. unauthenticated endpoints
-   - Note any security-relevant information disclosed
-
-3. **Technology Stack Identification**:
-   - Backend framework/language
-   - Database type (if identifiable)
-   - Authentication mechanism (JWT, session cookies, etc.)
-   - Any third-party integrations
-
-**Tools to Use:**
-
-- Burp Suite (Proxy, Spider, Scanner)
-- Postman or Insomnia (API testing)
-- Browser Developer Tools
-- curl or httpie (command-line testing)
-
-### Phase 3: Vulnerability Testing
-
-Test for the following vulnerability categories from OWASP API Security Top 10:2023:
-
-#### 1. API1:2023 - Broken Object Level Authorization (BOLA/IDOR)
-
-**What to test:**
-
-- Can you access other users' resources by changing IDs?
-- Are object-level access controls properly enforced?
-- Can you enumerate user IDs or resource IDs?
-
-**Testing methodology:**
-
-1. Create two user accounts (User A and User B)
-2. Obtain authentication tokens for both
-3. Use User A's token to access User B's resources
-4. Document any successful unauthorized access
-
-**Example test:**
-
-```bash
-# User A's token trying to access User B's data
-curl -H "Authorization: Bearer USER_A_TOKEN" \
-     http://localhost:8888/api/users/USER_B_ID
-```
-
-#### 2. API2:2023 - Broken Authentication
-
-**What to test:**
-
-- Weak password policies
-- Brute force protection (rate limiting)
-- Session management issues
-- JWT security (algorithm confusion, weak secrets)
-- Token expiration and refresh mechanisms
-
-**Testing methodology:**
-
-1. Attempt multiple failed login attempts (test rate limiting)
-2. Analyze JWT tokens for weaknesses
-3. Test token reuse after logout
-4. Check for predictable session identifiers
-
-#### 3. API3:2023 - Broken Object Property Level Authorization
-
-**What to test:**
-
-- Mass assignment vulnerabilities
-- Excessive data exposure in API responses
-- Can users modify restricted fields?
-
-**Testing methodology:**
-
-1. Capture legitimate API requests
-2. Add additional fields (e.g., `isAdmin: true`, `role: "admin"`)
-3. Observe response for sensitive data exposure
-4. Test field manipulation in update operations
-
-**Example test:**
-
-```bash
-# Attempt to set admin flag via mass assignment
-curl -X PUT http://localhost:5000/api/users/1 \
-     -H "Content-Type: application/json" \
-     -d '{"username": "attacker", "isAdmin": true, "balance": 999999}'
-```
-
-#### 4. API4:2023 - Unrestricted Resource Consumption
-
-**What to test:**
-
-- Rate limiting on sensitive endpoints
-- Pagination limits
-- Query complexity limits (GraphQL)
-- Resource quotas
-
-**Testing methodology:**
-
-1. Send rapid requests to endpoints
-2. Request large amounts of data without pagination
-3. Test for timeout/throttling mechanisms
-
-#### 5. API5:2023 - Broken Function Level Authorization
-
-**What to test:**
-
-- Can regular users access admin endpoints?
-- Are privileged functions properly protected?
-- Horizontal and vertical privilege escalation
-
-**Testing methodology:**
-
-1. Identify admin/privileged endpoints
-2. Attempt access with regular user credentials
-3. Test hidden or undocumented endpoints
-
-#### 6. API7:2023 - Server-Side Request Forgery (SSRF)
-
-**What to test:**
-
-- URL parameters accepting external URLs
-- Features that fetch remote resources
-- Webhook implementations
-
-**Testing methodology:**
-
-1. Identify endpoints accepting URLs
-2. Test with internal IPs (127.0.0.1, localhost, 192.168.x.x)
-3. Test with cloud metadata endpoints (169.254.169.254)
-
-#### 7. Additional Testing
-
-- **SQL Injection**: Test input fields for SQL injection
-- **XSS**: Test for reflected/stored XSS in API responses
-- **CORS Misconfiguration**: Check CORS headers
-- **Security Headers**: Verify presence of security headers
-- **Error Handling**: Test for information disclosure in errors
-
-### Phase 4: Exploitation and Proof of Concept
-
-For each vulnerability found:
-
-1. **Reproduce the vulnerability** reliably
-2. **Document the exploitation process** step-by-step
-3. **Capture evidence**:
-   - Screenshots of successful exploits
-   - HTTP request/response pairs
-   - Video recordings (optional but recommended)
-4. **Assess the impact**:
-   - What data is exposed or compromised?
-   - What actions can an attacker perform?
-   - What is the business impact?
-
-### Phase 5: Professional Report Writing
-
-Compile your findings into a professional penetration testing report.
-
----
-
-## Report Structure
-
-### 1. Executive Summary (1-2 pages)
-
-- Overview of the assessment
-- Key findings summary
-- Risk rating overview (Critical/High/Medium/Low count)
-- Overall security posture assessment
-- Prioritized recommendations
-
-**Target Audience**: Non-technical stakeholders, management
-
-### 2. Scope and Methodology (1 page)
-
-- Application tested (crAPI or VAmPI)
-- Testing dates and duration
-- Testing methodology (OWASP API Top 10:2023)
-- Tools used
-- Limitations and constraints
-- Rules of engagement
-
-### 3. Technical Findings (Main section)
-
-For each vulnerability discovered, include:
-
-#### Finding Template
-
-**Finding #X: [Vulnerability Name]**
-
-- **Severity**: Critical / High / Medium / Low
-- **OWASP Category**: API1:2023, API2:2023, etc.
-- **CWE**: CWE number (e.g., CWE-284: Improper Access Control)
-- **Affected Endpoint(s)**: List specific API endpoints
-- **Description**: Clear explanation of the vulnerability
-- **Proof of Concept**:
-  - Step-by-step reproduction steps
-  - HTTP requests and responses
-  - Screenshots/evidence
-- **Impact**: Detailed impact analysis
-  - Confidentiality impact
-  - Integrity impact
-  - Availability impact
-  - Business impact
-- **Remediation**:
-  - Specific fix recommendations
-  - Secure code examples
-  - References to best practices
-- **CVSS Score**: Optional - calculate CVSS score
-
-**Minimum Findings Required**: 5 vulnerabilities across different OWASP categories
-
-### 4. Risk Assessment Matrix
-
-Provide a summary table:
-
-| Finding | Severity | OWASP Category | Impact | Remediation Priority |
-|---------|----------|----------------|--------|---------------------|
-| BOLA on /api/users | Critical | API1:2023 | High | Immediate |
-| Missing Rate Limiting | High | API4:2023 | Medium | High |
-| ... | ... | ... | ... | ... |
-
-### 5. Recommendations (1-2 pages)
-
-- **Immediate Actions**: Critical fixes needed now
-- **Short-term Improvements**: High/medium priority fixes
-- **Long-term Strategy**: Overall security improvements
-- **Security Best Practices**: General recommendations for API security
-
-### 6. Appendices
-
-- **Appendix A**: Detailed HTTP requests and responses
-- **Appendix B**: Tool outputs and logs
-- **Appendix C**: References and resources
-- **Appendix D**: Testing timeline
-
----
-
-## Submission Requirements
-
-### Deliverables
-
-1. **Penetration Testing Report (PDF)**:
-   - Professional formatting
-   - Cover page with your name, date, title
-   - Table of contents
-   - All sections as outlined above
-   - Properly formatted code and screenshots
-   - 10-20 pages typical length
-
-2. **Proof of Concept Files (ZIP)**:
-   - Python scripts or curl commands used
-   - Burp Suite project file (optional)
-   - Screenshots and evidence
-   - Any exploitation tools created
-
-### Format Requirements
-
-- **Document**: PDF format, professional appearance
-- **Code**: Syntax highlighted, properly formatted
-- **Screenshots**: Clear, annotated with explanations
-- **File Naming**: `Module04_Assignment3_[YourName].pdf`
-- **Submission**: Upload to Google Drive per course guidelines
-
----
-
-## Evaluation Criteria
-
-### Reconnaissance and Discovery (15 points)
-
-- **Thoroughness** (8 points): Comprehensive API endpoint discovery
-- **Documentation** (7 points): Clear documentation of API structure and technology stack
-
-### Vulnerability Identification (35 points)
-
-- **Quantity** (10 points): Number of unique vulnerabilities found (minimum 5)
-- **Diversity** (10 points): Coverage across different OWASP categories
-- **Accuracy** (10 points): Correct identification and classification
-- **Severity Assessment** (5 points): Appropriate risk ratings
-
-### Exploitation and Proof of Concept (25 points)
-
-- **Reproducibility** (10 points): Clear, reproducible steps
-- **Evidence Quality** (10 points): Screenshots, requests/responses, clear documentation
-- **Technical Depth** (5 points): Understanding of exploitation techniques
-
-### Report Quality (20 points)
-
-- **Executive Summary** (5 points): Clear, concise, actionable for management
-- **Technical Writing** (7 points): Clear explanations, proper terminology
-- **Remediation Recommendations** (5 points): Specific, actionable fixes
-- **Professionalism** (3 points): Formatting, grammar, organization
-
-### Bonus Points (5 points)
-
-- **Advanced Exploitation** (up to 3 points): Creative or advanced attack techniques
-- **Automated Tools** (up to 2 points): Custom scripts for testing
-- **Video Demonstration** (up to 2 points): Video proof of concept
-
-### Total: 100 points (+ up to 7 bonus)
-
----
-
-## Severity Rating Guidelines
-
-Use the following criteria to assess severity:
-
-### Critical
-
-- Remote code execution
-- Complete authentication bypass
-- Access to all user data
-- Admin account takeover
-
-### High
-
-- Access to sensitive data of multiple users
-- Privilege escalation
-- Significant BOLA allowing unauthorized data access
-- No rate limiting on authentication
-
-### Medium
-
-- Limited information disclosure
-- CSRF on important functions
-- Weak password policy
-- Missing security headers
-
-### Low
-
-- Information disclosure (non-sensitive)
-- Verbose error messages
-- Minor CORS issues
-- Missing security recommendations
-
----
-
-## Tips for Success
-
-1. **Start Early**: API testing takes time; don't wait until the deadline
-2. **Be Systematic**: Test methodically, document everything as you go
-3. **Think Like an Attacker**: Try unexpected inputs and edge cases
-4. **Document Everything**: Take screenshots immediately when you find vulnerabilities
-5. **Professional Tone**: Write as if reporting to a real client
-6. **Prioritize Findings**: Focus on high-impact vulnerabilities first
-7. **Test Thoroughly**: Don't stop at the first vulnerability; explore comprehensively
-8. **Ask Questions**: If stuck, ask during office hours (but don't share findings publicly)
-
----
-
-## Tools Reference
-
-### Essential Tools
-
-- **Burp Suite Community/Pro**: <https://portswigger.net/burp>
-- **Postman**: <https://www.postman.com/>
-- **curl**: Command-line HTTP client (built-in on most systems)
-- **jq**: JSON processor for command line
-
-### Optional Tools
-
-- **OWASP ZAP**: <https://www.zaproxy.org/>
-- **jwt_tool**: <https://github.com/ticarpi/jwt_tool>
-- **Arjun**: API endpoint discovery
-- **SQLmap**: SQL injection testing
-
-### Documentation Resources
-
-- **crAPI Challenges**: <https://github.com/OWASP/crAPI/blob/develop/docs/challenges.md>
-- **VAmPI Documentation**: Check `/docs` endpoint
-- **OWASP API Security Top 10**: <https://owasp.org/API-Security/>
-
----
-
-## Academic Integrity
-
-- **You must perform your own testing and write your own report**
-- You may use automated tools (Burp Suite, SQLmap, etc.)
-- You may consult documentation and resources
-- **Do not share findings or collaborate on testing**
-- **Do not share reports or exploit code with other students**
-- Cite any resources or tools used
-
-**This is individual work. Collaboration constitutes plagiarism and will result in academic penalties.**
-
----
-
-## Important Notes
-
-1. **Test Only Assigned Applications**: Only test crAPI or VAmPI (locally hosted)
-2. **Do Not Test Production Systems**: Never test unauthorized applications
-3. **Local Environment Only**: All testing must be on your local machine
-4. **Ethical Conduct**: This is for educational purposes only
-5. **No Real Attacks**: Do not use these techniques on unauthorized systems
-
-**Reminder**: Unauthorized security testing is illegal under the Computer Fraud and Abuse Act (CFAA) and similar laws worldwide.
-
----
-
-## Deadline
-
-Refer to the course schedule for the specific deadline. Late submissions will be penalized according to the course policy.
-
----
-
-## Questions?
-
-If you have questions:
-
-1. Check the application's documentation (GitHub README, `/docs` endpoint)
-2. Review Module 04 lecture materials on API security
-3. Attend office hours or lab sessions
-4. Post general questions (not vulnerabilities or solutions) on the course forum
-
-Good luck with your API security assessment!
+A small vulnerable REST API with an OpenAPI document it serves itself. Faster to stand up, fewer
+distinct vulnerability classes. Choose this one if your machine is short on memory.
+
+### Tooling
+
+- **Burp Suite Community**, free, for intercepting and replaying requests.
+- **Postman** or **Insomnia**, or just `curl` and `jq`, for driving the API directly.
+- **jwt_tool** (<https://github.com/ticarpi/jwt_tool>) if your target issues JWTs.
+- Python with `requests` for the scripted tests in Task 3. Lecture 5 contains a BOLA test loop you
+  can adapt.
+- Docker. Everything else is free; nothing here needs hardware beyond a laptop that can run the
+  container.
+
+### Rules of engagement
+
+- **In scope:** only the container you deployed, on your own machine, reachable only from
+  `localhost`.
+- **Out of scope:** everything else. No public API, no bug bounty target, no school system, no
+  classmate's container, and no "I only tested it gently" exceptions. Lecture 5 suggests testing a
+  public API as practice; for this graded assignment, do not.
+- Do not expose the container to the network or to the internet. It is deliberately vulnerable and
+  it is yours to keep contained.
+- Module 01 and Austrian StGB §118a, §126a and §126b cover the boundary. Unauthorised testing is a
+  criminal matter here, not a disciplinary one.
+
+## Tasks
+
+### 1. Enumeration
+
+Map the API before you attack it.
+
+**In the report:** a table of every endpoint you found, with its method, whether authentication is
+required, the parameters it accepts, and how you discovered it (documentation, front-end traffic in
+Burp, the OpenAPI document, guessing). Then half a page on the technology stack: framework,
+database if identifiable, authentication mechanism, and any version banners or error messages that
+disclosed something.
+
+Also state which target you chose and why, and include the output of `docker ps` showing your
+container running.
+
+### 2. Register your own accounts
+
+Create **two** user accounts of your own on the target and note their identifiers. Every
+authorisation test below uses these two. Your tokens and user IDs are specific to your deployment,
+which is what makes your evidence yours.
+
+**In the report:** both usernames or emails, both user IDs, and one decoded JWT or session cookie
+per account with the sensitive values redacted except the subject claim.
+
+### 3. Test against the OWASP API Top 10:2023
+
+Work through these systematically. For each, state what you tested, how, and the result - including
+the categories where you found nothing. A negative result that is documented is worth marks; a
+category you skipped silently is not.
+
+1. **API1 - Broken Object Level Authorisation.** Use account A's token against account B's
+   resources, across every object-bearing endpoint you found. Script the loop rather than clicking.
+2. **API2 - Broken Authentication.** Password policy, rate limiting on login, token lifetime, token
+   reuse after logout, and the JWT weaknesses from lecture 5: `alg: none`, a weak signing secret,
+   algorithm confusion, missing expiry.
+3. **API3 - Broken Object Property Level Authorisation.** Mass assignment: add fields the client
+   should not control, such as a role or balance field, to an update request. Excessive data
+   exposure: look for fields in responses the client never needed.
+4. **API4 - Unrestricted Resource Consumption.** Rate limits, pagination limits, and on crAPI's
+   GraphQL endpoint, query depth and batching.
+5. **API5 - Broken Function Level Authorisation.** Reach administrative functions with a normal
+   user's token, including endpoints that are not linked from the front end.
+6. **API7 - SSRF.** Any endpoint that fetches a URL: internal addresses, `localhost`, and the cloud
+   metadata address.
+7. **At least two of:** SQL or NoSQL injection, injection reflected into a response, CORS
+   misconfiguration, missing security headers, or information disclosure through errors.
+
+### 4. Write the findings
+
+**At least five confirmed findings, in at least four different API Top 10 categories.** Each
+finding gets its own subsection containing:
+
+- **Title, severity and category:** severity per the scale below, plus the API Top 10 entry and a
+  CWE identifier.
+- **Affected endpoints:** exact paths and methods.
+- **Reproduction:** numbered steps, with the raw HTTP request and the relevant part of the response
+  in code blocks. Someone holding your report and a fresh deployment must be able to reproduce it
+  without asking you anything.
+- **Impact:** what an attacker gets, in terms of this application's data and functions. Tie it to
+  your own two accounts where the finding is an authorisation flaw.
+- **Remediation:** the specific change. Name the check, the library, the configuration or the
+  schema change. "Implement proper authorisation" earns nothing.
+
+### 5. Report framing
+
+Wrap the findings in:
+
+- **Executive summary**, one page, for a reader who will not read the findings: what was tested,
+  what the worst problem is, how many findings at each severity, and what to fix first.
+- **Scope and methodology**, half a page: target and version, dates, tools, what you did not test
+  and why.
+- **Findings summary table**: finding, severity, category, affected endpoint, fix priority.
+- **Appendix**: your test scripts and any long request logs.
+
+### Severity scale
+
+Use this scale and justify any rating you give in one sentence.
+
+- **Critical** - remote code execution, authentication bypass, or access to every user's data.
+- **High** - privilege escalation, access to other users' sensitive data, or no brute-force
+  protection on authentication.
+- **Medium** - limited information disclosure, CSRF on a meaningful action, weak password policy.
+- **Low** - verbose errors, missing headers with no demonstrated impact, non-sensitive disclosure.
+
+## Evaluation criteria
+
+| Area | Weight | What earns full marks |
+| --- | --- | --- |
+| **Enumeration** | 15% | Endpoint table substantially complete for the chosen target, with method, auth requirement, parameters and discovery method, plus a correct technology-stack description. |
+| **Test coverage** | 20% | All seven test areas in Task 3 attempted and documented, negative results included, with the method stated for each. |
+| **Findings** | 25% | Five or more genuine vulnerabilities across four or more API Top 10 categories, correctly classified with a correct CWE, and correctly rated against the severity scale. |
+| **Reproducibility of evidence** | 15% | Every finding has raw requests and responses tied to the student's own accounts and deployment, and could be reproduced from the report alone. |
+| **Remediation** | 15% | Each fix names a concrete mechanism that would actually close that finding in that codebase. |
+| **Report craft** | 10% | Executive summary readable by a non-specialist, scope and methodology stated honestly including what was not tested, summary table consistent with the findings, appendix present. |
+| **Bonus** | +20% | See below. |
+
+Five findings with copied remediation boilerplate score below three findings a developer could fix
+from the report. Severity inflation is marked down: rating a missing header as Critical costs marks
+in the findings row.
+
+## Bonus: Automate and verify (up to +20%)
+
+Do **both**.
+
+1. **Automate one class of test.** Write a script that tests one category across every endpoint you
+   enumerated - a BOLA sweep, a JWT weakness check, or a mass-assignment fuzzer - and produces a
+   readable result table. Include the script and its output. It must read your endpoint list rather
+   than hardcode one path.
+2. **Fix one finding and prove it.** Patch the target's source for one of your findings, redeploy,
+   and show the same exploit failing while legitimate use still works. Include the diff.
+
+### Bonus evaluation
+
+| Area | Weight | What earns full marks |
+| --- | --- | --- |
+| **Automation** | +10% | A working script covering all enumerated endpoints for one category, with output that distinguishes vulnerable from safe endpoints. |
+| **Verified fix** | +8% | A real diff, the exploit shown failing afterwards, and legitimate functionality shown still working. |
+| **Explanation** | +2% | Two or three sentences on why the fix is sufficient and where else the same pattern would need applying. |
+
+## Resources
+
+- OWASP API Security Top 10:2023: <https://owasp.org/API-Security/>
+- crAPI: <https://github.com/OWASP/crAPI>
+- VAmPI: <https://github.com/erev0s/VAmPI>
+- Burp Suite documentation: <https://portswigger.net/burp/documentation>
+- OWASP Cheat Sheet Series: <https://cheatsheetseries.owasp.org/>
+- CWE list: <https://cwe.mitre.org/>

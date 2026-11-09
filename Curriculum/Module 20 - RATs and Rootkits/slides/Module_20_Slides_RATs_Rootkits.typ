@@ -1,4 +1,4 @@
-#import "../../../typst-athena-slides-template/1.0.1/src/lib.typ": *
+#import "../../../typst-theme-emberzero/1.1.0/src/lib.typ": *
 
 #show: athena-theme.with(
   font: "Berkeley Mono",
@@ -75,7 +75,7 @@
   4) Profit
 ]
 
-#section-slide(title: "Command and Control (C2")
+#section-slide(title: "Command and Control (C2)")
 
 #slide(title: "Command and Control (C2)")[
   - Recieve and execute commands
@@ -130,7 +130,7 @@
     - DLLs
   ][
     // Right: image — adjust height or width if needed
-    #image("../figures/DLL-load-order.png", height: 110%)
+    #image("../figures/DLL-load-order.png", height: 100%)
   ]
 ]
 
@@ -200,15 +200,16 @@
 ]
 
 #slide(title: "Kernel Protections")[
-  - Non-exposed symbols
-  - KASLR & SMAP
-  - Write protection
-  - Exploit protections
-  - Integrity checks
-  - Still not perfect
-  #set align(center)
-  #image("../figures/kernel-protection.png")
-
+  #split(columns: (1fr, 2fr), align: horizon)[
+    - Non-exposed symbols
+    - KASLR & SMAP
+    - Write protection
+    - Exploit protections
+    - Integrity checks
+    - Still not perfect
+  ][
+    #image("../figures/kernel-protection.png")
+  ]
 ]
 
 #slide(title: "Firmware/BIOS/ Hypervisor")[

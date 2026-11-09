@@ -1,18 +1,18 @@
 # Cloud Computing Security Concepts
 
-Ensuring robust security in cloud computing involves a multifaceted approach that addresses various key concepts. Below are explanations for essential cloud computing security considerations:
+Cloud security is a set of overlapping controls. This lecture walks through the eight areas that matter most in practice.
 
 ## 1. Network Security
 
 ### Overview
 
-Network security in cloud computing focuses on safeguarding data as it traverses networks and ensuring the secure communication between cloud components.
+Network security in the cloud covers protecting data while it crosses a network and keeping the communication between cloud components secure.
 
 ### Best Practices
 
 - **Virtual Private Clouds (VPCs):** Implement VPCs to isolate resources logically and control network traffic.
 - **Network Access Control Lists (NACLs):** Define rules at the subnet level to control incoming and outgoing traffic.
-- **Encryption:** Use encryption protocols for data in transit, such as SSL/TLS for web traffic and VPNs for secure connectivity.
+- **Encryption:** Encrypt data in transit with TLS for web traffic and VPNs or private interconnects for network links. Note that SSL and TLS 1.0/1.1 are deprecated and should be disabled. "SSL" in product names and documentation almost always means TLS today.
 - **DDoS Mitigation:** Deploy measures to mitigate Distributed Denial of Service (DDoS) attacks through traffic filtering and load balancing.
 
 ### Tools
@@ -42,19 +42,15 @@ Network security in cloud computing focuses on safeguarding data as it traverses
 
 ### Overview
 
-Logging and monitoring are critical components for actively overseeing and safeguarding cloud environments. These practices entail the systematic collection, analysis, and interpretation of data generated across diverse cloud services, providing essential insights into the security and operational aspects of the infrastructure.
+Logging and monitoring are how you see what is happening in a cloud environment. Both mean collecting data from the services in use and then analysing and interpreting it, which is what gives you a view of the security and the operation of the infrastructure.
 
-The significance of logging and monitoring encompasses several key dimensions:
+Five things depend on it:
 
-**Threat Detection and Prevention:** Real-time monitoring plays a pivotal role in swiftly identifying anomalies, unauthorized access, and suspicious activities. This capability enables organizations to respond promptly to potential security threats.
-
-**Incident Response:** Detailed logs and real-time monitoring significantly contribute to effective incident response. By offering a comprehensive view of events leading up to and during a security incident, organizations can better comprehend and mitigate the impact of security breaches.
-
-**Compliance and Forensic Analysis:** Logging serves as a foundational element for maintaining detailed audit trails, a necessity for compliance with regulatory requirements. Additionally, these logs are instrumental in supporting forensic analysis during and after security incidents, aiding in the investigation and resolution process.
-
-**Performance Optimization:** Monitoring is instrumental in tracking the performance of cloud services and applications. By identifying bottlenecks and monitoring resource utilization, organizations can optimize performance, ensuring a more efficient and responsive infrastructure.
-
-**Operational Insights:** Logging and monitoring provide invaluable operational insights. These insights help organizations gain a deeper understanding of user behavior, track application performance, and monitor the overall health of the system. This knowledge is instrumental in making informed decisions for operational efficiency.
+- Threat detection and prevention. Monitoring in real time identifies anomalies, unauthorized access and suspicious activity early enough to react to it.
+- Incident response. Detailed logs and live monitoring show the sequence of events leading up to and during an incident, which is what makes the impact of a breach understandable and containable.
+- Compliance and forensic analysis. Audit trails are a regulatory requirement, and the same logs are the evidence base for an investigation during and after an incident.
+- Performance. Monitoring tracks how cloud services and applications behave, which is how bottlenecks and resource use are found.
+- Operational insight. Logs and metrics show how users behave, how applications perform and how healthy the system is, which is what operational decisions should be based on.
 
 ### Best Practices
 
@@ -67,20 +63,19 @@ The significance of logging and monitoring encompasses several key dimensions:
 
 - **Centralized Logging:**
 
-  - Prometheus
   - AWS CloudWatch Logs
-
-  - Azure Monitor
+  - Azure Monitor Logs
   - Google Cloud Logging
+  - Grafana Loki
 
-- **Real-time Monitoring:**
+- **Real-time Monitoring:** (metrics rather than logs, a different data type)
 
+  - Prometheus
   - AWS CloudWatch
-
   - Azure Monitor
   - Google Cloud Monitoring
   - Uptime Kuma
-  - Grafana
+  - Grafana (visualises both metrics and logs; it does not store them)
 
 - **Security Information and Event Management (SIEM):**
 
@@ -100,7 +95,30 @@ The significance of logging and monitoring encompasses several key dimensions:
 
 ### Overview
 
-Incident response planning involves preparing for and responding to security incidents promptly to minimize damage and recover from potential breaches.
+Incident response planning involves preparing for and responding to security incidents promptly to minimize damage and recover from potential breaches. It is a cycle, not a checklist: the output of one incident is the input to the next round of preparation.
+
+```text
+  +-> 1 Preparation      playbooks, on-call rota, tabletop exercises
+  |        |
+  |        v
+  |   2 Detection        monitoring alerts, log review, triage
+  |        |
+  |        v
+  |   3 Containment      isolate the resource - but snapshot it
+  |        |             first, or you destroy the evidence
+  |        v
+  |   4 Eradication      remove the foothold, rotate every exposed
+  |        |             credential and key
+  |        v
+  |   5 Recovery         rebuild from a known-good state and
+  |        |             verify it is clean before reconnecting
+  |        v
+  +-- 6 Lessons learned  post-mortem feeds back into preparation
+```
+
+The order matters. Shutting down a compromised instance before taking a
+snapshot is the most common mistake: it stops the attacker and also removes
+any chance of finding out how they got in.
 
 ### Best Practices
 
@@ -143,7 +161,7 @@ Incident response planning involves preparing for and responding to security inc
 
 ### Overview
 
-Data backup and recovery strategies are crucial for safeguarding data against accidental deletion, corruption, or malicious activities.
+Backup and recovery strategies protect data against accidental deletion, corruption, and malicious activity.
 
 ### Best Practices
 
@@ -222,7 +240,7 @@ Patch management involves keeping software and systems up-to-date with the lates
 
   - National Vulnerability Database (NVD)
 
-  - US-CERT
+  - CISA advisories (the former US-CERT alerts)
   - Common Vulnerabilities and Exposures (CVE)
 
 ## 6. Threat Intelligence
@@ -272,36 +290,36 @@ Threat intelligence involves gathering and analyzing information about potential
 
 ### Overview
 
-Testing is a crucial part of a strong security plan for cloud systems. It involves using different methods like red teaming and penetration testing to thoroughly check and strengthen the security of cloud environments. This comprehensive approach aims not just to find weaknesses but also to build a security stance that can handle the challenges of today's complex cloud setups.
+Testing is how a security plan for a cloud system gets checked against reality. Red teaming, penetration testing, vulnerability scanning and audits each examine the environment in a different way. Finding the weaknesses is the first half of the work; feeding them back into the configuration is what actually strengthens the environment.
 
 ### The Role of Testing Methodologies
 
 1. **Red Teaming:**
 
-   - *Objective:* Delve into intricate simulations of cyber-attacks, mirroring real-world adversaries, to rigorously assess the efficacy of existing defense mechanisms.
-   - *Approach:* Employ advanced tactics, techniques, and procedures to uncover potential weaknesses and enhance adaptive security strategies.
+   - *Objective:* Test whether the defenders and their tooling actually detect and stop an attack, by imitating a real adversary over a longer campaign.
+   - *Approach:* Work towards a defined goal (for example: reach the production database) using whatever path works, usually without warning the defenders.
 
 1. **Penetration Testing:**
 
-   - *Objective:* Undertake controlled security assessments, orchestrating ethically driven attacks, to uncover and address vulnerabilities across specific systems, applications, or network segments.
-   - *Approach:* Simulate real-world attack scenarios, enabling a granular evaluation of the security posture and the identification of areas for improvement.
+   - *Objective:* Find and report exploitable vulnerabilities in a defined scope: a system, an application, or a network segment.
+   - *Approach:* Authorised, time-boxed, scope-limited attacks. Breadth of findings matters more than stealth. Check the provider's testing policy first: scanning or attacking cloud resources you do not own is out of scope and may breach the terms of service.
 
 1. **Vulnerability Scanning:**
 
-   - *Objective:* Routinely scan the cloud infrastructure and applications, deploying automated tools to systematically identify and remediate vulnerabilities before they can be exploited.
-   - *Approach:* Employ continuous assessments to proactively address known security weaknesses, fostering a proactive and fortified security landscape.
+   - *Objective:* Automatically identify *known* vulnerabilities and misconfigurations across infrastructure and applications, continuously.
+   - *Approach:* Scheduled automated scans. A scanner finds known issues cheaply but cannot chain them together the way a tester can, so it complements rather than replaces testing.
 
 1. **Security Audits:**
 
-   - *Objective:* Conduct thorough security audits to assess compliance with stringent security policies and industry standards.
-   - *Approach:* Evaluate the effectiveness of security controls, ensuring adherence to policies, and benchmarking against industry best practices.
+   - *Objective:* Check compliance with security policies and industry standards.
+   - *Approach:* Review controls and configuration against a defined baseline (for example CIS benchmarks) rather than attacking the system.
 
 ### Best Practices
 
-- **Holistic Testing Approach:** Synthesize a comprehensive suite of testing methodologies to ensure a nuanced evaluation of the security posture.
-- **Regular Testing Cycles:** Institute recurring testing cycles to dynamically adapt to emerging threats, ensuring a perpetually current understanding of vulnerabilities.
-- **Scenario-Based Testing:** Integrate real-world scenarios into testing regimes, simulating authentic threats and fortifying preparedness.
-- **Collaborative Red and Blue Teaming:** Cultivate collaboration between red and blue teams, leveraging their unique perspectives to enhance the effectiveness of testing activities and incident response.
+- **Combine the methods:** each one finds a different class of problem; none of them alone gives a full picture.
+- **Test repeatedly:** infrastructure and threats both change, so a single annual test only describes the day it was run.
+- **Scenario-Based Testing:** base tests on threats that are realistic for your systems, rather than on a generic checklist.
+- **Collaborative Red and Blue Teaming:** Have the red and blue teams work together. Each side sees what the other misses, which improves both the testing and the incident response built on it.
 
 ### Tools
 
@@ -331,13 +349,35 @@ Testing is a crucial part of a strong security plan for cloud systems. It involv
 
 ### Continuous Improvement
 
-Testing in the realm of cloud security is not merely a singular endeavor; it represents an ongoing and adaptive process. Regularly reassess and refine testing methodologies to uphold a proactive, responsive, and continually evolving security stance.
+Testing is not a one-off exercise. Re-run it after significant changes to the infrastructure and feed the findings back into configuration baselines and playbooks.
 
 ## 8. Shared Responsibility Model
 
 ### Overview
 
-The shared responsibility model is a foundational concept in cloud computing, delineating the distribution of security responsibilities between the cloud service provider (CSP) and the customer. By clearly defining these responsibilities, the model aims to establish a secure and collaborative approach to managing various aspects of cloud services.
+The shared responsibility model is a foundational concept in cloud computing: it defines which security responsibilities belong to the cloud service provider (CSP) and which stay with the customer. Providers usually summarise it as security *of* the cloud versus security *in* the cloud.
+
+```text
+            Provider's side        |        Your side
+  ---------------------------------+--------------------------------
+  "Security OF the cloud"          | "Security IN the cloud"
+                                   |
+  - physical data centres          | - IAM users, roles, keys
+  - host OS and hypervisor         | - guest OS patches (IaaS)
+  - network backbone               | - firewall / security group rules
+  - hardware decommissioning       | - bucket and database access rules
+  - availability of the service    | - encryption choices, key handling
+  - patching managed services      | - application code and its bugs
+                                   |
+  Failures here are rare and are   | Most publicly reported cloud data
+  handled by the provider.         | breaches start here: a public
+                                   | bucket, an over-broad role, or a
+                                   | leaked access key.
+```
+
+Where the dividing line sits depends on the service model (see the IaaS /
+PaaS / SaaS stack in the overview lecture). Moving to a managed service
+moves the line, it never removes it.
 
 ### Key Components of the Shared Responsibility Model
 
@@ -373,20 +413,15 @@ The shared responsibility model is a foundational concept in cloud computing, de
 
 ### Best Practices
 
-- **Clear Communication:** Establish and maintain clear communication channels between the CSP and the customer to ensure a mutual understanding of security responsibilities.
-- **Continuous Education:** Stay informed about updates and changes to the shared responsibility model and continuously educate relevant stakeholders.
-- **Comprehensive Security Policies:** Develop and enforce comprehensive security policies to align with the shared responsibility model.
+Keep the communication channels between provider and customer open, so both sides agree on who owns which control. Track the changes a provider makes to its model and pass them on to the people affected. Write the resulting split into security policies and enforce them.
 
 ### Advantages of the Shared Responsibility Model
 
-- **Risk Distribution:** Distributes security responsibilities between CSP and customer based on their areas of expertise.
-- **Flexibility:** Allows customers to customize security measures for their specific needs.
-- **Efficiency:** Promotes collaboration, avoiding duplicative efforts in securing the entire cloud environment.
+The model splits security responsibilities between provider and customer along the lines of who has the expertise for each part. Customers keep the freedom to adapt their own controls to their needs, and neither side duplicates work the other is already doing.
 
 ### Challenges and Considerations
 
-- **Understanding Boundaries:** Both CSP and customers must have a clear understanding of the demarcation lines for their respective responsibilities.
-- **Evolution of Threat Landscape:** Regularly reassess and update security measures to adapt to the evolving threat landscape.
+Both the provider and the customer need a clear understanding of where the demarcation lines for their responsibilities run. Security measures also need regular reassessment, because the threats they were chosen against keep changing.
 
 ## Sources
 

@@ -1,4 +1,4 @@
-#import "../../../typst-athena-slides-template/1.0.1/src/lib.typ": *
+#import "../../../typst-theme-emberzero/1.1.0/src/lib.typ": *
 
 #show: athena-theme.with(
   font: "Berkeley Mono",
@@ -14,580 +14,192 @@
   ),
 )
 
+#let meme(path) = slide(title: "", dark: true)[
+  #align(center + horizon, image(path, height: 100%))
+]
+
 #title-slide()
 
 #slide(title: "Information Gathering")[
-  #color-block(
-    title: [Definition:],
-    [Systematic process of collecting, analyzing, and cataloging data about a target to produce actionable intelligence.],
-  )
+  #color-block(title: [Definition])[
+    Collect, analyze and catalog data about a target until it becomes actionable.
+  ]
+
+  - *Network*: IPs, domains, DNS
+  - *Systems*: OS, services, versions
+  - *People*: names, email format, roles
 ]
 
-#slide(title: "The Process of Information Gathering")[
-  *Phases:*
-
-  1. *Planning and Preparation*
-    - Define scope, objectives, rules of engagement
-    - Gather tools and resources
-
-  2. *Data Collection*
-    - Passive methods: OSINT, public records
-    - Active methods: Network scanning, service enumeration
-
-  3. *Data Analysis*
-    - Correlate findings
-    - Identify patterns and anomalies
-
-  4. *Reporting*
-    - Document findings
-    - Provide recommendations for next steps
-]
-
-#slide(title: "What Information to Gather")[
-  *Network Infrastructure:*
-  - IP ranges, domains, subdomains
-  - DNS configurations, network topology
-
-  *Systems and Services:*
-  - Operating systems, running services
-  - Application versions, patch levels
-
-  *Organizational Information:*
-  - Company structure, employees
-  - Email formats, office locations
-
-  *Security Posture:*
-  - Security products, authentication methods
-  - Compliance requirements
-]
-
-#section-slide(title: "NMAP: Network Mapper")
+#section-slide(title: "NMAP")
 
 #slide(title: "What is NMAP?")[
-  Industry-standard open-source tool for network discovery and security auditing
+  #quote-block[
+    The network scanner. Since 1997. Free, scriptable, everywhere.
+  ]
 
-  *Created by:* Gordon "Fyodor" Lyon (1997)
-
-  *Why NMAP?*
-  - Most comprehensive network scanning tool
-  - Flexible and scriptable (NSE)
-  - Cross-platform compatibility
-  - Used by security professionals worldwide
-  - Free and open source
-]
-
-#slide(title: "NMAP Core Capabilities")[
-  *Four Main Functions:*
-
-  1. *Host Discovery* - Which systems are online?
-  2. *Port Scanning* - Which ports are open?
-  3. *Version Detection* - What services/versions running?
-  4. *OS Detection* - What operating systems?
-
-  Plus: Vulnerability detection, network mapping, and more via NSE scripts
+  1. *Host discovery* -- who is online?
+  2. *Port scanning* -- what is open?
+  3. *Version detection* -- what is running?
+  4. *OS detection* -- what is it running on?
 ]
 
 #slide(title: "Host Discovery")[
-  #grid(
-    columns: (1fr, 1fr),
-    gutter: 6mm,
-    align: (top),
-  )[
-    *Find hosts without full scan*
-
-    ```bash
-    # Basic ping scan (ICMP)
-    nmap -sn 192.168.1.0/24
-
-    # Skip ping, assume all up
-    nmap -Pn 192.168.1.10
-
-    # ARP scan (local network, most reliable)
-    nmap -PR 192.168.1.0/24
-    ```
-  ][
-    *Discovery Methods:*
-    - ICMP echo requests (ping)
-    - TCP SYN to common ports
-    - TCP ACK (bypass simple firewalls)
-    - ARP for local networks
-  ]
+  ```bash
+  nmap -sn 192.168.1.0/24   # ping sweep
+  nmap -Pn 192.168.1.10     # skip ping, assume up
+  nmap -PR 192.168.1.0/24   # ARP, best on local LAN
+  ```
 ]
 
 #slide(title: "Port Scanning")[
-  #grid(
-    columns: (1fr, 1fr),
-    gutter: 6mm,
-    align: (top),
-  )[
-    *Scan Types:*
+  ```bash
+  nmap -sS 192.168.1.10          # SYN scan (root)
+  nmap -sT 192.168.1.10          # full connect
+  nmap -p- 192.168.1.10          # all 65535 ports
+  nmap --top-ports 100 10.0.0.1  # the usual suspects
+  ```
+]
 
-    - *TCP SYN* (`-sS`): Stealth, doesn't complete handshake (requires root)
-    - *TCP Connect* (`-sT`): Full connection (no root needed)
-    - *UDP* (`-sU`): Scan UDP ports (slower)
-  ][
-    ```bash
-    # Specific ports
-    nmap -p 22,80,443 192.168.1.10
-
-    # All ports
-    nmap -p- 192.168.1.10
-
-    # Top 100 ports
-    nmap --top-ports 100 192.168.1.10
-    ```
+#slide(title: "Don't Forget UDP")[
+  #color-block(title: [A TCP scan finds no UDP services. None.])[
+    DNS, SNMP, TFTP and NTP are invisible until you ask for them.
   ]
-]
-
-#slide(title: "Service and Version Detection")[
-  #grid(
-    columns: (1fr, 1fr),
-    gutter: 6mm,
-    align: (top),
-  )[
-    *Identify what's running:*
-
-    ```bash
-    # Basic version detection
-    nmap -sV 192.168.1.10
-
-    # Aggressive version detection
-    nmap -sV --version-intensity 9 192.168.1.10
-    ```
-  ][
-    *Example Output:*
-    ```
-    PORT     STATE SERVICE VERSION
-    22/tcp   open  ssh     OpenSSH 8.2p1
-    80/tcp   open  http    Apache 2.4.41
-    3306/tcp open  mysql   MySQL 5.7.22
-    ```
-  ]
-]
-
-#slide(title: "Operating System Detection")[
-  #grid(
-    columns: (1fr, 1fr),
-    gutter: 6mm,
-    align: (top),
-  )[
-    *Fingerprint OS via TCP/IP stack analysis*
-
-    ```bash
-    # OS detection (requires root)
-    nmap -O 192.168.1.10
-
-    # Aggressive detection + version scanning
-    nmap -A 192.168.1.10
-    ```
-  ][
-    *Identifies:*
-    - Operating system family
-    - Specific version
-    - Device type
-  ]
-]
-
-#slide(title: "NMAP Timing Templates")[
-  Control scan speed with -T0 through -T5:
-
-  - *T0 (Paranoid)*: Extremely slow, IDS evasion (5 min between probes)
-  - *T1 (Sneaky)*: Slow, IDS evasion (15 sec between probes)
-  - *T2 (Polite)*: Slows down to reduce bandwidth
-  - *T3 (Normal)*: Default timing
-  - *T4 (Aggressive)*: Fast, assumes reliable network
-  - *T5 (Insane)*: Very fast, may sacrifice accuracy
 
   ```bash
-  nmap -sS -T4 192.168.1.0/24
+  sudo nmap -sU --top-ports 20 192.168.1.10
+  ```
+
+  A full UDP sweep takes hours. Scan the top ports.
+]
+
+#slide(title: "Versions and OS")[
+  ```bash
+  nmap -sV 192.168.1.10   # service versions
+  nmap -O  192.168.1.10   # OS fingerprint (root)
+  nmap -A  192.168.1.10   # everything, loud
+  ```
+
+  ```
+  PORT     STATE SERVICE VERSION
+  22/tcp   open  ssh     OpenSSH 8.2p1
+  80/tcp   open  http    Apache 2.4.41
   ```
 ]
 
-#slide(title: "NMAP Output Formats")[
-  *Save scan results in various formats:*
+#slide(title: "Port States")[
+  - *open* -- a service answers
+  - *closed* -- reachable, nothing listening
+  - *filtered* -- a firewall dropped the probe
+  - *open|filtered* -- UDP, can't tell
+]
+
+#meme("figures/ig_morpheus.png")
+
+#slide(title: "Timing: -T0 to -T5")[
+  - *T0/T1* -- paranoid, slow, hours
+  - *T3* -- default
+  - *T4* -- fast, fine on good networks
+  - *T5* -- insane, misses results, may break things
+]
+
+#meme("figures/ig_fine.png")
+
+#slide(title: "Always Save Output")[
+  ```bash
+  nmap -oA scan 192.168.1.10   # .nmap + .xml + .gnmap
+  ```
+
+  You will need it again. You will not remember the flags.
+]
+
+#meme("figures/ig_gru.png")
+
+#section-slide(title: "NSE: Scripting Engine")
+
+#slide(title: "NSE Scripts")[
+  600+ Lua scripts in categories: `default`, `vuln`, `discovery`, ...
 
   ```bash
-  # Normal output (human-readable)
-  nmap -oN scan.txt 192.168.1.10
-
-  # XML output (machine-parseable)
-  nmap -oX scan.xml 192.168.1.10
-
-  # Grepable output
-  nmap -oG scan.gnmap 192.168.1.10
-
-  # All formats at once
-  nmap -oA scan_results 192.168.1.10
+  nmap -sC target                              # safe defaults
+  nmap --script=vuln target                    # known vulns
+  nmap --script=ssl-enum-ciphers -p 443 target
   ```
 ]
 
-#slide(title: "Advanced NMAP Techniques")[
-  *Evasion and Obfuscation:*
-
+#slide(title: "The Workflow")[
   ```bash
-  # Use decoy addresses
-  nmap -D RND:10 192.168.1.10
-
-  # Fragment packets
-  nmap -f 192.168.1.10
-
-  # Spoof source port
-  nmap --source-port 53 192.168.1.10
-
-  # Scan through proxy
-  nmap --proxies http://proxy:8080 target.com
+  nmap -sn 10.0.0.0/24 -oA 1-hosts            # 1. who is up
+  nmap -iL hosts.txt -p- --open -oA 2-ports   # 2. what is open
+  nmap -sV -sC -O -oA 3-services target       # 3. what is it
+  nmap --script=vuln -oA 4-vulns target       # 4. what is wrong
   ```
-]
-
-#section-slide(title: "NMAP Scripting Engine (NSE)")
-
-#slide(title: "What is NSE?")[
-  *NMAP Scripting Engine extends NMAP capabilities*
-
-  - 600+ pre-written scripts
-  - Lua-based scripting language
-  - Categories: auth, brute, discovery, exploit, vuln, and more
-
-  *Script Categories:*
-  - `default` - Safe scripts, run with `-sC`
-  - `vuln` - Vulnerability detection
-  - `exploit` - Exploitation attempts
-  - `brute` - Brute force attacks
-  - `discovery` - Advanced enumeration
-]
-
-#slide(title: "Using NSE Scripts")[
-  ```bash
-  # Run default safe scripts
-  nmap -sC 192.168.1.10
-
-  # Run specific script
-  nmap --script=http-title 192.168.1.10
-
-  # Run multiple scripts
-  nmap --script=http-enum,http-headers 192.168.1.10
-
-  # Run all scripts in category
-  nmap --script=vuln 192.168.1.10
-
-  # Run with wildcards
-  nmap --script="http-*" 192.168.1.10
-  ```
-]
-
-#slide(title: "Popular NSE Scripts")[
-  ```bash
-  # HTTP enumeration
-  nmap --script=http-enum -p 80 target.com
-
-  # SMB vulnerability detection
-  nmap --script=smb-vuln-* -p 445 target.com
-
-  # SSL/TLS analysis
-  nmap --script=ssl-enum-ciphers -p 443 target.com
-
-  # DNS zone transfer
-  nmap --script=dns-zone-transfer -p 53 ns1.example.com
-
-  # Database enumeration
-  nmap --script=mysql-info -p 3306 target.com
-  ```
-]
-
-#slide(title: "NMAP Practical Workflow")[
-  == Four-Phase Approach:
-
-  *Phase 1: Discovery*
-  ```bash
-  nmap -sn 192.168.1.0/24 -oA discovery
-  ```
-
-  *Phase 2: Port Scanning*
-  ```bash
-  nmap -iL live_hosts.txt -p- --open -T4 -oA ports
-  ```
-
-  *Phase 3: Service Enumeration*
-  ```bash
-  nmap -sV -sC -O -oA services target
-  ```
-
-  *Phase 4: Vulnerability Assessment*
-  ```bash
-  nmap --script=vuln -oA vulns target
-  ```
-]
-
-#slide(title: "Interpreting NMAP Results")[
-  *Port States:*
-
-  - *open* - Service actively accepting connections
-  - *closed* - Port accessible but no service listening
-  - *filtered* - Firewall blocking probe (inconclusive)
-  - *unfiltered* - Port accessible but state undetermined
-  - *open|filtered* - Cannot determine (UDP scans)
-  - *closed|filtered* - Cannot determine (rare)
-]
-
-#slide(title: "Common Port Numbers")[
-  #table(
-    columns: (auto, auto, 1fr),
-    align: (center, left, left),
-    table.header([*Port*], [*Service*], [*Description*]),
-    [22], [SSH], [Secure Shell],
-    [80], [HTTP], [Web traffic],
-    [443], [HTTPS], [Encrypted web],
-    [3389], [RDP], [Remote Desktop],
-    [445], [SMB], [Windows file sharing],
-    [3306], [MySQL], [MySQL database],
-    [5432], [PostgreSQL], [PostgreSQL database],
-    [8080], [HTTP-ALT], [Alternative HTTP],
-  )
 ]
 
 #section-slide(title: "Enumeration")
 
 #slide(title: "What is Enumeration?")[
-  *Aggressive phase of information gathering*
-
-  - Extract granular details from identified services
-  - Drill deep into specific targets
-  - User accounts, shares, configurations
-  - Bridge between scanning and exploitation
-]
-
-#slide(title: "Enumeration Process")[
-  1. Identify service/protocol
-  2. Query service for detailed information
-  3. Extract data systematically
-  4. Validate findings
-  5. Document for exploitation phase
-]
-
-#slide(title: "SMB/NetBIOS Enumeration")[
-  #grid(
-    columns: (1fr, 1fr),
-    gutter: 6mm,
-    align: (top),
-  )[
-    *Windows network information extraction*
-
-    *Ports:* 137, 139, 445
-
-    ```bash
-    # Comprehensive SMB enumeration
-    enum4linux -a 192.168.1.10
-
-    # List shares
-    smbclient -L //192.168.1.10 -N
-
-    # Share mapping
-    smbmap -H 192.168.1.10
-    ```
-  ][
-    *Information Extracted:*
-    - Workgroup/domain, OS version
-    - Users, groups, password policies
-    - Network shares and permissions
+  #color-block(title: [Scanning finds the door. Enumeration reads the nameplate.])[
+    Pull users, shares, configs and policies out of each service.
   ]
 ]
 
-#slide(title: "SNMP Enumeration")[
-  *Network device configuration extraction*
-
-  *Port:* 161 (UDP)
-
+#slide(title: "SMB (139/445)")[
   ```bash
-  # Walk entire MIB tree
-  snmpwalk -v 2c -c public 192.168.1.1
-
-  # Comprehensive enumeration
-  snmp-check 192.168.1.1
-
-  # Community string scanner
-  onesixtyone -c community.txt 192.168.1.0/24
+  smbclient -L //192.168.1.10 -N          # list shares, no password
+  smbclient //192.168.1.10/public -N -c ls
+  enum4linux -a 192.168.1.10              # all of it, plus users
   ```
 
-  *Common Community Strings:* public, private, manager, admin
+  `-N` is an anonymous session. No exploit needed.
 ]
 
-#slide(title: "LDAP Enumeration")[
-  #grid(
-    columns: (1fr, 1fr),
-    gutter: 6mm,
-    align: (top),
-  )[
-    *Directory services (Active Directory)*
+#slide(title: "SNMP (161/udp)")[
+  ```bash
+  snmpwalk -v 2c -c public 192.168.1.1 1.3.6.1.2.1.1
+  onesixtyone -c community.txt 192.168.1.1
+  ```
 
-    *Ports:* 389 (LDAP), 636 (LDAPS)
+  - Hostname, location, contact, interfaces
+  - Default community strings: `public`, `private`. Still common.
+]
 
-    ```bash
-    # Query LDAP directory
-    ldapsearch -x -h 192.168.1.10 -s base
+#slide(title: "LDAP and DNS")[
+  ```bash
+  ldapsearch -x -h 192.168.1.10 -b "dc=example,dc=com"
+  dig @ns1.example.com example.com AXFR   # zone transfer
+  amass enum -d example.com               # subdomains
+  ```
+]
 
-    # Extract all users
-    ldapsearch -x -h 192.168.1.10 \
-      -b "dc=example,dc=com" \
-      "(objectClass=person)"
-    ```
-  ][
-    *Information Extracted:*
-    - Domain structure, user accounts
-    - Group memberships, password policies
-    - Service accounts, privileged groups
+#section-slide(title: "Rules")
+
+#slide(title: "Before You Scan")[
+  #color-block(title: [Written authorization])[
+    Scope, ports, timing, time window.
   ]
+
+  - A fast full scan on an old embedded device is a denial of service
+  - Log every command with a timestamp
 ]
 
-#slide(title: "DNS Enumeration")[
-  #grid(
-    columns: (1fr, 1fr),
-    gutter: 6mm,
-    align: (top),
-  )[
-    *Discover subdomains and network infrastructure*
-
-    *Port:* 53
-
-    ```bash
-    # Zone transfer attempt
-    dig @ns1.example.com example.com AXFR
-
-    # Comprehensive DNS enumeration
-    dnsenum example.com
-
-    # Subdomain discovery
-    sublist3r -d example.com
-    amass enum -d example.com
-    ```
-  ][
-    *Information Extracted:*
-    - All DNS records (A, MX, TXT, NS, CNAME)
-    - Subdomains, mail servers, name servers
-  ]
+#slide(title: "Defending")[
+  - Turn off what you don't need
+  - Change SNMP strings, block anonymous SMB, no zone transfers
+  - Strip version banners
+  - Alert on port sweeps
 ]
 
-#slide(title: "Database Enumeration")[
-  *Extract database versions, schemas, users*
-
-  ```bash
-  # MySQL
-  nmap --script mysql-info,mysql-databases \
-    -p 3306 192.168.1.10
-
-  # PostgreSQL
-  nmap --script pgsql-brute \
-    -p 5432 192.168.1.10
-
-  # MSSQL
-  nmap --script ms-sql-info,ms-sql-config \
-    -p 1433 192.168.1.10
-  ```
+#slide(title: "Remember")[
+  - `-sn` #sym.arrow.r `-p-` #sym.arrow.r `-sV -sC` #sym.arrow.r `--script=vuln`
+  - Always `-oA`
+  - Enumeration turns ports into usernames
+  - Authorization first
 ]
 
-#slide(title: "Enumeration Workflow")[
-  *Systematic approach:*
-
-  ```bash
-  # SMB/NetBIOS (ports 139/445)
-  enum4linux -a 192.168.1.10 | tee enum4linux.txt
-
-  # SNMP (port 161)
-  snmp-check 192.168.1.10 | tee snmp.txt
-
-  # LDAP (port 389)
-  ldapsearch -x -h 192.168.1.10 -s base | tee ldap.txt
-
-  # HTTP/HTTPS (ports 80/443)
-  nikto -h http://192.168.1.10 | tee nikto.txt
-  gobuster dir -u http://192.168.1.10 \
-    -w /usr/share/wordlists/dirb/common.txt
-  ```
-]
-
-#section-slide(title: "Best Practices")
-
-#slide(title: "NMAP Best Practices")[
-  *Performance:*
-  - Use `-T4` for reliable networks
-  - Scan top ports first: `--top-ports 1000`
-  - Parallelize: scan multiple targets simultaneously
-  - Use `--min-rate` and `--max-rate` for rate control
-
-  *Stealth:*
-  - SYN scans (`-sS`) over connect scans
-  - Randomize: `--randomize-hosts`
-  - Fragment packets: `-f`
-  - Slow timing: `-T0` or `-T1`
-]
-
-#slide(title: "Legal and Ethical Considerations")[
-  #color-block(
-    title: [Critical:],
-    [
-      *Always obtain written authorization before scanning*
-    ],
-  )
-
-  *Requirements:*
-  - Stay within defined scope (IP ranges, ports)
-  - Use appropriate timing to avoid DoS
-  - Document all scan activities with timestamps
-  - Respect bandwidth and system resources
-]
-
-#slide(title: "Common NMAP Errors")[
-  *"You requested a scan type which requires root privileges"*
-  - Solution: Use `sudo nmap` or run as administrator
-
-  *"Note: Host seems down"*
-  - Solution: Use `-Pn` to skip host discovery
-  - Try different discovery methods: `-PS`, `-PA`, `-PU`
-
-  *Slow UDP scans*
-  - Solution: Scan only essential UDP ports: `--top-ports 20`
-  - Increase parallelism: `--min-parallelism 100`
-]
-
-#slide(title: "Defensive Countermeasures")[
-  *Organizations can limit enumeration:*
-
-  - Disable unnecessary services
-  - Change default SNMP community strings
-  - Block anonymous SMB enumeration
-  - Require LDAP authentication
-  - Disable DNS zone transfers
-  - Remove verbose error messages
-  - Monitor enumeration attempts
-  - Rate limiting and honeypots
-]
-
-#section-slide(title: "Key Takeaways")
-
-#slide(title: "Summary")[
-  *Critical Points:*
-
-  - Information gathering is systematic, not random
-  - NMAP is the foundational tool for network reconnaissance
-  - Enumeration provides granular details for exploitation
-  - Different services require different enumeration techniques
-  - Always operate within legal and authorized boundaries
-  - Combine automated tools with manual verification
-  - Document everything for reporting
-  - Defenders should enumerate their own systems regularly
-]
-
-#slide(title: "Practical Next Steps")[
-  *Hands-on Practice:*
-  1. Install NMAP and explore help: `nmap --help`
-  2. Scan your own systems (with permission)
-  3. Practice NSE scripts on lab environments
-  4. Learn enumeration tools: enum4linux, ldapsearch
-  5. Set up detection for NMAP scans
-
-  *Resources:*
-  - NMAP Documentation: nmap.org/book
-  - NMAP NSE Scripts: nmap.org/nsedoc
-  - HackTheBox and TryHackMe
+#slide(title: "Resources")[
+  - nmap.org/book
+  - nmap.org/nsedoc
+  - HackTheBox / TryHackMe
 ]
 
 #title-slide()

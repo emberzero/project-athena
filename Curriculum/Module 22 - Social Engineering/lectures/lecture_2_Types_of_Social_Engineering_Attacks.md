@@ -1,21 +1,21 @@
 # Types of Social Engineerings Attacks
 
-In the rapidly changing and complex world of cybersecurity, it is crucial to have a comprehensive understanding of the wide range of social engineering attacks. These tactics take advantage of the vulnerabilities in human psychology. By unraveling this digital puzzle, individuals and organisations can better protect themselves against these strategies and safeguard their sensitive information from falling into the wrong hands.
+Social engineering attacks come in a handful of recognisable shapes. They all exploit human psychology rather than a technical flaw, but they differ in the channel they use, the story they tell and what they ask for. Knowing the shapes makes an attack easier to spot while it is happening.
 
 1. **Phishing:**
-   Imagine receiving an email that appears to be from a trusted source, urging you to click a link or share sensitive information. This is the essence of phishing. Cybercriminals craft emails, messages, or websites that mimic reputable entities to trick individuals into divulging personal data.
+   A phishing message appears to come from a trusted source and urges the recipient to click a link or hand over sensitive information. The attacker crafts emails, messages or websites that mimic reputable organisations so that the victim divulges personal data.
 1. **Pretexting:**
-   In the world of pretexting, the attacker weaves a fabricated scenario to manipulate individuals into sharing information. This could involve posing as a co-worker, IT personnel, or another figure of trust to extract confidential details.
+   In pretexting, the attacker invents a scenario to get someone to share information, usually by posing as a co-worker, as IT staff or as some other figure of trust in order to extract confidential details.
 1. **Baiting:**
-   Baiting lures victims with the promise of something enticing, such as a free software download or a tempting link. Little do they know, these digital treats come with a hidden cost – the compromise of their security.
+   Baiting offers the victim something they want: a free software download, a pirated film, or a USB stick left in a car park. The bait carries the payload.
 1. **Quid Pro Quo:**
    Quid pro quo attacks involve the exchange of something valuable in return for information. For instance, an attacker might pose as technical support, offering assistance in exchange for login credentials or other sensitive data.
 1. **Impersonation:**
-   The art of impersonation involves pretending to be someone else, whether it's a colleague, boss, or even a trusted service provider. Through social media, email, or other communication channels, attackers exploit this guise to manipulate victims.
+   Impersonation means pretending to be someone specific: a colleague, a boss, or a trusted service provider. The attacker keeps up that guise over social media, email or another channel to manipulate the victim.
 1. **Tailgating (Piggybacking):**
-   In the physical realm, tailgating occurs when an unauthorized person follows someone with legitimate access into a secure area. In the digital realm, it involves gaining access to restricted areas by exploiting the trust of an authorized individual.
+   Tailgating is a physical-access attack: an unauthorised person follows someone with legitimate access through a controlled door, often while carrying boxes or claiming to have forgotten their badge. The equivalent in a digital system is riding an authorised user's already-authenticated session, for example an unlocked workstation or a remote-support connection the user was talked into opening.
 
-Understanding these types of social engineering attacks is like building a shield against the unseen threats lurking in the digital shadows. By recognizing the tactics employed by cyber adversaries, individuals can fortify their defenses and navigate the online world with greater resilience.
+Most real attacks combine several of these. A pretext establishes the story, a phishing message delivers it, and impersonation makes it credible. Recognising the individual components is what makes the combination visible.
 
 ## Sources
 

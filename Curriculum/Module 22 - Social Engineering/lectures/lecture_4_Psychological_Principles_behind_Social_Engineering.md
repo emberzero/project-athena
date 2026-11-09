@@ -1,25 +1,20 @@
 # Psychological Principles behind Social Engineering
 
-<span style="float: left; margin-right: 10px;">
-    <img src="../resources/images/SocialEngineering.png" alt="Social Engineering" width="200">
-    <br>
-    <small>Source: [ChatGPT/DALL&middot;E]</small>
-</span>
-<span>
-In this section of the module Social Engineering, we will explore the psychological tricks and methods used in social engineering attacks and why, despite widespread knowledge of these tactics, they remain some of the most efficient in cyberspace.
+![Social engineering](../resources/images/SocialEngineering.png)
 
-While many assume that technical flaws are the main cause of cyberattacks, in reality, social engineering often initiates these breaches. In fact, up to 91 percent of cyberattacks begin with a simple phishing scheme, as stated in an article from Microsoft \[1\].
+*Image source: ChatGPT / DALL-E.*
 
-Even the most cautious individuals can fall prey to the sophisticated manipulation of social engineers who skilfully exploit psychological principles such as trust and authority.
+This section covers the psychological tricks and methods used in social engineering attacks, and why they stay effective even though the tactics are widely known.
 
-These methods often go unnoticed because they are woven into the fabric of everyday interactions, making them particularly stealthy and difficult to thwart. This article will shed light on why these human-centric strategies continue to pose a formidable challenge to cybersecurity.
-</span>
+Technical flaws are often blamed for cyberattacks, but social engineering is what starts many breaches. According to an article from Microsoft \[1\], up to 91 percent of cyberattacks begin with a simple phishing scheme.
 
-<div style="clear: both;"></div>
+Even cautious people fall for social engineers who exploit psychological principles such as trust and authority.
+
+The methods often go unnoticed because they look like ordinary everyday interactions, which makes them hard to spot and hard to stop. The sections below explain why these human-centred strategies remain hard to defend against.
 
 ## Core Psychological Principles that Social Engineers Exploit
 
-Social engineering effectively manipulates individuals by leveraging specific psychological principles. Below are some of these most known principles along with some examples:
+Social engineers rely on a handful of psychological principles. The best-known ones, with examples:
 
 - **Reciprocity**: People feel obliged to return favors.
 
@@ -45,11 +40,11 @@ Social engineering effectively manipulates individuals by leveraging specific ps
 
   - Example: A message stating that there are a limited number of slots for a cybersecurity webinar could push people to sign up quickly, compromising their data.
 
-Of course, this is only a brief overview of the most well-known principles. There are many more, and probably some that are not even known yet. But if you want to delve deeper into the subject, I recommend the book ["Social Engineering: The Science of Human Hacking"](https://www.amazon.com/Social-Engineering-Science-Human-Hacking/dp/111943338X) by Christopher Hadnagy \[3\].
+This is only a short overview of the best-known principles; there are many more. For a fuller treatment, read the book ["Social Engineering: The Science of Human Hacking"](https://www.amazon.com/Social-Engineering-Science-Human-Hacking/dp/111943338X) by Christopher Hadnagy \[3\].
 
 ## Why Social Engineering Works
 
-Of course It's now natural to question: "Why would anyone fall for this?" Many reasons exist, but a prominent one is the lack of awareness about the tactics of social engineering. Most people navigate their daily lives with an innate trust in others, not anticipating malicious intentions. Amidst the hustle of everyday tasks, the thought that one could be a target of manipulation is often a distant concern. Here is an overview of the most common reasons why social engineering works:
+Why would anyone fall for this? One of the main reasons is simply that people are not aware of the tactics. Most people go through the day trusting others and not expecting malicious intent, and while they are busy with their own work the possibility of being manipulated is rarely on their mind. The most common reasons social engineering works:
 
 - **Cognitive Overload**: People can only process a limited amount of information at a time
 
@@ -77,13 +72,13 @@ Of course It's now natural to question: "Why would anyone fall for this?" Many r
 
 ## Conclusion
 
-As you can see, there are many reasons why social engineering works. And this is just a small selection of the most common reasons. But we're such complex creatures that it's impossible to generalise about why it works so effectively. You could still say, though, it all boils down to something like: **Humans are the weakest link in the security chain because they are prone to making mistakes and errors in judgement** and that is just our human nature. But it's this very human aspect that holds the potential for increased awareness and resilience. Social engineering thrives on exploiting our imperfections, but with continued education and vigilance we can strengthen this seemingly weakest link. This complex interplay is what makes social engineering such an enduring challenge in cybersecurity.
+The reasons above are only a selection of the most common ones. People are complicated enough that no single explanation covers every case, but the short version is this: **Humans are the weakest link in the security chain because they are prone to making mistakes and errors in judgement.** That same human factor is also what training can change. Social engineering works on human imperfection, and continued education and vigilance are what strengthen the link.
 
-In the next sections of this module we will look at the tools and techniques that social engineers use to exploit these psychological principles, and then we'll look at how we can defend against these attacks.
+The next sections cover the tools and techniques social engineers use to exploit these principles, and then the defences against them.
 
 ## Sources
 
-- **1 Website**: [The psychology of social engineering - the "soft" side of cybercrime](https://www.microsoft.com/en-us/security/blog/2020/06/30/psychology-social-engineering-soft-side-cybercrime) - By Microsoft Security Team, June 30, 2020
-- **2 Website**: [Understanding the Psychology Behind Social Engineering Attacks](https://medium.com/@michaelroyvarley/understanding-the-psychology-behind-social-engineering-attacks-b3c637ef9026) - By Mike Varley, Oct 1
-- **3 Book**: [Social Engineering: The Science of Human Hacking](https://www.amazon.com/Social-Engineering-Science-Human-Hacking/dp/111943338X) - By Christopher Hadnagy, 2018
-- **4 Website**: [The Psychology of Social Engineering – Why It Works](https://www.cde.state.co.us/dataprivacyandsecurity/socialengineeringeducation) - By Colorado Department of Education, January 21, 2020
+- 1 Website: [The psychology of social engineering - the "soft" side of cybercrime](https://www.microsoft.com/en-us/security/blog/2020/06/30/psychology-social-engineering-soft-side-cybercrime) - By Microsoft Security Team, June 30, 2020
+- 2 Website: [Understanding the Psychology Behind Social Engineering Attacks](https://medium.com/@michaelroyvarley/understanding-the-psychology-behind-social-engineering-attacks-b3c637ef9026) - By Mike Varley, Oct 1
+- 3 Book: [Social Engineering: The Science of Human Hacking](https://www.amazon.com/Social-Engineering-Science-Human-Hacking/dp/111943338X) - By Christopher Hadnagy, 2018
+- 4 Website: [The Psychology of Social Engineering: Why It Works](https://www.cde.state.co.us/dataprivacyandsecurity/socialengineeringeducation) - By Colorado Department of Education, January 21, 2020

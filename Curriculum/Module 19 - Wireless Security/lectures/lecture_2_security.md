@@ -2,42 +2,43 @@
 
 ## 2.1 Introduction
 
-In our digital age, WiFi networks are ubiquitous, serving as the gateway to the internet for both personal and professional use. However, this convenience also brings vulnerability. This lecture aims to guide you through the essential steps and best practices to secure your WiFi network effectively.
+A WiFi network transmits over the air, so anyone within radio range can receive its traffic without ever touching a physical port. This lecture gives a short overview of the resulting risks and the measures used against them.
 
 ## 2.2 Security Risks
 
-- **Unauthorized Access:** Unauthorized access occurs when individuals who are not authorized to use a WiFi network gain access to it.
-- **Data Theft:** Data theft refers to the unauthorized retrieval of data transmitted over the network. It can be particularly damaging if sensitive information is intercepted.
-- **Network Attacks:** Network attacks disrupt the normal functioning of a network, steal data, or damage network infrastructure.
-- **Malware Infiltration:** Malware infiltration refers to the introduction of malicious software into the network.
+The risks are the usual ones for a shared medium. People who are not authorized to use the network gain access to it. Data transmitted over the network is retrieved by someone else, which is particularly damaging when it carries sensitive information. Attacks disrupt the normal functioning of the network, steal data, or damage network infrastructure. And malicious software is introduced into the network.
 
 **Note:** This lecture is only required to provide a basic understanding and brief overview of WiFi security fundamentals. Detailed security risks and attack vectors are covered in later lectures.
 
 ## 2.3 Security Protocols
 
-The first line of defense in securing a WiFi network involves choosing the right security protocol. These protocols are responsible for authentication (controlling the access to the network) and encryption (securing the integrity and confidentiality of data) in the network.
+Securing a WiFi network starts with the choice of security protocol. These protocols handle authentication (controlling access to the network) and encryption (protecting the integrity and confidentiality of the data).
 
-- **WEP (Wired Equivalent Privacy):** Outdated and highly insecure, avoid using.
-- **WPA (WiFi Protected Access):** Better than WEP, but has vulnerabilities.
-- **WPA2 (WiFi Protected Access 2):** Currently the most secure option available for most users.
-- **WPA3:** The latest standard, offering improved security features.
+- **WEP (Wired Equivalent Privacy):** Broken. The key can be recovered from captured traffic in minutes. Never use it.
+- **WPA (WiFi Protected Access):** Deprecated. Its TKIP encryption is built on the same RC4 cipher as WEP and has known attacks.
+- **WPA2 (WiFi Protected Access 2):** Still widely deployed and acceptable when configured with AES-CCMP and a strong passphrase, but a captured handshake allows an offline attack on that passphrase.
+- **WPA3:** The current standard and the recommended choice. Its SAE handshake removes the offline passphrase attack and it mandates protection of management frames.
+
+Where hardware allows it, use WPA3. Where it does not, use WPA2 with AES-CCMP
+and disable the WPA/TKIP and WEP fallbacks, since a mixed-mode network can be
+downgraded to its weakest option.
 
 ## 2.4 Further Considerations
 
-- **Strong Passwords:** Use a complex password for your WiFi network by mixing letters, numbers, and special characters. Avoid common words or easily guessable information.
-- **Change SSID Names:** Change the default SSID to something unique but not personally identifiable. Avoid names that make the network a more likely target for hackers.
-- **Disable WPS:** WPS can be a security vulnerability due to its PIN feature making it easier for devices to connect. Disable WPS to prevent potential brute-force attacks.
-- **Firewalls:** Activate the router's built-in firewall to add an extra layer of defense. Consider additional firewall software for more comprehensive protection.
-- **Firmware Updates:** Regularly update the router's firmware to patch security vulnerabilities. Set reminders or enable auto-updates if available.
-- **MAC Filters:** Use MAC address filtering for an additional layer of security. Be aware that MAC addresses can be spoofed by determined attackers.
-- **Reduced Range:** Adjust the signal strength of your router to limit coverage outside your premises. Consider the physical placement of the router in your home or office.
-- **Guest Access:** Create a separate guest network if your router supports it. Ensure it has a different password and doesn't provide access to the main network.
-- **Monitoring:** Regularly check the list of devices connected to your network. Investigate unknown devices or unusual activity.
-- **Education:** Educate yourself and employees about the risks and threats affecting wireless security. Only then it is possible to deal with threats.
+- Use a complex password mixing letters, numbers and special characters. Avoid common words and anything guessable from public information about you.
+- Change the default SSID to something unique but not personally identifiable, and avoid names that make the network a more attractive target.
+- Disable WPS. Its PIN feature exists to make connecting easier and is open to brute force.
+- Activate the router's built-in firewall, and consider additional firewall software where the router's own is limited.
+- Update the router's firmware regularly to patch known vulnerabilities. Enable auto-updates if the router supports them.
+- MAC address filtering keeps casual devices off the network, but it is not a security control. MAC addresses are sent in the clear in every frame and are trivial to copy, so an attacker simply adopts an address that is already allowed.
+- Adjust the transmit power to limit coverage outside your premises, and think about where in the building the router sits.
+- Create a separate guest network if the router supports it, with its own password and no access to the main network.
+- Check the list of connected devices regularly and investigate unknown devices or unusual activity.
+- Teach yourself and your colleagues what the risks are. Nobody can react to a threat they have never heard of.
 
-## 2.3 Conclusion
+## 2.5 Conclusion
 
-Securing a WiFi network is a critical task in safeguarding your digital life. By implementing these practices, you significantly reduce the risk of security breaches and protect sensitive information. Regular vigilance and adherence to these security measures will help ensure that your network remains a safe gateway to the digital world.
+The single most effective measure is choosing a current security protocol with a strong passphrase; the remaining items reduce exposure but do not substitute for it. The following lectures cover the authentication and encryption mechanisms behind these protocols, the attacks against them, and the defences in detail.
 
 ## Sources
 

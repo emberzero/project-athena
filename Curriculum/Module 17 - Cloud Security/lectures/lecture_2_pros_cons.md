@@ -2,13 +2,39 @@
 
 ## Introduction
 
-In the realm of web hosting and server management, selecting the right type of server is crucial for the performance, security, and scalability of your applications and websites. This document compares three popular types of servers: cloud, dedicated, and shared servers, highlighting their pros and cons.
+The server type you pick sets the ceiling for the performance, security, and scalability of an application, and it is hard to change later. This lecture compares the three common options - cloud, dedicated, and shared servers - with their trade-offs.
 
-## Cloud Servers
+## Server Types
 
-Cloud Server: You pay for a service to scale your application
-Dedicated Server: A single server for a application (not scalable)
-Shared Server: A single server hosting multiple applications/projects
+- **Shared server:** one physical machine hosting many customers'
+  applications side by side.
+- **Dedicated server:** one physical machine rented to a single customer.
+- **Cloud server:** compute capacity rented as a service, where instances
+  are added and removed on demand.
+
+The difference is mostly about who else is on the machine and how quickly
+capacity can change:
+
+```text
+  Shared server              Dedicated server
+  +----------------------+   +----------------------+
+  | app A  app B  app C  |   |        app A         |
+  +----------------------+   +----------------------+
+   one machine, many          one machine, one
+   tenants - a noisy          tenant - no resource
+   neighbour hits all         contention, but you
+   of them                    pay for idle capacity
+
+  Cloud
+          +-----------------+
+  users ->| load balancer   |
+          +--+-----+-----+--+
+             |     |     |
+          +--+-+ +-+--+ +-+--+   instances of the same
+          |app | |app | |app |   app, added and removed
+          | A  | | A  | | A  |   as demand changes
+          +----+ +----+ +----+
+```
 
 ### Which one to use?
 
@@ -49,7 +75,7 @@ Shared Server: A single server hosting multiple applications/projects
 | **Student Project**                 | Shared Server             | Cost-effective and simple, suitable for low traffic and minimal resource needs.                                         |
 | **Scalable High-Traffic App**       | Cloud Server              | Ideal for handling traffic spikes and growth, offers scalability and flexibility.                                       |
 | **Small Developer's App**           | Shared, then Cloud Server | Start with shared for cost-efficiency, move to cloud for scalability as the app grows.                                  |
-| **Business with Sensitive Data**    | Dedicated Server          | Provides robust security, high performance, and full customization for handling sensitive information and high traffic. |
+| **Business with Sensitive Data**    | Dedicated Server          | Provides strong security , high performance, and full customization for handling sensitive information and high traffic. |
 | **Media-Rich Websites/Communities** | Dedicated Server          | Ensures fast loading of media content and can handle many concurrent users due to dedicated resources.                  |
 
 ### Price development
@@ -76,9 +102,9 @@ Prices are not accurate. Goal is to understand the development of the prices.
 
 ### Shared Servers
 
-- **Initial Setup**: Standard shared hosting p\[ackage.
+- **Initial Setup**: Standard shared hosting package.
 - **Cost**: Fixed at $20/month.
-- **Scaling**: Limited; performance may degrade as DAUs increase.\]()
+- **Scaling**: Limited; performance may degrade as DAUs increase.
 
 ### Table: Monthly Overview of DAUs, Server Requirements, and Costs
 

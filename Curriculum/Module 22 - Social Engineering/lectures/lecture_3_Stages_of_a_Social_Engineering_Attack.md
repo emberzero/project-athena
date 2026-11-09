@@ -1,21 +1,28 @@
 # Stages of a Social Engineering Attack
 
-Embarking on the fascinating journey through the stages of a social engineering attack is to stepping into a mysterious and enigmatic realm, where the vulnerabilities of human nature are manipulated to serve as powerful tools for cyber manipulation.
+A social engineering attack runs through a sequence of stages, each producing
+something the next stage needs. Disrupting any one stage breaks the chain.
+
+```text
+  recon   ─▶ select  ─▶ trust   ─▶ exploit ─▶ execute ─▶ evade
+  gathers    picks      builds     makes      gets       covers
+  a profile  a victim   a pretext  the ask    access     tracks
+```
 
 1. **Reconnaissance:**
-   The journey begins with reconnaissance, where the attacker gathers information about the target. This phase involves scouring social media, company websites, and any available online repositories to piece together a profile. The more details acquired, the more convincing the subsequent stages become.
+   The attacker gathers information about the target from social media, company websites, and any available online repository, and assembles a profile. The more detail they collect, the more convincing the later stages become.
 1. **Target Selection:**
-   Armed with a wealth of information, the social engineer strategically selects targets based on their susceptibility and relevance to the desired outcome. Whether an individual employee, a department, or an entire organization, the chosen targets become the focal points for the impending manipulation.
+   Using that profile, the attacker picks targets by how susceptible they are and how useful they are for the intended outcome. A target can be an individual employee, a department, or an entire organization.
 1. **Developing Trust:**
-   Trust is the linchpin of social engineering. During this stage, the attacker establishes a facade of credibility. This could involve posing as a colleague, a superior, or even a trusted service provider. Building trust sets the stage for the exploitation that follows.
+   The attacker builds a facade of credibility, for example by posing as a colleague, a superior, or a trusted service provider. Without it, the request in the next stage has no reason to be followed.
 1. **Exploitation:**
-   With trust firmly established, the social engineer exploits the human element. This could manifest as a carefully crafted email, a seemingly innocent phone call, or a manipulated online interaction. The goal is to deceive the target into divulging sensitive information or performing actions that compromise security.
+   With trust established, the attacker makes the request: a carefully crafted email, a seemingly innocent phone call, or a manipulated online interaction. The goal is to get the target to divulge sensitive information or to perform an action that compromises security.
 1. **Execution:**
-   The meticulously planned attack comes to fruition in the execution phase. Whether through phishing emails, deceptive websites, or other manipulative tactics, the attacker leverages the trust cultivated to achieve their objectives. This could range from acquiring login credentials to gaining unauthorized access.
+   The planned attack runs. Through phishing emails, deceptive websites, or other manipulative tactics, the attacker uses the established trust to reach the objective, which ranges from acquiring login credentials to gaining unauthorized access.
 1. **Evasion:**
-   Like a digital phantom, the social engineer seeks to evade detection and maintain anonymity. This involves covering their tracks, erasing digital footprints, and ensuring that their malicious activities go unnoticed for as long as possible.
+   The attacker covers their tracks: removing log entries where they can, abandoning the pretext accounts and infrastructure, and keeping the intrusion unnoticed for as long as possible. The longer the access goes undetected, the more it is worth.
 
-Understanding the stages of a social engineering attack is akin to shining a light into the darkest corners of cybersecurity. By recognizing the intricate dance of manipulation, individuals and organizations can fortify their defenses, creating a more resilient barrier against the ever-present threat of social engineering.
+Defences map onto these stages. Limiting what staff publish about internal structure raises the cost of reconnaissance; a verification procedure for unusual requests breaks the trust stage; and logging that an attacker cannot reach makes the evasion stage fail.
 
 ## Sources
 

@@ -1,18 +1,26 @@
 # Introduction to Reconnaissance
 
-Reconnaissance is the critical initial phase of any security assessment or cyber attack where information about a target is systematically collected and analyzed. Often abbreviated as "recon," this phase determines the success of subsequent attack stages by identifying potential vulnerabilities, entry points, and attack vectors. The quality and thoroughness of reconnaissance directly impacts the effectiveness of any security operation.
+Reconnaissance is the first phase of any security assessment or cyber attack: information about a target is collected and analyzed systematically. Often abbreviated as "recon," it decides how well the later stages work, because the vulnerabilities, entry points and attack vectors they rely on are all identified here.
 
 ## Why Reconnaissance Matters
 
-In cybersecurity, information is power. The reconnaissance phase serves multiple purposes:
-
-- **Attack Surface Mapping**: Identify all potential entry points into a target system or organization
-- **Vulnerability Discovery**: Find weaknesses before moving to exploitation phases
-- **Risk Assessment**: Understand the target's security posture and defenses
-- **Attack Planning**: Develop targeted strategies based on gathered intelligence
-- **Stealth Operations**: Minimize detection by understanding monitoring and defense mechanisms
+The phase serves several purposes at once. It maps the attack surface, meaning every potential entry point into a target system or organization, and it finds weaknesses before any exploitation is attempted. It establishes the target's security posture and defenses, which is what an attack plan is then built on. Knowing which monitoring and defense mechanisms are in place is also what keeps the later activity from being detected.
 
 According to the Cyber Kill Chain framework developed by Lockheed Martin, reconnaissance is the first of seven stages in a cyber attack, making it foundational to both offensive and defensive security operations.
+
+```text
+  Cyber Kill Chain (Lockheed Martin) - recon is stage 1
+
+  | 1. Reconnaissance        gather target information
+  | 2. Weaponization         pair an exploit with a payload
+  | 3. Delivery              email, web, removable media
+  | 4. Exploitation          trigger the vulnerability
+  | 5. Installation          establish persistence
+  | 6. Command & Control     open a channel back to the attacker
+  v 7. Actions on Objective  exfiltrate, encrypt, destroy
+
+  Stages 2-7 are only as good as the information from stage 1.
+```
 
 ## Types of Reconnaissance
 
@@ -22,11 +30,7 @@ According to the Cyber Kill Chain framework developed by Lockheed Martin, reconn
 
 #### Key Characteristics
 
-- **Non-intrusive**: No packets sent directly to target systems
-- **Difficult to detect**: Leaves no logs or alerts on target infrastructure
-- **Legal gray area**: Often uses publicly available information
-- **Time-intensive**: Requires patience and analytical skills
-- **Lower risk**: Minimal chance of triggering security alerts
+No packets are sent directly to target systems, so the activity leaves no logs or alerts on the target infrastructure and is hard to detect. The chance of triggering a security alert is minimal. Because the sources are usually publicly available information, the legal position is a gray area rather than a clear prohibition. The cost is time: passive work needs patience and analytical skill.
 
 #### Methods
 
@@ -36,8 +40,8 @@ According to the Cyber Kill Chain framework developed by Lockheed Martin, reconn
 - **Job Postings**: Reveal technologies, tools, and security requirements
 - **Financial Reports**: Public companies disclose infrastructure and technology investments
 - **Archive Services**: Wayback Machine for historical website content
-- **DNS Enumeration**: Analyzing DNS records without querying target servers directly
-- **Cached Content**: Google Cache, Archive.org for removed or modified content
+- **DNS Enumeration**: Querying DNS records through a recursive resolver rather than the target's own nameservers (the authoritative server still sees the resolver's query, so this is quiet rather than invisible)
+- **Cached Content**: Archive.org and similar mirrors for removed or modified content (Google dropped its own cache links in 2024)
 
 #### Tools and Techniques
 
@@ -45,9 +49,10 @@ According to the Cyber Kill Chain framework developed by Lockheed Martin, reconn
   - Command: `whois example.com`
   - Reveals registration dates, expiration, registrant details (if not privacy-protected)
 
-- **nslookup/dig**: Query DNS records without directly contacting target servers
-  - Command: `nslookup example.com` or `dig example.com ANY`
-  - Reveals A, AAAA, MX, TXT, NS records
+- **nslookup/dig**: Query DNS records through your own resolver instead of the target's nameservers
+  - Command: `nslookup example.com` or `dig example.com MX`
+  - Reveals A, AAAA, MX, TXT, NS records when queried per record type
+  - Ask for one type at a time: `ANY` queries are answered minimally or refused by most resolvers (RFC 8482)
 
 - **theHarvester**: Automated tool for gathering emails, subdomains, IPs from public sources
   - Searches multiple data sources: search engines, PGP key servers, Shodan
@@ -77,11 +82,7 @@ An ethical hacker performing passive reconnaissance on `example-corp.com` might:
 
 #### Key Characteristics
 
-- **Intrusive**: Directly probes target systems
-- **Easily detected**: Leaves clear trails in logs and monitoring systems
-- **Legal requirements**: Requires explicit authorization
-- **Faster results**: Provides real-time, accurate information
-- **Higher risk**: Can trigger IDS/IPS, firewalls, and incident response
+Active techniques probe the target systems directly, which leaves clear trails in logs and monitoring systems and is therefore easy to detect. They can trigger IDS/IPS, firewalls and incident response, and they always require explicit authorization. In exchange the results are faster, current and accurate.
 
 #### Methods
 
@@ -140,6 +141,25 @@ During an authorized penetration test on `192.168.1.0/24`:
 **Result**: Detailed technical profile enabling targeted exploitation attempts.
 
 ### Passive vs. Active: Choosing Your Approach
+
+What separates the two is where the traffic goes:
+
+```text
+  PASSIVE  you --> search engines, WHOIS registry, certificate
+                   transparency logs, archives, job ads, your
+                   own recursive resolver
+                        |
+                        +--> answers come from third-party
+                             copies of the target's data
+
+           target infrastructure: no packets from you, no log
+           entry, nothing to alert on
+
+
+  ACTIVE   you --> firewall / IDS --> target host
+                   logs your source      the service logs the
+                   IP and every probe    connection itself
+```
 
 | Aspect | Passive Reconnaissance | Active Reconnaissance |
 |--------|------------------------|----------------------|
@@ -355,7 +375,7 @@ Organizations can implement several strategies to limit reconnaissance effective
 - Reconnaissance is the foundation of both offensive and defensive security operations
 - Passive techniques provide stealth; active techniques provide accuracy
 - Proper authorization is legally and ethically essential
-- Reconnaissance is a continuous process, not a one-time activity
+- Reconnaissance is repeated throughout an engagement rather than performed once
 - Defenders must understand reconnaissance to implement effective countermeasures
 - Modern reconnaissance leverages automation and combines multiple data sources
 - Supply chain and third-party relationships expand reconnaissance targets

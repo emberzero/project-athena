@@ -1,7 +1,7 @@
 #!/bin/bash
 
 cd ../Curriculum
-echo "# Table of Contents" > SUMMARY.md
+printf "# Table of Contents\n\n" > SUMMARY.md
 echo "* [Welcome](../README.md)" >> SUMMARY.md
 
 find . -mindepth 1 -maxdepth 1 -type d -exec bash -c '
@@ -11,7 +11,7 @@ find . -mindepth 1 -maxdepth 1 -type d -exec bash -c '
 ' _ {} \; | sort -k2n | while read d; do
   d=${d% *}
   echo "" >> SUMMARY.md
-  echo "### ${d##*/}" >> SUMMARY.md
+  printf "## %s\n\n" "${d##*/}" >> SUMMARY.md
   echo "* [Introduction]($(echo "$d" | sed 's/ /%20/g')/introduction.md)" >> SUMMARY.md
   if [ -d "$d/lectures" ]; then
     echo "* Lectures" >> SUMMARY.md

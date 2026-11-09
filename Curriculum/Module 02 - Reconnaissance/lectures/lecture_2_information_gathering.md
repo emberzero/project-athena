@@ -81,6 +81,22 @@ nmap -Pn 192.168.1.10
 nmap -PR 192.168.1.0/24
 ```
 
+```text
+  nmap -sn (no root)   IP-level probes only
+    you  --probe-->         host
+                            host firewall silently drops it
+    you  <---- nothing ---- host     => reported as "down"
+
+  nmap -PR   ARP, same LAN segment only
+    you  --"who has 192.168.1.42?"-->  broadcast
+    you  <--"that is me, aa:bb:cc"---  host
+
+  A host may refuse to answer an IP probe. It cannot refuse ARP
+  and still use IPv4 on the segment, which is why -PR finds
+  hosts that -sn misses - and only on the local network.
+  As root on the same LAN, -sn already uses ARP by itself.
+```
+
 #### 2. Port Scanning
 
 Determine which ports are open, closed, or filtered on target systems.
@@ -91,6 +107,25 @@ Determine which ports are open, closed, or filtered on target systems.
 - **TCP Connect Scan** (`-sT`): Completes full TCP connection (works without root)
 - **UDP Scan** (`-sU`): Scans UDP ports (slower, often filtered)
 - **Comprehensive**: `-sS -sU` scans both TCP and UDP
+
+```text
+  TCP Connect scan (-sT)      full handshake, the service logs it
+    you  --SYN-->      port
+    you  <--SYN/ACK--  port   port is open
+    you  --ACK-->      port   connection now established
+    you  --RST/FIN-->  port   and immediately torn down
+    => an entry in the application's own connection log
+
+  TCP SYN scan (-sS)          half-open, no session is created
+    you  --SYN-->      port
+    you  <--SYN/ACK--  port   port is open
+    you  --RST-->      port   aborted before completion
+    => no application log entry, but the firewall, the IDS and
+       any flow collector still see every packet
+
+  Closed port: answers RST.  Filtered port: nothing, or an
+  ICMP unreachable error.
+```
 
 **Port Specifications**:
 
@@ -280,6 +315,19 @@ nmap --script=mysql-info,mysql-databases -p 3306 192.168.1.10
 
 ### Practical NMAP Workflow
 
+```text
+  Phase 1         Phase 2         Phase 3         Phase 4
+  nmap -sn   -->  nmap -p-   -->  nmap -sV   -->  nmap
+  (ping sweep)    --open -T4      -sC -O          --script=vuln
+  |               |               |               |
+  v               v               v               v
+  discovery.      all_ports.*     service_scan.*  vuln_scan.*
+  gnmap
+  |
+  +-- grep "Status: Up" --> live_hosts.txt
+        feeds the -iL list of phases 2 and 3
+```
+
 #### Phase 1: Quick Discovery
 
 ```bash
@@ -324,9 +372,16 @@ nmap -p 445 --script=smb-vuln-ms17-010 192.168.1.10
 
 #### Exercise 1: Network Discovery
 
-1. Scan your local network to identify active hosts: `nmap -sn 192.168.1.0/24`
-2. Compare results with ARP scan: `sudo nmap -PR 192.168.1.0/24`
-3. Document: Which method found more hosts? Why might this be?
+Scan a network you own, such as your home LAN or a lab you set up. **Not** the
+school or company network: it is someone else's, and scanning it without asking
+is exactly the thing the rest of this lecture tells you not to do.
+
+1. Find active hosts: `nmap -sn 192.168.1.0/24` (adjust the range to your network)
+2. Compare with an ARP scan: `sudo nmap -PR 192.168.1.0/24`
+3. Document: which method found more hosts, and why?
+
+The ARP scan usually wins on a local network, because a host can refuse to answer
+a ping but cannot refuse ARP and still use the network.
 
 #### Exercise 2: Service Fingerprinting
 
@@ -362,6 +417,24 @@ nmap -p 445 --script=smb-vuln-ms17-010 192.168.1.10
 - **open|filtered**: Cannot determine if open or filtered (UDP scans)
 - **closed|filtered**: Cannot determine if closed or filtered (rare)
 
+**Seeing why**: add `--reason` and NMAP prints the packet that led to each verdict.
+This is the difference between trusting the tool and understanding it:
+
+```bash
+nmap --reason -p 22,80,443 192.168.1.10
+```
+
+```text
+PORT    STATE    SERVICE REASON
+22/tcp  open     ssh     syn-ack ttl 64
+80/tcp  closed   http    reset ttl 64
+443/tcp filtered https   no-response
+```
+
+A RST came back from port 80, so the host is reachable and nothing is listening.
+Port 443 produced silence, which is what a firewall that drops packets looks like.
+"Filtered" is not a result, it is the absence of one.
+
 #### Common Port Numbers
 
 | Port | Service | Description |
@@ -370,16 +443,26 @@ nmap -p 445 --script=smb-vuln-ms17-010 192.168.1.10
 | 22 | SSH | Secure Shell |
 | 23 | Telnet | Unencrypted remote access |
 | 25 | SMTP | Email transmission |
-| 53 | DNS | Domain Name System |
+| 53 | DNS | Domain Name System (TCP and UDP) |
 | 80 | HTTP | Web traffic |
 | 110 | POP3 | Email retrieval |
+| 139 | NetBIOS | Legacy Windows file sharing |
 | 143 | IMAP | Email retrieval |
+| 161 | SNMP | Network management (**UDP only**) |
+| 389 | LDAP | Directory services, Active Directory |
 | 443 | HTTPS | Encrypted web traffic |
 | 445 | SMB | Windows file sharing |
+| 1433 | MSSQL | Microsoft SQL Server |
+| 2049 | NFS | Unix/Linux file sharing |
 | 3306 | MySQL | MySQL database |
 | 3389 | RDP | Remote Desktop Protocol |
 | 5432 | PostgreSQL | PostgreSQL database |
 | 8080 | HTTP-ALT | Alternative HTTP port |
+
+Most of these have an enumeration section later in this lecture. Note the
+protocol: SNMP on 161 is **UDP only**, so a default TCP scan reports nothing at
+all for it. DNS listens on both, and uses TCP mainly for zone transfers and
+oversized responses.
 
 ### NMAP Best Practices
 
@@ -397,7 +480,23 @@ nmap -p 445 --script=smb-vuln-ms17-010 192.168.1.10
 - Randomize scan order: `--randomize-hosts`
 - Fragment packets: `-f`
 - Slow timing: `-T0` or `-T1`
-- Spoof source: `-S <spoofed_ip> -e <interface>`
+- Decoy addresses: `-D RND:10` hides your IP among nine fake ones
+
+**A reality check on "stealth".** These techniques are much weaker than their
+names suggest:
+
+- A SYN scan is only stealthy against *application* logs. It never completes the
+  handshake, so the service never logs a connection, but the firewall, the IDS
+  and any flow collector see it perfectly well. `-sS` does not make you invisible,
+  it just means the web server's access log stays clean.
+- Fragmentation and source-port tricks defeat simple packet filters from the
+  1990s. Any modern stateful firewall reassembles fragments before inspecting them.
+- Source-IP spoofing (`-S`) is *not* in the list above for a reason: the replies
+  go to the address you spoofed, not to you, so you learn nothing. It is only
+  useful in specific setups where you can also observe the spoofed host's traffic.
+- Real stealth is slow timing plus patience. `-T0` across a week is harder to spot
+  than any flag. That is rarely compatible with a time-boxed engagement, which is
+  why most authorized tests simply do not bother hiding.
 
 #### Legal and Ethical Considerations
 
@@ -406,6 +505,20 @@ nmap -p 445 --script=smb-vuln-ms17-010 192.168.1.10
 - Use appropriate timing to avoid DoS
 - Document all scan activities with timestamps
 - Respect bandwidth and system resources
+
+**Scanning can break things.** This is not a theoretical risk. Embedded and
+industrial devices (printers, IP cameras, building controls, medical equipment,
+PLCs) often have fragile network stacks that were never tested against a port
+scanner. A `-T5 -p-` sweep has knocked such devices offline, and in an industrial
+network that can mean a stopped production line. Rules of thumb:
+
+- Default to `-T3` on anything you do not recognize, and `-T4` only on ordinary
+  IT networks you know are healthy
+- Never scan OT, ICS or medical networks without the owner's explicit sign-off,
+  and then only with timing they approve
+- `--max-rate` caps packets per second when you need a hard ceiling
+- If a host stops responding mid-scan, stop and tell someone. Do not scan it again
+  to check
 
 ### Common Errors and Troubleshooting
 
@@ -461,6 +574,14 @@ Enumeration is the aggressive phase of information gathering where you extract g
 
 **Ports**: 137 (NetBIOS Name), 139 (NetBIOS Session), 445 (SMB)
 
+**Anonymous (null) sessions**: SMB allows a client to connect without supplying
+credentials. Many servers still accept such a session and will happily answer
+"which shares do you have?" and, if a share is marked guest-readable, "what is in
+them?". That is what the `-N` flag in the commands below means: no password, no
+account. An anonymous share listing is the single most common finding in an
+internal engagement, because it needs no exploit and leaves an ordinary-looking
+file-sharing connection in the logs.
+
 **Tools and Commands**:
 
 ```bash
@@ -514,6 +635,11 @@ crackmapexec smb 192.168.1.10 --shares
 **Purpose**: Extract device configurations, network topology, and system information from SNMP-enabled devices.
 
 **Port**: 161 (UDP)
+
+**Why scans miss it**: SNMP speaks UDP only. The default `nmap` scan is TCP, so a
+host running SNMP looks like it has no such service unless you explicitly scan UDP
+(`-sU`). A full UDP sweep is slow, so in practice you scan the top ports
+(`sudo nmap -sU --top-ports 20 <target>`) and accept that you may miss exotic ones.
 
 **Tools and Commands**:
 
@@ -737,15 +863,35 @@ smtp-user-enum -M VRFY -U users.txt -t 192.168.1.10 | tee smtp.txt
 
 #### Exercise 1: SMB Enumeration
 
-1. Set up a Windows VM or lab environment
-2. Run: `enum4linux -a <target_ip>`
-3. Analyze output:
-   - What is the domain/workgroup?
-   - What users exist?
-   - What shares are accessible?
-   - What is the password policy?
+Use the course lab target (see Assignment 2) or any host you are authorized to test.
 
-#### Exercise 2: DNS Enumeration
+1. List the shares without credentials: `smbclient -L //<target_ip> -N`
+2. Open a share that allows it and list its contents:
+   `smbclient //<target_ip>/<share> -N -c ls`
+3. Run the broader sweep: `enum4linux -a <target_ip>`
+4. Analyze the output:
+   - What is the workgroup and the server name?
+   - Which shares exist, and which answer an anonymous client?
+   - What is in the readable share, and would you expect it to be public?
+   - Does the server disclose users or a password policy, or only shares?
+
+A server that reveals shares but no accounts is already a finding. Note what you
+got *and* what stayed closed, because the difference tells you how the server is
+configured.
+
+#### Exercise 2: SNMP Enumeration
+
+1. SNMP is UDP-only, so find it first: `sudo nmap -sU --top-ports 20 <target_ip>`
+2. Guess the community string. Start with the defaults (`public`, `private`), or
+   let a scanner try a list: `onesixtyone -c community.txt <target_ip>`
+3. Read the system branch of the MIB tree:
+   `snmpwalk -v 2c -c <community> <target_ip> 1.3.6.1.2.1.1`
+4. Analyze the output:
+   - What is the device's name, location and contact?
+   - How much of this would help someone planning a phone-based pretext?
+   - What else does the agent expose beyond the system branch?
+
+#### Exercise 3: DNS Enumeration
 
 1. Choose a domain (your organization or authorized target)
 2. Run: `dnsenum example.com`
@@ -755,7 +901,7 @@ smtp-user-enum -M VRFY -U users.txt -t 192.168.1.10 | tee smtp.txt
    - Was zone transfer successful?
    - What services were identified?
 
-#### Exercise 3: Web Enumeration
+#### Exercise 4: Web Enumeration
 
 1. Identify a web server (authorized testing only)
 2. Run: `nikto -h http://target.com`
@@ -769,7 +915,7 @@ smtp-user-enum -M VRFY -U users.txt -t 192.168.1.10 | tee smtp.txt
 
 #### Systematic Approach
 
-- Enumerate all discovered services, not just "interesting" ones
+- Enumerate every discovered service, including the ones that look dull
 - Document all findings in structured format
 - Cross-reference information from multiple sources
 - Validate findings before relying on them
@@ -779,7 +925,10 @@ smtp-user-enum -M VRFY -U users.txt -t 192.168.1.10 | tee smtp.txt
 - Enumeration is noisy and logged by target systems
 - Use appropriate timing and rate limiting
 - Consider detection risk vs. information value
-- Authenticated enumeration is less suspicious than anonymous
+- Authenticated enumeration blends in with normal traffic, but it is **fully
+  attributable**: every query is tied to the account you used, with a username in
+  the log. Anonymous enumeration is more likely to raise an alert and less likely
+  to identify you. Neither is "safer" in general; they fail differently.
 
 #### Legal and Ethical
 
@@ -792,13 +941,13 @@ smtp-user-enum -M VRFY -U users.txt -t 192.168.1.10 | tee smtp.txt
 
 Organizations can limit enumeration effectiveness:
 
-- **Disable unnecessary services**: Close SMB, SNMP on public-facing systems
-- **Use strong community strings**: Change default SNMP communities
-- **Implement null session restrictions**: Block anonymous SMB enumeration
-- **Disable LDAP anonymous binds**: Require authentication
-- **Configure DNS properly**: Disable zone transfers, use split-horizon DNS
-- **Remove verbose error messages**: Don't reveal system details
-- **Monitor enumeration attempts**: Alert on suspicious query patterns
+- Close SMB, SNMP and any other service that is not needed on public-facing systems.
+- Change the default SNMP community strings to something that cannot be guessed.
+- Block anonymous SMB enumeration by restricting null sessions.
+- Require authentication for LDAP; refuse anonymous binds.
+- Disable DNS zone transfers and use split-horizon DNS.
+- Strip system details out of error messages.
+- Monitor for enumeration attempts and alert on suspicious query patterns.
 
 ## Additional Tools for Information Gathering
 

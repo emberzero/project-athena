@@ -2,7 +2,7 @@
 
 ## The World Wide Web
 
-The Internet, commonly referred to as "The Web," is a massive distributed client/server information system that has fundamentally transformed global communication, commerce, and information sharing. At its core, the Web operates on a request-response architecture where clients (typically web browsers) communicate with servers (web hosts) to retrieve and exchange information.
+The World Wide Web is a distributed client/server information system built on top of the Internet. The two terms are often used interchangeably in everyday speech, but they are not the same thing: the Internet is the underlying network of networks, and the Web is one of the services that runs on it. The Web works on a request-response architecture: clients, typically web browsers, ask servers (web hosts) for information, and the servers answer.
 
 ![The Web](images/TheWeb.png)
 
@@ -53,13 +53,18 @@ HTTP (Hypertext Transfer Protocol) is the foundation of data communication on th
    - RESTful architecture leverages HTTP methods
 
 **RFC 2616 Definition:**
+
+RFC 2616 is quoted below because its wording is the clearest short definition of
+HTTP. Note that it is no longer the current specification: it was obsoleted by
+RFC 7230-7235 in 2014, and those in turn by RFC 9110-9112 in 2022.
+
 > "The Hypertext Transfer Protocol (HTTP) is an application-level protocol for distributed, collaborative, hypermedia information systems. It is a generic, stateless protocol which can be used for many tasks beyond its use for hypertext, such as name servers and distributed object management systems, through extension of its request methods, error codes and headers."
 
 ## HTTP Request Structure
 
 ![HTTP Request](images/http_request.png)
 
-An HTTP request consists of several components that work together to specify what resource is being requested and how it should be handled.
+An HTTP request has several components that together specify which resource is requested and how it should be handled.
 
 ### Request Components
 
@@ -95,7 +100,8 @@ HTTP defines several methods indicating the desired action:
   - Used in CORS preflight requests
   - Example: `OPTIONS /api/users HTTP/1.1`
 
-**Non-Idempotent Methods:**
+**Unsafe Methods** (they are expected to change server state; some of them are
+still idempotent, as noted per method):
 
 - **POST**: Submit data to create a resource or trigger processing
   - Not idempotent (multiple requests may create multiple resources)
@@ -191,15 +197,15 @@ name=John+Doe&email=john%40example.com&age=30
 ```http
 POST /upload HTTP/1.1
 Host: example.com
-Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Type: multipart/form-data; boundary=----Boundary7MA4YWxkTrZu0gW
 Content-Length: 1234
 
-------WebKitFormBoundary7MA4YWxkTrZu0gW
+------Boundary7MA4YWxkTrZu0gW
 Content-Disposition: form-data; name="file"; filename="document.pdf"
 Content-Type: application/pdf
 
 [Binary file content]
-------WebKitFormBoundary7MA4YWxkTrZu0gW--
+------Boundary7MA4YWxkTrZu0gW--
 ```
 
 ### Complete Request Example
@@ -419,9 +425,13 @@ Set-Cookie: session_id=abc123xyz;
 
 **Cookie Attributes Explained:**
 
-- **Domain**: Which domains can receive the cookie
-  - `.example.com` includes all subdomains
-  - Omitting sets it to exact domain only
+- **Domain**: Which hosts receive the cookie
+  - `Domain=example.com` sends it to `example.com` *and every subdomain*
+  - A leading dot (`.example.com`) is ignored by modern browsers and has the
+    same effect; it is not a way to broaden or narrow scope
+  - Omitting `Domain` is the stricter choice: a host-only cookie, sent back
+    only to the exact host that set it
+  - Note that cookies ignore scheme and port, so they are not origin-scoped
 
 - **Path**: URL path cookie applies to
   - `/` applies to entire site
@@ -469,9 +479,15 @@ Set-Cookie: session_id=abc123xyz;
    - Server authorizes request based on session
 
 3. **Session Termination**:
-   - User logs out: server deletes session data
-   - Session expires: automatic cleanup after timeout
-   - Session hijacking prevention: bind to IP, User-Agent
+   - User logs out: the server deletes the session data *server-side*; clearing
+     the cookie in the browser is not enough
+   - Session expires: automatic cleanup after an idle and an absolute timeout
+   - Binding a session to the client IP or User-Agent is sometimes suggested as
+     anti-hijacking defence, but it is weak: mobile clients change IP
+     constantly, and the User-Agent is supplied by the attacker along with the
+     stolen cookie. The defences that actually work are HTTPS everywhere,
+     `HttpOnly`, short lifetimes, and rotating the session ID on privilege
+     change
 
 **Example Session Flow:**
 
@@ -543,6 +559,31 @@ HTTP/1.1 200 OK
 
 ## Modern HTTP Versions
 
+The three versions in use today carry the same HTTP semantics (the same
+methods, headers and status codes) over increasingly different transports:
+
+```text
+  HTTP/1.1              HTTP/2                HTTP/3
+  +----------------+    +----------------+    +----------------+
+  | HTTP, as text  |    | HTTP, binary   |    | HTTP, binary   |
+  | one request    |    | framing,       |    | framing,       |
+  | per connection |    | multiplexed    |    | multiplexed    |
+  | at a time      |    | streams        |    | streams        |
+  +----------------+    +----------------+    +----------------+
+  | TLS (optional) |    | TLS (optional  |    | QUIC, with     |
+  |                |    | in the spec,   |    | TLS 1.3 built  |
+  |                |    | required by    |    | into the       |
+  |                |    | every browser) |    | transport      |
+  +----------------+    +----------------+    +----------------+
+  | TCP            |    | TCP            |    | UDP            |
+  +----------------+    +----------------+    +----------------+
+   Head-of-line         HOL blocking          No HOL blocking:
+   blocking per         pushed down into       QUIC streams are
+   connection           TCP: one lost          independent
+                        packet stalls
+                        every stream
+```
+
 ### HTTP/1.1 (1997)
 
 **Features:**
@@ -578,7 +619,9 @@ HTTP/1.1 200 OK
 
 4. **Server Push**: Server can proactively send resources
    - Send CSS/JS before browser requests them
-   - Improves page load times
+   - In practice this failed: it was hard to avoid pushing resources the
+     client already had cached, and Chrome disabled it by default in 2022.
+     The `103 Early Hints` response is the replacement
 
 5. **Stream Prioritization**: Specify resource importance
    - Critical resources loaded first
@@ -624,6 +667,31 @@ HTTP/1.1 200 OK
 
 **TLS Handshake (Simplified):**
 
+```text
+  Client                                           Server
+    |                                                 |
+    | 1. ClientHello                                  |
+    |    TLS versions, cipher suites, SNI, random     |
+    | ----------------------------------------------> |
+    |                                                 |
+    | 2. ServerHello + Certificate (+ key share)      |
+    | <---------------------------------------------- |
+    |                                                 |
+    | 3. Verify the certificate locally:              |
+    |    chain to a trusted CA, name match, validity, |
+    |    revocation. No message is sent in this step  |
+    |    -- which is why a client that skips it sees  |
+    |    no error at all.                             |
+    |                                                 |
+    | 4. Key agreement (ECDHE)                        |
+    | <---------------------------------------------> |
+    |                                                 |
+    | 5. Both sides derive the same session keys      |
+    |                                                 |
+    | 6. HTTP request / response, now encrypted       |
+    | <=============================================> |
+```
+
 1. Client sends "Client Hello" (supported cipher suites, TLS version)
 2. Server sends "Server Hello" (chosen cipher suite, certificate)
 3. Client verifies certificate
@@ -661,7 +729,7 @@ Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
 Understanding URLs is fundamental to web security:
 
 ```url
-https://user:pass@www.example.com:443/path/to/page?query=value&foo=bar#section
+https://user:pass@www.example.com:443/path/page?query=value&foo=bar#sec
 ```
 
 **Components:**
@@ -670,15 +738,17 @@ https://user:pass@www.example.com:443/path/to/page?query=value&foo=bar#section
 - **Credentials**: `user:pass@` (rarely used, security risk)
 - **Host**: `www.example.com` (domain or IP)
 - **Port**: `:443` (default 80 for HTTP, 443 for HTTPS)
-- **Path**: `/path/to/page` (resource location)
+- **Path**: `/path/page` (resource location)
 - **Query**: `?query=value&foo=bar` (parameters)
-- **Fragment**: `#section` (client-side only, not sent to server)
+- **Fragment**: `#sec` (client-side only, not sent to server)
 
 **URL Encoding:**
 
 Special characters must be percent-encoded:
 
-- Space: `%20` or `+`
+- Space: `%20` (or `+`, but *only* inside
+  `application/x-www-form-urlencoded` data; in a path, `+` is a literal
+  plus sign)
 - `&`: `%26`
 - `=`: `%3D`
 - `/`: `%2F`
@@ -694,7 +764,7 @@ Example: `hello world` → `hello%20world`
 - Status codes indicate request outcome
 - Modern HTTP versions (HTTP/2, HTTP/3) improve performance
 - HTTPS encrypts communication and verifies server identity
-- Proper session management is crucial for security
+- Session management has direct security consequences
 - Cookie attributes (Secure, HttpOnly, SameSite) provide security
 
 ## Security Implications

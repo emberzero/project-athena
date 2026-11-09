@@ -1,4 +1,4 @@
-#import "../../../typst-athena-slides-template/1.0.1/src/lib.typ": *
+#import "../../../typst-theme-emberzero/1.1.0/src/lib.typ": *
 
 #show: athena-theme.with(
   font: "Berkeley Mono",
@@ -19,6 +19,7 @@
 #section-slide(title: "SQL Injection (SQLi)")
 
 #slide(title: "What is SQL Injection?")[
+  #set text(size: 18pt)
   *SQL Injection (SQLi)*
 
   - Critical vulnerability enabling manipulation of database queries
@@ -35,6 +36,8 @@
 ]
 
 #slide(title: "Basic SQL Injection Example")[
+  #local(inset: 0.12em)[
+  #set text(size: 18pt)
   *Vulnerable Code:*
   ```php
   <?php
@@ -60,9 +63,11 @@
   ```
 
   `--` is SQL comment, password check bypassed!
+  ]
 ]
 
 #slide(title: "Types of SQL Injection")[
+  #set text(size: 18pt)
   1. *Union-Based SQLi*
      - Combine results from injected query
      - Requires matching column count
@@ -128,6 +133,7 @@
 ]
 
 #slide(title: "SQL Injection Prevention")[
+  #set text(size: 18pt)
   *1. Parameterized Queries (Prepared Statements):*
   ```php
   // SECURE
@@ -154,6 +160,7 @@
 #section-slide(title: "Server-Side Request Forgery (SSRF)")
 
 #slide(title: "What is SSRF?")[
+  #set text(size: 18pt)
   *Server-Side Request Forgery*
 
   - Attacker induces server to make HTTP requests to arbitrary domains
@@ -188,6 +195,7 @@
 ]
 
 #slide(title: "Cloud Metadata Exploitation")[
+  #set text(size: 18pt)
   *AWS Metadata Endpoint:*
   ```
   https://vulnerable.com/fetch?url=http://169.254.169.254/latest/meta-data/iam/security-credentials/role-name
@@ -210,6 +218,8 @@
 ]
 
 #slide(title: "SSRF Prevention")[
+  #local(inset: 0.12em)[
+  #set text(size: 17pt)
   *1. Whitelist Allowed Destinations:*
   ```php
   $allowed = ['api.example.com', 'cdn.example.com'];
@@ -233,6 +243,7 @@
   - 169.254.169.254 (cloud metadata)
 
   *4. Network Segmentation & Firewall Rules*
+  ]
 ]
 
 #section-slide(title: "Command Injection")
@@ -276,6 +287,7 @@
 ]
 
 #slide(title: "Command Injection Prevention")[
+  #set text(size: 14pt)
   *1. Avoid System Commands:*
   ```php
   // BAD
@@ -304,6 +316,7 @@
 #section-slide(title: "Path Traversal & File Inclusion")
 
 #slide(title: "Path Traversal")[
+  #set text(size: 18pt)
   *Definition:* Access files outside intended directory
 
   *Vulnerable Code:*
@@ -328,6 +341,7 @@
 ]
 
 #slide(title: "Local File Inclusion (LFI)")[
+  #set text(size: 18pt)
   *Vulnerable Code:*
   ```php
   <?php
@@ -350,6 +364,7 @@
 ]
 
 #slide(title: "File Inclusion Prevention")[
+  #set text(size: 14pt)
   *1. Whitelist Allowed Files:*
   ```php
   $allowed = ['home', 'about', 'contact'];
@@ -377,6 +392,7 @@
 #section-slide(title: "XML External Entity (XXE)")
 
 #slide(title: "XXE Injection")[
+  #set text(size: 15pt)
   *Definition:* Exploit XML parser to access files or make HTTP requests
 
   *Vulnerable Code:*
@@ -447,6 +463,7 @@
 #section-slide(title: "Server-Side Template Injection (SSTI)")
 
 #slide(title: "SSTI")[
+  #set text(size: 18pt)
   *Definition:* Inject template directives that execute server-side
 
   *Vulnerable Code (Flask/Jinja2):*
@@ -516,6 +533,7 @@
 #section-slide(title: "Insecure Deserialization")
 
 #slide(title: "Insecure Deserialization")[
+  #set text(size: 16pt)
   *Definition:* Untrusted data used to reconstruct objects
 
   *PHP Example:*
@@ -538,6 +556,7 @@
 ]
 
 #slide(title: "Deserialization Impact")[
+  #set text(size: 15pt)
   *Python Pickle RCE:*
   ```python
   import pickle
@@ -560,6 +579,7 @@
 ]
 
 #slide(title: "Deserialization Prevention")[
+  #set text(size: 14pt)
   *1. Use Safe Formats:*
   ```python
   # DON'T
@@ -587,6 +607,7 @@
 #section-slide(title: "Authentication & Authorization")
 
 #slide(title: "Broken Access Control")[
+  #local(inset: 0.12em)[
   *Insecure Direct Object Reference (IDOR):*
 
   ```php
@@ -611,6 +632,7 @@
       die("Access denied");
   }
   ```
+  ]
 ]
 
 #slide(title: "Vertical Privilege Escalation")[
@@ -664,6 +686,7 @@
 ]
 
 #slide(title: "Security Testing Tools")[
+  #set text(size: 14pt)
   *Static Analysis (SAST):*
   - SonarQube
   - Checkmarx
@@ -701,6 +724,7 @@
 ]
 
 #slide(title: "Resources")[
+  #set text(size: 15pt)
   *Learning:*
   - PortSwigger Web Security Academy
   - OWASP Testing Guide

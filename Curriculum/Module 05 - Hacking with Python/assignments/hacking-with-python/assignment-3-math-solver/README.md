@@ -21,7 +21,7 @@ By completing this assignment, you will:
 
 ### The Challenge: "The Math Gauntlet"
 
-You've discovered a mysterious server at `nc localhost 9999` that promises a flag to anyone who can solve **50 random mathematical equations in under 30 seconds**. No human could solve them that fast—this is a job for automation!
+You've discovered a mysterious server at `nc localhost 9999` that promises a flag to anyone who can solve **50 random mathematical equations in under 30 seconds**. No human could solve them that fast, so this is a job for automation.
 
 The server sends equations in various formats:
 
