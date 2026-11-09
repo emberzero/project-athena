@@ -4,3 +4,6 @@
 [submodule "typst-athena-slides-template"]
 	path = typst-athena-slides-template
 	url = git@github.com:nodezeroat/typst-athena-slides-template.git
+[submodule "typst-theme-emberzero"]
+	path = typst-theme-emberzero
+	url = ssh://git@git.em0.at/workshop/typst-theme-emberzero.git

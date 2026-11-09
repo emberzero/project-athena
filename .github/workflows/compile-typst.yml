@@ -1,4 +1,4 @@
-name: Compile Typst Slides and Release
+name: Compile Typst Slides and Lectures, then Release
 
 on:
   push:
@@ -6,8 +6,12 @@ on:
       - main
     paths:
       - 'Curriculum/**/slides/**'
+      - 'Curriculum/**/lectures/**'
+      - 'utils/lecture-template.typ'
+      - 'flake.nix'
       - '.github/workflows/compile-typst.yml'
       - 'typst-athena-slides-template'
+      - 'typst-theme-emberzero'
       - 'athena-fonts'
 
 permissions:
@@ -40,8 +44,8 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: latest-slides
-          name: "Latest Compiled Slides"
-          body: "Compiled PDFs of all slides in the Curriculum directory."
+          name: "Latest Compiled Slides and Lectures"
+          body: "Compiled PDFs of every slide deck and lecture in the Curriculum directory."
           files: result/*.pdf
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

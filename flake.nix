@@ -52,6 +52,15 @@
                 echo "Compiling $file → $name.pdf"
                 typst compile "$file" "out/$name.pdf" --root .
               done
+
+              # Lectures: one shared template, rendered once per Markdown file.
+              find Curriculum -type f -path "*/lectures/*.md" | while read file; do
+                name=$(basename "$file" .md)
+                module=$(echo "$file" | sed -E 's|Curriculum/(Module [0-9]+).*|\1|' | tr -d ' ')
+                echo "Compiling $file → ''${module}_''${name}.pdf"
+                typst compile utils/lecture-template.typ \
+                  "out/''${module}_''${name}.pdf" --root . --input md="$file"
+              done
             '';
 
             installPhase = ''
