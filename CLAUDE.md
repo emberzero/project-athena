@@ -232,7 +232,7 @@ The repository uses submodules for fonts and the Typst template:
 
 ```bash
 # Clone with submodules
-git clone --recurse-submodules https://github.com/nodezeroat/project-athena.git
+git clone --recurse-submodules https://github.com/emberzero/project-athena.git
 
 # Update submodules
 git submodule update --init --recursive

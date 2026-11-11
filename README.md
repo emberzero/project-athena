@@ -1,6 +1,6 @@
 # Project Athena
 
-[![Compile Typst Slides and Release](https://github.com/nodezeroat/project-athena/actions/workflows/compile-typst.yml/badge.svg)](https://github.com/nodezeroat/project-athena/actions/workflows/compile-typst.yml)
+[![Compile Typst Slides and Release](https://github.com/emberzero/project-athena/actions/workflows/compile-typst.yml/badge.svg)](https://github.com/emberzero/project-athena/actions/workflows/compile-typst.yml)
 
 ![Athena Banner](athena_banner.jpg)
 
@@ -25,7 +25,7 @@ Each topic is covered in detail with markdown files containing easy-to-understan
 To access the Project Athena curriculum, simply clone the repository to your local machine.
 
 ```bash
-git clone https://github.com/nodezeroat/project-athena.git
+git clone https://github.com/emberzero/project-athena.git
 ```
 
 ## Usage
@@ -42,7 +42,7 @@ If you would like to contribute content, please fork the repository, create a ne
 
 Current Contributors:
 
-[![contributors-img](https://contrib.rocks/image?repo=nodezeroat/project-athena)](https://github.com/nodezeroat/project-athena/graphs/contributors)
+[![contributors-img](https://contrib.rocks/image?repo=emberzero/project-athena)](https://github.com/emberzero/project-athena/graphs/contributors)
 
 ![repobeats-analytics](https://repobeats.axiom.co/api/embed/c1449b6b68dffe70d7ec7d12efd75c5a9d6c56b9.svg)
 
