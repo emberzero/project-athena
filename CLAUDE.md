@@ -29,7 +29,7 @@ Curriculum/
 ├── ...
 └── SUMMARY.md                   # Auto-generated table of contents
 
-typst-athena-slides-template/   # Git submodule: custom Typst theme
+typst-theme-emberzero/          # Git submodule: EmberZero Typst theme
 athena-fonts/                    # Git submodule: custom fonts
 utils/                           # Helper scripts
 ```
@@ -199,10 +199,10 @@ Each module follows a consistent pattern:
 
 ### Typst Slide System
 
-Slides use a custom Athena theme from the `typst-athena-slides-template` submodule:
+Slides use the EmberZero theme from the `typst-theme-emberzero` submodule:
 
 ```typst
-#import "../../../typst-athena-slides-template/1.0.1/src/lib.typ": *
+#import "../../../typst-theme-emberzero/1.1.0/src/lib.typ": *
 
 #show: athena-theme.with(
   font: "Berkeley Mono",
@@ -219,12 +219,7 @@ Slides use a custom Athena theme from the `typst-athena-slides-template` submodu
 #section-slide(title: "Section")
 ```
 
-All slide files **must** import from the relative path to a theme submodule (three directories up from any module's slides folder).
-
-Two themes are present. `typst-athena-slides-template` is the original and is
-still used by most modules. `typst-theme-emberzero` is the EmberZero fork, with
-the same API plus `#split`, `#cblock` and `#icon`; Module 02 uses it. New decks
-should import `typst-theme-emberzero/1.1.0`.
+All slide files **must** import the theme by relative path (three directories up from any module's slides folder). Besides the slide functions above, the theme provides `#split`, `#cblock` and `#icon`.
 
 ### Git Submodules
 

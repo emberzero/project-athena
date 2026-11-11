@@ -10,7 +10,6 @@ on:
       - 'utils/lecture-template.typ'
       - 'flake.nix'
       - '.github/workflows/compile-typst.yml'
-      - 'typst-athena-slides-template'
       - 'typst-theme-emberzero'
       - 'athena-fonts'
 

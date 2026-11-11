@@ -1,9 +1,6 @@
 [submodule "athena-fonts"]
 	path = athena-fonts
 	url = git@github.com:emberzero/athena-fonts.git
-[submodule "typst-athena-slides-template"]
-	path = typst-athena-slides-template
-	url = git@github.com:emberzero/typst-athena-slides-template.git
 [submodule "typst-theme-emberzero"]
 	path = typst-theme-emberzero
 	url = git@github.com:emberzero/typst-theme-emberzero.git
